@@ -1,20 +1,22 @@
 # eventstore-node
 A port of the EventStore .Net ClientAPI to Node.js
 
-# Porting .Net Task to Node.js
+## Porting .Net Task to Node.js
 
 I used Promise to replace .Net Task, so when executing an async command, i.e. appendToStream you'll have to wait for result/error like this:
 
-connection
-	.appendToStream('myStream', client.expectedVersion.any, events, userCredentials)
-	.then(function(result) {
-		//Do something with the WriteResult here
-	})
-	.catch(function(err) {
-		//Handle error here
-	});
+    connection
+      .appendToStream('myStream', client.expectedVersion.any, events, userCredentials)
+      .then(function(result) {
+        //Do something with the WriteResult here
+      })
+      .catch(function(err) {
+        //Handle error here
+      });
 
-# Status
+## Status
+
+Unstable
 
 Incomplete/missing features:
 
@@ -24,9 +26,9 @@ Incomplete/missing features:
 - Set system settings: not implemented yet
 - Performance: there's still some while loop in the code that could be problematic with node.js
 - Tests: tests are only covering happy path scenarios for now
-- NPM package: no package released yet, I will release one when code is production ready
+- NPM package: no package released yet, I will release one when code is stable
 
-# Running the tests
+## Running the tests
 You will need:
 
 - dependencies (npm install)
@@ -36,3 +38,8 @@ You will need:
 To execute the tests suites simply run test with npm
 
 npm test
+
+## License
+
+This is a port, original code is released under the EventStore license and can be found at https://github.com/eventstore/eventstore.
+Ported code is released under the MIT license, see https://github.com/nicdex/eventstore-node/blob/master/LICENSE
