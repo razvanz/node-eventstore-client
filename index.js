@@ -8,4 +8,4 @@
  * library is heavy on number of files so it could have negative impact on load time
  * we need a compiled (single file) version of the library
  */
-module.exports = require('./src/main.js');
+module.exports = require('./src/client.js');

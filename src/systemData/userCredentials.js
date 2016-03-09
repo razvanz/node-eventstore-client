@@ -1,9 +1,20 @@
-function UserCredentials(username, password) {
-  if (!username || username === '') throw new TypeError("username must be a non-empty string.");
-  if (!password || password === '') throw new TypeError("password must be a non-empty string.");
+var ensure = require('../common/utils/ensure');
 
-  this.username = username;
-  this.password = password;
+/**
+ * @param {string} username
+ * @param {string} password
+ * @constructor
+ * @property {string} username
+ * @property {string} password
+ */
+function UserCredentials(username, password) {
+  ensure.notNullOrEmpty(username, 'username');
+  ensure.notNullOrEmpty(password, 'password');
+
+  Object.defineProperties(this, {
+    username: {enumerable: true, value: username},
+    password: {enumerable: true, value: password}
+  });
 }
 
 module.exports = UserCredentials;

@@ -1,7 +1,7 @@
 var util = require('util');
 var when = require('when');
 var uuid = require('uuid');
-var client = require('../src/main');
+var client = require('../src/client');
 var NoopLogger = require('../src/common/log/noopLogger');
 
 var consoleLogger = {
@@ -18,7 +18,7 @@ function createRandomEvent() {
 }
 
 var testStreamName = 'test-' + uuid.v4();
-var userCredentialsForAll = client.createUserCredentials("admin", "changeit");
+var userCredentialsForAll = new client.UserCredentials("admin", "changeit");
 
 function testEvent(test, event, expectedVersion) {
   if (!event) return;
@@ -32,7 +32,7 @@ module.exports = {
     var tcpEndPoint = {host: 'localhost', port: 1113};
     var settings = {verboseLogging: false, log: new NoopLogger()};
     //var settings = {verboseLogging: true, log: consoleLogger};
-    this.conn = client(tcpEndPoint, settings);
+    this.conn = client.EventStoreConnection.create(settings, tcpEndPoint);
     this.connError = null;
     var self = this;
     this.conn.connect()
