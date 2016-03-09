@@ -1,0 +1,543 @@
+var util = require('util');
+var uuid = require('uuid');
+var when = require('when');
+var EventEmitter = require('events').EventEmitter;
+var ensure = require('./common/utils/ensure');
+
+var messages = require('./core/messages');
+var EventStoreConnectionLogicHandler = require('./core/eventStoreConnectionLogicHandler');
+
+var DeleteStreamOperation = require('./clientOperations/deleteStreamOperation');
+var AppendToStreamOperation = require('./clientOperations/appendToStreamOperation');
+var StartTransactionOperation = require('./clientOperations/startTransactionOperation');
+var TransactionalWriteOperation = require('./clientOperations/transactionalWriteOperation');
+var CommitTransactionOperation = require('./clientOperations/commitTransactionOperation');
+var ReadEventOperation = require('./clientOperations/readEventOperation');
+var ReadStreamEventsForwardOperation = require('./clientOperations/readStreamEventsForwardOperation');
+var ReadStreamEventsBackwardOperation = require('./clientOperations/readStreamEventsBackwardOperation');
+var ReadAllEventsForwardOperation = require('./clientOperations/readAllEventsForwardOperation');
+var ReadAllEventsBackwardOperation = require('./clientOperations/readAllEventsBackwardOperation');
+
+var EventStoreTransaction = require('./eventStoreTransaction');
+var EventStoreStreamCatchUpSubscription = require('./eventStoreStreamCatchUpSubscription');
+var EventStoreAllCatchUpSubscription = require('./eventStoreAllCatchUpSubscription');
+
+var results = require('./results');
+var systemStreams = require('./common/systemStreams');
+var systemEventTypes = require('./common/systemEventTypes');
+var EventData = require('./eventData');
+
+/**
+ * @param settings
+ * @param endpointDiscoverer
+ * @param connectionName
+ * @constructor
+ * @property {string} connectionName
+ */
+function EventStoreNodeConnection(settings, endpointDiscoverer, connectionName) {
+  this._connectionName = connectionName || ['ES-', uuid.v4()].join('');
+  this._settings = settings;
+  this._endpointDiscoverer = endpointDiscoverer;
+  this._handler = new EventStoreConnectionLogicHandler(this, settings);
+
+  var self = this;
+  this._handler.on('connected', function(e) {
+    self.emit('connected', e);
+  });
+  this._handler.on('disconnected', function(e) {
+    self.emit('disconnected', e);
+  });
+  this._handler.on('reconnecting', function(e) {
+    self.emit('reconnecting', e);
+  });
+  this._handler.on('closed', function(e) {
+    self.emit('closed', e);
+  });
+  this._handler.on('error', function(e) {
+    self.emit('error', e);
+  });
+}
+util.inherits(EventStoreNodeConnection, EventEmitter);
+
+Object.defineProperty(EventStoreNodeConnection.prototype, 'connectionName', {
+  get: function() {
+    return this._connectionName;
+  }
+});
+
+/**
+ * @returns {Promise}
+ */
+EventStoreNodeConnection.prototype.connect = function() {
+  var self = this;
+  return when.promise(function(resolve, reject) {
+    function cb(err) {
+      if (err) return reject(err);
+      resolve();
+    }
+    var startConnectionMessage = new messages.StartConnectionMessage(cb, self._endpointDiscoverer);
+    self._handler.enqueueMessage(startConnectionMessage);
+  });
+};
+
+EventStoreNodeConnection.prototype.close = function() {
+  this._handler.enqueueMessage(new messages.CloseConnectionMessage("Connection close requested by client.", null));
+};
+
+// --- Writing ---
+/**
+ * Delete a stream (async)
+ * @param {string} stream
+ * @param {number} expectedVersion
+ * @param {boolean} [hardDelete]
+ * @param {UserCredentials} [userCredentials]
+ * @returns {Promise.<DeleteResult>}
+ */
+EventStoreNodeConnection.prototype.deleteStream = function(stream, expectedVersion, hardDelete, userCredentials) {
+  if (typeof stream !== 'string' || stream === '') throw new TypeError("stream must be an non-empty string.");
+  if (typeof expectedVersion !== 'number' || expectedVersion % 1 !== 0) throw new TypeError("expectedVersion must be an integer.");
+
+  var self = this;
+  return when.promise(function(resolve, reject) {
+    function cb(err, result) {
+      if (err) return reject(err);
+      resolve(result);
+    }
+
+    var deleteStreamOperation = new DeleteStreamOperation(
+        self._settings.log, cb, self._settings.requireMaster, stream, expectedVersion,
+        !!hardDelete, userCredentials || null);
+    self._enqueueOperation(deleteStreamOperation);
+  });
+};
+
+/**
+ * Append events to a stream (async)
+ * @param {string} stream The name of the stream to which to append.
+ * @param {number} expectedVersion The version at which we currently expect the stream to be in order that an optimistic concurrency check can be performed.
+ * @param {Array.<EventData>} events The events to append.
+ * @param {UserCredentials} [userCredentials] User credentials
+ * @returns {Promise.<WriteResult>}
+ */
+EventStoreNodeConnection.prototype.appendToStream = function(stream, expectedVersion, events, userCredentials) {
+  if (typeof stream !== 'string' || stream === '') throw new TypeError("stream must be an non-empty string.");
+  if (typeof expectedVersion !== 'number' || expectedVersion % 1 !== 0) throw new TypeError("expectedVersion must be an integer.");
+  if (!Array.isArray(events)) throw new TypeError("events must be an array.");
+
+  var self = this;
+  return when.promise(function(resolve, reject) {
+    function cb(err, result) {
+      if (err) return reject(err);
+      resolve(result);
+    }
+    var operation = new AppendToStreamOperation(self._settings.log, cb, self._settings.requireMaster, stream,
+        expectedVersion, events, userCredentials || null);
+    self._enqueueOperation(operation);
+  });
+};
+
+/**
+ * Start a transaction (async)
+ * @param {string} stream
+ * @param {number} expectedVersion
+ * @param {UserCredentials} [userCredentials]
+ * @returns {Promise.<EventStoreTransaction>}
+ */
+EventStoreNodeConnection.prototype.startTransaction = function(stream, expectedVersion, userCredentials) {
+  //TODO validations
+  var self = this;
+  return when.promise(function(resolve, reject) {
+    function cb(err, result) {
+      if (err) return reject(err);
+      resolve(result);
+    }
+    var operation = new StartTransactionOperation(self._settings.log, cb, self._settings.requireMaster, stream,
+        expectedVersion, self, userCredentials || null);
+    self._enqueueOperation(operation);
+  });
+};
+
+/**
+ * Continue a transaction
+ * @param {number} transactionId
+ * @param {UserCredentials} userCredentials
+ * @returns {EventStoreTransaction}
+ */
+EventStoreNodeConnection.prototype.continueTransaction = function(transactionId, userCredentials) {
+  //TODO validations
+  return new EventStoreTransaction(transactionId, userCredentials, this);
+};
+
+EventStoreNodeConnection.prototype.transactionalWrite = function(transaction, events, userCredentials) {
+  var self = this;
+  return when.promise(function(resolve, reject) {
+    function cb(err) {
+      if (err) return reject(err);
+      resolve();
+    }
+    var operation = new TransactionalWriteOperation(self._settings.log, cb, self._settings.requireMaster,
+        transaction.transactionId, events, userCredentials);
+    self._enqueueOperation(operation);
+  });
+};
+
+EventStoreNodeConnection.prototype.commitTransaction = function(transaction, userCredentials) {
+  var self = this;
+  return when.promise(function(resolve, reject) {
+    function cb(err, result) {
+      if (err) return reject(err);
+      resolve(result);
+    }
+    var operation = new CommitTransactionOperation(self._settings.log, cb, self._settings.requireMaster,
+        transaction.transactionId, userCredentials);
+    self._enqueueOperation(operation);
+  });
+};
+
+// --- Reading ---
+/**
+ * Read a single event (async)
+ * @param {string} stream
+ * @param {number} eventNumber
+ * @param {boolean} [resolveLinkTos]
+ * @param {UserCredentials} [userCredentials]
+ * @returns {Promise.<EventReadResult>}
+ */
+EventStoreNodeConnection.prototype.readEvent = function(stream, eventNumber, resolveLinkTos, userCredentials) {
+  if (typeof stream !== 'string' || stream === '') throw new TypeError("stream must be an non-empty string.");
+  if (typeof eventNumber !== 'number' || eventNumber % 1 !== 0) throw new TypeError("eventNumber must be an integer.");
+  if (eventNumber < -1) throw new Error("eventNumber out of range.");
+  if (resolveLinkTos && typeof resolveLinkTos !== 'boolean') throw new TypeError("resolveLinkTos must be a boolean.");
+
+  var self = this;
+  return when.promise(function(resolve, reject){
+    function cb(err, result) {
+      if (err) return reject(err);
+      resolve(result);
+    }
+    var operation = new ReadEventOperation(self._settings.log, cb, stream, eventNumber, resolveLinkTos || false,
+        self._settings.requireMaster, userCredentials || null);
+    self._enqueueOperation(operation);
+  });
+};
+
+/**
+ * Reading a specific stream forwards (async)
+ * @param {string} stream
+ * @param {number} start
+ * @param {number} count
+ * @param {boolean} [resolveLinkTos]
+ * @param {UserCredentials} [userCredentials]
+ * @returns {Promise.<StreamEventsSlice>}
+ */
+EventStoreNodeConnection.prototype.readStreamEventsForward = function(
+    stream, start, count, resolveLinkTos, userCredentials
+) {
+  if (typeof stream !== 'string' || stream === '') throw new TypeError("stream must be an non-empty string.");
+  if (typeof start !== 'number' || start % 1 !== 0) throw new TypeError("start must be an integer.");
+  if (typeof count !== 'number' || count % 1 !== 0) throw new TypeError("count must be an integer.");
+  if (resolveLinkTos && typeof resolveLinkTos !== 'boolean') throw new TypeError("resolveLinkTos must be a boolean.");
+
+  var self = this;
+  return when.promise(function(resolve, reject) {
+    function cb(err, result) {
+      if (err) return reject(err);
+      resolve(result);
+    }
+    var operation = new ReadStreamEventsForwardOperation(self._settings.log, cb, stream, start, count,
+        resolveLinkTos || false, self._settings.requireMaster, userCredentials || null);
+    self._enqueueOperation(operation);
+  });
+};
+
+/**
+ * Reading a specific stream backwards (async)
+ * @param {string} stream
+ * @param {number} start
+ * @param {number} count
+ * @param {boolean} [resolveLinkTos]
+ * @param {UserCredentials} [userCredentials]
+ * @returns {Promise.<StreamEventsSlice>}
+ */
+EventStoreNodeConnection.prototype.readStreamEventsBackward = function(
+    stream, start, count, resolveLinkTos, userCredentials
+) {
+  if (typeof stream !== 'string' || stream === '') throw new TypeError("stream must be an non-empty string.");
+  if (typeof start !== 'number' || start % 1 !== 0) throw new TypeError("start must be an integer.");
+  if (typeof count !== 'number' || count % 1 !== 0) throw new TypeError("count must be an integer.");
+  if (resolveLinkTos && typeof resolveLinkTos !== 'boolean') throw new TypeError("resolveLinkTos must be a boolean.");
+
+  var self = this;
+  return when.promise(function(resolve, reject) {
+    function cb(err, result) {
+      if (err) return reject(err);
+      resolve(result);
+    }
+    var operation = new ReadStreamEventsBackwardOperation(self._settings.log, cb, stream, start, count,
+        resolveLinkTos || false, self._settings.requireMaster, userCredentials || null);
+    self._enqueueOperation(operation);
+  });
+};
+
+/**
+ * Reading all events forwards (async)
+ * @param {Position} position
+ * @param {number} maxCount
+ * @param {boolean} [resolveLinkTos]
+ * @param {UserCredentials} [userCredentials]
+ * @returns {Promise.<AllEventsSlice>}
+ */
+EventStoreNodeConnection.prototype.readAllEventsForward = function(
+    position, maxCount, resolveLinkTos, userCredentials
+) {
+  //TODO validations
+
+  var self = this;
+  return when.promise(function(resolve, reject) {
+    function cb(err, result) {
+      if (err) return reject(err);
+      resolve(result);
+    }
+    var operation = new ReadAllEventsForwardOperation(self._settings.log, cb, position, maxCount,
+        resolveLinkTos || false, self._settings.requireMaster, userCredentials || null);
+    self._enqueueOperation(operation);
+  });
+};
+
+/**
+ * Reading all events backwards (async)
+ * @param {Position} position
+ * @param {number} maxCount
+ * @param {boolean} [resolveLinkTos]
+ * @param {UserCredentials} [userCredentials]
+ * @returns {Promise.<AllEventsSlice>}
+ */
+EventStoreNodeConnection.prototype.readAllEventsBackward = function(
+    position, maxCount, resolveLinkTos, userCredentials
+) {
+  //TODO validations
+
+  var self = this;
+  return when.promise(function(resolve, reject) {
+    function cb(err, result) {
+      if (err) return reject(err);
+      resolve(result);
+    }
+    var operation = new ReadAllEventsBackwardOperation(self._settings.log, cb, position, maxCount,
+        resolveLinkTos || false, self._settings.requireMaster, userCredentials || null);
+    self._enqueueOperation(operation);
+  });
+};
+
+// --- Subscriptions ---
+/**
+ * Subscribe to a stream (async)
+ * @param {!string} stream
+ * @param {!boolean} resolveLinkTos
+ * @param {function} eventAppeared
+ * @param {function} [subscriptionDropped]
+ * @param {UserCredentials} [userCredentials]
+ * @returns {Promise.<EventStoreSubscription>}
+ */
+EventStoreNodeConnection.prototype.subscribeToStream = function(
+    stream, resolveLinkTos, eventAppeared, subscriptionDropped, userCredentials
+) {
+  if (typeof stream !== 'string' || stream === '') throw new TypeError("stream must be a non-empty string.");
+  if (typeof eventAppeared !== 'function') throw new TypeError("eventAppeared must be a function.");
+
+  var self = this;
+  return when.promise(function(resolve,reject) {
+    function cb(err, result) {
+      if (err) return reject(err);
+      resolve(result);
+    }
+    self._handler.enqueueMessage(
+        new messages.StartSubscriptionMessage(
+            cb, stream, !!resolveLinkTos, userCredentials || null, eventAppeared, subscriptionDropped || null,
+            self._settings.maxRetries, self._settings.operationTimeout));
+  });
+};
+
+/**
+ * @param {!string} stream
+ * @param {?number} lastCheckpoint
+ * @param {!boolean} resolveLinkTos
+ * @param {!function} eventAppeared
+ * @param {function} [liveProcessingStarted]
+ * @param {function} [subscriptionDropped]
+ * @param {UserCredentials} [userCredentials]
+ * @param {!number} [readBatchSize]
+ * @returns {EventStoreStreamCatchUpSubscription}
+ */
+EventStoreNodeConnection.prototype.subscribeToStreamFrom = function(
+    stream, lastCheckpoint, resolveLinkTos, eventAppeared, liveProcessingStarted, subscriptionDropped,
+    userCredentials, readBatchSize
+) {
+  if (typeof stream !== 'string' || stream === '') throw new TypeError("stream must be a non-empty string.");
+  if (typeof eventAppeared !== 'function') throw new TypeError("eventAppeared must be a function.");
+
+  var catchUpSubscription =
+      new EventStoreStreamCatchUpSubscription(this, this._settings.log, stream, lastCheckpoint,
+          resolveLinkTos, userCredentials || null, eventAppeared,
+          liveProcessingStarted || null, subscriptionDropped || null, this._settings.verboseLogging,
+          readBatchSize);
+  catchUpSubscription.start();
+  return catchUpSubscription;
+};
+
+/**
+ * Subscribe to all (async)
+ * @param {!boolean} resolveLinkTos
+ * @param {!function} eventAppeared
+ * @param {function} [subscriptionDropped]
+ * @param {UserCredentials} [userCredentials]
+ * @returns {Promise.<EventStoreSubscription>}
+ */
+EventStoreNodeConnection.prototype.subscribeToAll = function(
+    resolveLinkTos, eventAppeared, subscriptionDropped, userCredentials
+) {
+  if (typeof eventAppeared !== 'function') throw new TypeError("eventAppeared must be a function.");
+
+  var self = this;
+  return when.promise(function(resolve, reject) {
+    function cb(err, result) {
+      if (err) return reject(err);
+      resolve(result);
+    }
+    self._handler.enqueueMessage(
+        new messages.StartSubscriptionMessage(
+            cb, '', resolveLinkTos, userCredentials || null, eventAppeared, subscriptionDropped || null,
+            self._settings.maxRetries, self._settings.operationTimeout));
+  });
+};
+
+/**
+ * Subscribe to all from
+ * @param {?Position} lastCheckpoint
+ * @param {!boolean} resolveLinkTos
+ * @param {!function} eventAppeared
+ * @param {function} [liveProcessingStarted]
+ * @param {function} [subscriptionDropped]
+ * @param {UserCredentials} [userCredentials]
+ * @param {!number} [readBatchSize]
+ * @returns {EventStoreAllCatchUpSubscription}
+ */
+EventStoreNodeConnection.prototype.subscribeToAllFrom = function(
+    lastCheckpoint, resolveLinkTos, eventAppeared, liveProcessingStarted, subscriptionDropped,
+    userCredentials, readBatchSize
+) {
+  if (typeof eventAppeared !== 'function') throw new TypeError("eventAppeared must be a function.");
+
+  var catchUpSubscription =
+      new EventStoreAllCatchUpSubscription(this, this._settings.log, lastCheckpoint, resolveLinkTos,
+          userCredentials || null, eventAppeared, liveProcessingStarted || null,
+          subscriptionDropped || null, this._settings.verboseLogging, readBatchSize || 500);
+  catchUpSubscription.start();
+  return catchUpSubscription;
+};
+
+EventStoreNodeConnection.prototype.connectToPersistentSubscription = function() {
+  //TODO: connect to persistent subscription
+  throw new Error("Not implemented.");
+};
+
+EventStoreNodeConnection.prototype.createPersistentSubscription = function() {
+  //TODO: create persistent subscription
+  throw new Error("Not implemented.");
+};
+
+EventStoreNodeConnection.prototype.updatePersistentSubscription = function() {
+  //TODO: update persistent subscription
+  throw new Error("Not implemented.");
+};
+
+EventStoreNodeConnection.prototype.deletePersistentSubscription = function() {
+  //TODO: delete persistent subscription
+  throw new Error("Not implemented.");
+};
+
+EventStoreNodeConnection.prototype.setStreamMetadata = function() {
+  //TODO: set stream metadata (non-raw)
+  throw new Error("Not implemented.");
+};
+
+/**
+ * Set stream metadata with raw object (async)
+ * @param {string} stream
+ * @param {number} expectedMetastreamVersion
+ * @param {object} metadata
+ * @param {UserCredentials} [userCredentials]
+ * @returns {Promise.<WriteResult>}
+ */
+EventStoreNodeConnection.prototype.setStreamMetadataRaw = function(
+    stream, expectedMetastreamVersion, metadata, userCredentials
+) {
+  ensure.notNullOrEmpty(stream, "stream");
+  if (systemStreams.isMetastream(stream))
+    throw new Error(util.format("Setting metadata for metastream '%s' is not supported.", stream));
+  var self = this;
+  return when.promise(function(resolve, reject) {
+    function cb(err, result) {
+      if (err) return reject(err);
+      resolve(result);
+    }
+    var data = metadata ? new Buffer(JSON.stringify(metadata)) : null;
+    var metaevent = new EventData(uuid.v4(), systemEventTypes.StreamMetadata, true, data, null);
+    self._enqueueOperation(
+        new AppendToStreamOperation(self._settings.log, cb, self._settings.requireMaster,
+                                    systemStreams.metastreamOf(stream), expectedMetastreamVersion,
+                                    [metaevent], userCredentials));
+  });
+};
+
+EventStoreNodeConnection.prototype.getStreamMetadata = function(stream, userCredentials) {
+  //TODO: get stream metadata (non-raw)
+  throw new Error("Not implemented.");
+};
+
+/**
+ * Get stream metadata as raw object (async)
+ * @param {string} stream
+ * @param {UserCredentials} [userCredentials]
+ * @returns {Promise.<RawStreamMetadataResult>}
+ */
+EventStoreNodeConnection.prototype.getStreamMetadataRaw = function(stream, userCredentials) {
+  return this.readEvent(systemStreams.metastreamOf(stream), -1, false, userCredentials)
+      .then(function(res) {
+        switch(res.status) {
+          case results.EventReadStatus.Success:
+            if (res.event === null) throw new Error("Event is null while operation result is Success.");
+            var evnt = res.event.originalEvent;
+            var version = evnt ? evnt.eventNumber : -1;
+            var data = evnt ? JSON.parse(evnt.data.toString()) : null;
+            return new results.RawStreamMetadataResult(stream, false, version, data);
+          case results.EventReadStatus.NotFound:
+          case results.EventReadStatus.NoStream:
+            return new results.RawStreamMetadataResult(stream, false, -1, null);
+          case results.EventReadStatus.StreamDeleted:
+            return new results.RawStreamMetadataResult(stream, true, Number.MAX_VALUE, null);
+          default:
+            throw new Error(util.format("Unexpected ReadEventResult: %s.", res.status));
+        }
+      });
+};
+
+EventStoreNodeConnection.prototype.setSystemSettings = function() {
+  //TODO: set system settings
+  throw new Error("Not implemented.");
+};
+
+EventStoreNodeConnection.prototype._enqueueOperation = function(operation) {
+  var self = this;
+  var message = new messages.StartOperationMessage(operation, self._settings.maxRetries, self._settings.operationTimeout);
+  function tryEnqueue() {
+    if (self._handler.totalOperationCount >= self._settings.maxQueueSize) {
+      setImmediate(tryEnqueue);
+      return;
+    }
+    self._handler.enqueueMessage(message);
+  }
+  setImmediate(tryEnqueue)
+};
+
+module.exports = EventStoreNodeConnection;

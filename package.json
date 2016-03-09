@@ -1,0 +1,29 @@
+{
+  "name": "eventstore-node",
+  "version": "0.0.1",
+  "description": "A port of the EventStore .Net ClientAPI to Node.js",
+  "main": "index.js",
+  "scripts": {
+    "test": "nodeunit"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/nicdex/eventstore-node.git"
+  },
+  "keywords": [
+    "eventstore",
+    "geteventstore",
+    "node"
+  ],
+  "author": "Nicolas Dextraze",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/nicdex/eventstore-node/issues"
+  },
+  "homepage": "https://github.com/nicdex/eventstore-node#readme",
+  "dependencies": {
+    "protobufjs": "^5.0.1",
+    "uuid": "^2.0.1",
+    "when": "^3.7.7"
+  }
+}
