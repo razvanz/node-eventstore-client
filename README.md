@@ -1,18 +1,11 @@
 # eventstore-node
 A port of the EventStore .Net ClientAPI to Node.js
 
-## Porting .Net Task to Node.js
+## Dependencies
 
-I used Promise to replace .Net Task, so when executing an async command, i.e. appendToStream you'll have to wait for result/error like this:
-
-    connection
-      .appendToStream('myStream', client.expectedVersion.any, events, userCredentials)
-      .then(function(result) {
-        //Do something with the WriteResult here
-      })
-      .catch(function(err) {
-        //Handle error here
-      });
+- Node.js >= 0.12
+- protobufjs module
+- uuid module
 
 ## Status
 
@@ -28,16 +21,29 @@ Incomplete/missing features:
 - Tests: tests are only covering happy path scenarios for now
 - NPM package: no package released yet, I will release one when code is stable
 
+## Porting .Net Task to Node.js
+
+I used Promise to replace .Net Task, so when executing an async command, i.e. appendToStream you'll have to wait for result/error like this:
+
+    connection
+      .appendToStream('myStream', client.expectedVersion.any, events, userCredentials)
+      .then(function(result) {
+        //Do something with the WriteResult here
+      })
+      .catch(function(err) {
+        //Handle error here
+      });
+
 ## Running the tests
 You will need:
 
-- dependencies (npm install)
-- nodeunit (npm install -g nodeunit)
+- dependencies (`npm install`)
+- nodeunit (`npm install -g nodeunit`)
 - an instance of EventStore running on localhost:1113 (https://geteventstore.com/downloads/)
 
 To execute the tests suites simply run test with npm
 
-npm test
+    npm test
 
 ## License
 
