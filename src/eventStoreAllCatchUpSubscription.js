@@ -1,5 +1,4 @@
 var util = require('util');
-var when = require('when');
 
 var EventStoreCatchUpSubscription = require('./eventStoreCatchUpSubscription');
 var results = require('./results');
@@ -26,10 +25,10 @@ EventStoreAllCatchUpSubscription.prototype._readEventsTill = function(
 
   function processEvents(events, index) {
     index = index || 0;
-    if (index >= events.length) return when();
+    if (index >= events.length) return Promise.resolve();
     if (events[index].originalPosition === null) throw new Error("Subscription event came up with no OriginalPosition.");
 
-    return when.promise(function(resolve, reject) {
+    return new Promise(function(resolve, reject) {
           self._tryProcess(events[index]);
           resolve();
         })
@@ -48,8 +47,8 @@ EventStoreAllCatchUpSubscription.prototype._readEventsTill = function(
                     ? slice.isEndOfStream
                     : slice.nextPosition.compareTo(new results.Position(lastCommitPosition, lastCommitPosition)) >= 0;
                 if (!done && slice.isEndOfStream)
-                    return when(done).delay(10);
-                return when(done);
+                    return Promise.resolve(done).delay(10);
+                return Promise.resolve(done);
               });
         })
         .then(function(done) {

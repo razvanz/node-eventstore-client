@@ -1,5 +1,4 @@
 var util = require('util');
-var when = require('when');
 
 var EventStoreCatchUpSubscription = require('./eventStoreCatchUpSubscription');
 var SliceReadStatus = require('./sliceReadStatus');
@@ -27,9 +26,9 @@ EventStoreStreamCatchUpSubscription.prototype._readEventsTill = function(
 
   function processEvents(events, index) {
     index = index || 0;
-    if (index >= events.length) return when();
+    if (index >= events.length) return Promise.resolve();
 
-    return when.promise(function(resolve, reject) {
+    return new Promise(function(resolve, reject) {
           self._tryProcess(events[index]);
           resolve();
         })
@@ -46,7 +45,7 @@ EventStoreStreamCatchUpSubscription.prototype._readEventsTill = function(
               return processEvents(slice.events)
                   .then(function() {
                     self._nextReadEventNumber = slice.nextEventNumber;
-                    var done = when(lastEventNumber === null ? slice.isEndOfStream : slice.nextEventNumber > lastEventNumber);
+                    var done = Promise.resolve(lastEventNumber === null ? slice.isEndOfStream : slice.nextEventNumber > lastEventNumber);
                     if (!done && slice.isEndOfStream)
                         return done.delay(10);
                     return done;

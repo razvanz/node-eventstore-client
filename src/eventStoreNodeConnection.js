@@ -1,6 +1,5 @@
 var util = require('util');
 var uuid = require('uuid');
-var when = require('when');
 var EventEmitter = require('events').EventEmitter;
 var ensure = require('./common/utils/ensure');
 
@@ -70,7 +69,7 @@ Object.defineProperty(EventStoreNodeConnection.prototype, 'connectionName', {
  */
 EventStoreNodeConnection.prototype.connect = function() {
   var self = this;
-  return when.promise(function(resolve, reject) {
+  return new Promise(function(resolve, reject) {
     function cb(err) {
       if (err) return reject(err);
       resolve();
@@ -98,7 +97,7 @@ EventStoreNodeConnection.prototype.deleteStream = function(stream, expectedVersi
   if (typeof expectedVersion !== 'number' || expectedVersion % 1 !== 0) throw new TypeError("expectedVersion must be an integer.");
 
   var self = this;
-  return when.promise(function(resolve, reject) {
+  return new Promise(function(resolve, reject) {
     function cb(err, result) {
       if (err) return reject(err);
       resolve(result);
@@ -125,7 +124,7 @@ EventStoreNodeConnection.prototype.appendToStream = function(stream, expectedVer
   if (!Array.isArray(events)) throw new TypeError("events must be an array.");
 
   var self = this;
-  return when.promise(function(resolve, reject) {
+  return new Promise(function(resolve, reject) {
     function cb(err, result) {
       if (err) return reject(err);
       resolve(result);
@@ -146,7 +145,7 @@ EventStoreNodeConnection.prototype.appendToStream = function(stream, expectedVer
 EventStoreNodeConnection.prototype.startTransaction = function(stream, expectedVersion, userCredentials) {
   //TODO validations
   var self = this;
-  return when.promise(function(resolve, reject) {
+  return new Promise(function(resolve, reject) {
     function cb(err, result) {
       if (err) return reject(err);
       resolve(result);
@@ -170,7 +169,7 @@ EventStoreNodeConnection.prototype.continueTransaction = function(transactionId,
 
 EventStoreNodeConnection.prototype.transactionalWrite = function(transaction, events, userCredentials) {
   var self = this;
-  return when.promise(function(resolve, reject) {
+  return new Promise(function(resolve, reject) {
     function cb(err) {
       if (err) return reject(err);
       resolve();
@@ -183,7 +182,7 @@ EventStoreNodeConnection.prototype.transactionalWrite = function(transaction, ev
 
 EventStoreNodeConnection.prototype.commitTransaction = function(transaction, userCredentials) {
   var self = this;
-  return when.promise(function(resolve, reject) {
+  return new Promise(function(resolve, reject) {
     function cb(err, result) {
       if (err) return reject(err);
       resolve(result);
@@ -210,7 +209,7 @@ EventStoreNodeConnection.prototype.readEvent = function(stream, eventNumber, res
   if (resolveLinkTos && typeof resolveLinkTos !== 'boolean') throw new TypeError("resolveLinkTos must be a boolean.");
 
   var self = this;
-  return when.promise(function(resolve, reject){
+  return new Promise(function(resolve, reject){
     function cb(err, result) {
       if (err) return reject(err);
       resolve(result);
@@ -239,7 +238,7 @@ EventStoreNodeConnection.prototype.readStreamEventsForward = function(
   if (resolveLinkTos && typeof resolveLinkTos !== 'boolean') throw new TypeError("resolveLinkTos must be a boolean.");
 
   var self = this;
-  return when.promise(function(resolve, reject) {
+  return new Promise(function(resolve, reject) {
     function cb(err, result) {
       if (err) return reject(err);
       resolve(result);
@@ -268,7 +267,7 @@ EventStoreNodeConnection.prototype.readStreamEventsBackward = function(
   if (resolveLinkTos && typeof resolveLinkTos !== 'boolean') throw new TypeError("resolveLinkTos must be a boolean.");
 
   var self = this;
-  return when.promise(function(resolve, reject) {
+  return new Promise(function(resolve, reject) {
     function cb(err, result) {
       if (err) return reject(err);
       resolve(result);
@@ -293,7 +292,7 @@ EventStoreNodeConnection.prototype.readAllEventsForward = function(
   //TODO validations
 
   var self = this;
-  return when.promise(function(resolve, reject) {
+  return new Promise(function(resolve, reject) {
     function cb(err, result) {
       if (err) return reject(err);
       resolve(result);
@@ -318,7 +317,7 @@ EventStoreNodeConnection.prototype.readAllEventsBackward = function(
   //TODO validations
 
   var self = this;
-  return when.promise(function(resolve, reject) {
+  return new Promise(function(resolve, reject) {
     function cb(err, result) {
       if (err) return reject(err);
       resolve(result);
@@ -346,7 +345,7 @@ EventStoreNodeConnection.prototype.subscribeToStream = function(
   if (typeof eventAppeared !== 'function') throw new TypeError("eventAppeared must be a function.");
 
   var self = this;
-  return when.promise(function(resolve,reject) {
+  return new Promise(function(resolve,reject) {
     function cb(err, result) {
       if (err) return reject(err);
       resolve(result);
@@ -399,7 +398,7 @@ EventStoreNodeConnection.prototype.subscribeToAll = function(
   if (typeof eventAppeared !== 'function') throw new TypeError("eventAppeared must be a function.");
 
   var self = this;
-  return when.promise(function(resolve, reject) {
+  return new Promise(function(resolve, reject) {
     function cb(err, result) {
       if (err) return reject(err);
       resolve(result);
@@ -476,7 +475,7 @@ EventStoreNodeConnection.prototype.setStreamMetadataRaw = function(
   if (systemStreams.isMetastream(stream))
     throw new Error(util.format("Setting metadata for metastream '%s' is not supported.", stream));
   var self = this;
-  return when.promise(function(resolve, reject) {
+  return new Promise(function(resolve, reject) {
     function cb(err, result) {
       if (err) return reject(err);
       resolve(result);

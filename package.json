@@ -23,7 +23,6 @@
   "homepage": "https://github.com/nicdex/eventstore-node#readme",
   "dependencies": {
     "protobufjs": "^5.0.1",
-    "uuid": "^2.0.1",
-    "when": "^3.7.7"
+    "uuid": "^2.0.1"
   }
 }

@@ -1,5 +1,4 @@
 var util = require('util');
-var when = require('when');
 
 var SubscriptionDropReason = require('./subscriptionDropReason');
 var results = require('./results');
@@ -130,7 +129,7 @@ EventStoreCatchUpSubscription.prototype._runSubscription = function() {
   var self = this;
   this._stopped = false;
   if (this._verbose) this._log.debug("Catch-up Subscription to %s: pulling events...", logStreamName);
-  when(this._readEventsTill(this._connection, this._resolveLinkTos, this._userCredentials, null, null))
+  this._readEventsTill(this._connection, this._resolveLinkTos, this._userCredentials, null, null)
       .then(function() {
         if (self._shouldStop) return;
         if (self._verbose) self._log.debug("Catch-up Subscription to %s: subscribing...", logStreamName);

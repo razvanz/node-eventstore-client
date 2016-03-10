@@ -1,5 +1,4 @@
 var util = require('util');
-var when = require('when');
 var uuid = require('uuid');
 var client = require('../src/client');
 var NoopLogger = require('../src/common/log/noopLogger');
@@ -72,11 +71,11 @@ module.exports = {
     this.conn.startTransaction(testStreamName, client.expectedVersion.any)
         .then(function(trx) {
           test.ok(trx, "No transaction.");
-          return when.join(trx, trx.write([createRandomEvent()]));
+          return Promise.all([trx, trx.write([createRandomEvent()])]);
         })
         .then(function(args) {
           var trx = args[0];
-          return when.join(trx, trx.write([createRandomEvent()]));
+          return Promise.all([trx, trx.write([createRandomEvent()])]);
         })
         .then(function(args) {
           var trx = args[0];

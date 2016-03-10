@@ -1,5 +1,3 @@
-var when = require('when');
-
 function StaticEndpointDiscoverer(tcpEndPoint, useSsl) {
   this._nodeEndpoints = {
     tcpEndPoint: useSsl ? null : tcpEndPoint,
@@ -8,7 +6,7 @@ function StaticEndpointDiscoverer(tcpEndPoint, useSsl) {
 }
 
 StaticEndpointDiscoverer.prototype.discover = function(failedTcpEndpoint) {
-  return when(this._nodeEndpoints);
+  return Promise.resolve(this._nodeEndpoints);
 };
 
 module.exports = StaticEndpointDiscoverer;
