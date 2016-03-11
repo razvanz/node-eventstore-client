@@ -67,21 +67,25 @@ function TcpPackageConnection(
       });
 }
 Object.defineProperty(TcpPackageConnection.prototype, 'connectionId', {
+  enumerable: true,
   get: function() {
     return this._connectionId;
   }
 });
 Object.defineProperty(TcpPackageConnection.prototype, 'isClosed', {
+  enumerable: true,
   get: function() {
     return this._connection.isClosed;
   }
 });
 Object.defineProperty(TcpPackageConnection.prototype, 'remoteEndPoint', {
+  enumerable: true,
   get: function() {
     return this._connection.remoteEndPoint;
   }
 });
 Object.defineProperty(TcpPackageConnection.prototype, 'localEndPoint', {
+  enumerable: true,
   get: function() {
     return this._connection.localEndPoint;
   }

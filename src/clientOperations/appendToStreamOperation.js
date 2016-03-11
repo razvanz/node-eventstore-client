@@ -7,6 +7,9 @@ var InspectionResult = require('./../systemData/inspectionResult');
 var ClientMessage = require('../messages/clientMessage');
 var WriteResult = require('../results').WriteResult;
 var Position = require('../results').Position;
+var WrongExpectedVersionError = require('../errors/wrongExpectedVersionError');
+var StreamDeletedError = require('../errors/streamDeletedError');
+var AccessDeniedError = require('../errors/accessDeniedError');
 
 var OperationBase = require('../clientOperations/operationBase');
 
@@ -52,17 +55,16 @@ AppendToStreamOperation.prototype._inspectResponse = function(response) {
       this._wasCommitTimeout = true;
       return new InspectionResult(InspectionDecision.Retry, "CommitTimeout");
     case ClientMessage.OperationResult.WrongExpectedVersion:
-      var err = ["Append failed due to WrongExpectedVersion. Stream: ", this._stream,", Expected version: ", this._expectedVersion].join('');
-      this.fail(new Error(err));
+      this.fail(new WrongExpectedVersionError("Append", this._stream, this._expectedVersion));
       return new InspectionResult(InspectionDecision.EndOperation, "WrongExpectedVersion");
     case ClientMessage.OperationResult.StreamDeleted:
-      this.fail(new Error("Stream deleted. Stream: " + this._stream));
+      this.fail(new StreamDeletedError(this._stream));
       return new InspectionResult(InspectionDecision.EndOperation, "StreamDeleted");
     case ClientMessage.OperationResult.InvalidTransaction:
       this.fail(new Error("Invalid transaction."));
       return new InspectionResult(InspectionDecision.EndOperation, "InvalidTransaction");
     case ClientMessage.OperationResult.AccessDenied:
-      this.fail(new Error(["Write access denied for stream '", this._stream, "'."].join('')));
+      this.fail(new AccessDeniedError("Write", this._stream));
       return new InspectionResult(InspectionDecision.EndOperation, "AccessDenied");
     default:
       throw new Error("Unexpected OperationResult: " + response.result);

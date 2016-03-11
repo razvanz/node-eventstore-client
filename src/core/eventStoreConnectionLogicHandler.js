@@ -115,15 +115,15 @@ EventStoreConnectionLogicHandler.prototype.enqueueMessage = function(msg) {
 EventStoreConnectionLogicHandler.prototype._discoverEndpoint = function(cb) {
   this._logDebug('DiscoverEndpoint');
 
-  if (this._state != ConnectionState.Connecting) return;
-  if (this._connectingPhase != ConnectingPhase.Reconnecting) return;
+  if (this._state !== ConnectionState.Connecting) return;
+  if (this._connectingPhase !== ConnectingPhase.Reconnecting) return;
 
   this._connectingPhase = ConnectingPhase.EndPointDiscovery;
 
   cb = cb || function() {};
 
   var self = this;
-  this._endpointDiscoverer.discover(this._connection != null ? this._connection.remoteEndPoint : null)
+  this._endpointDiscoverer.discover(this._connection !== null ? this._connection.remoteEndPoint : null)
       .then(function(nodeEndpoints){
         self.enqueueMessage(new messages.EstablishTcpConnectionMessage(nodeEndpoints));
         cb();
@@ -581,7 +581,6 @@ EventStoreConnectionLogicHandler.prototype._timerTick = function() {
   {
     case ConnectionState.Init: break;
     case ConnectionState.Connecting:
-    {
       if (this._connectingPhase == ConnectingPhase.Reconnecting && Date.now() - this._reconnInfo.timeStamp >= this._settings.reconnectionDelay)
       {
         this._logDebug("TimerTick checking reconnection...");
@@ -595,17 +594,15 @@ EventStoreConnectionLogicHandler.prototype._timerTick = function() {
           this._discoverEndpoint(null);
         }
       }
-      if (this._connectingPhase == ConnectingPhase.Authentication && Date.now() - this._authInfo.timeStamp >= this._settings.operationTimeout)
+      else if (this._connectingPhase == ConnectingPhase.Authentication && Date.now() - this._authInfo.timeStamp >= this._settings.operationTimeout)
       {
         this.emit('authenticationFailed', "Authentication timed out.");
         this._goToConnectedState();
       }
-      if (this._connectingPhase > ConnectingPhase.ConnectionEstablishing)
+      else if (this._connectingPhase > ConnectingPhase.ConnectionEstablishing)
         this._manageHeartbeats();
       break;
-    }
     case ConnectionState.Connected:
-    {
       // operations timeouts are checked only if connection is established and check period time passed
       if (Date.now() - this._lastTimeoutsTimeStamp >= this._settings.operationTimeoutCheckPeriod)
       {
@@ -619,7 +616,6 @@ EventStoreConnectionLogicHandler.prototype._timerTick = function() {
       }
       this._manageHeartbeats();
       break;
-    }
     case ConnectionState.Closed:
       break;
     default:

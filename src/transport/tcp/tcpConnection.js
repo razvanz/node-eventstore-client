@@ -16,11 +16,13 @@ function TcpConnection(log, connectionId, remoteEndPoint, onConnectionClosed) {
   this._receiveQueue = [];
 
   Object.defineProperty(this, 'remoteEndPoint', {
+    enumerable: true,
     get: function() {
       return this._remoteEndPoint;
     }
   });
   Object.defineProperty(this, 'localEndPoint', {
+    enumerable: true,
     get: function() {
       return this._localEndPoint;
     }

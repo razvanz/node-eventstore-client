@@ -43,8 +43,12 @@ module.exports.UserCredentials = require('./systemData/userCredentials');
 module.exports.EventData = EventData;
 module.exports.PersistentSubscriptionSettings = require('./persistentSubscriptionSettings');
 module.exports.SystemConsumerStrategies = require('./systemConsumerStrategies');
+module.exports.WrongExpectedVersionError = require('./errors/wrongExpectedVersionError');
+module.exports.StreamDeletedError = require('./errors/streamDeletedError');
+module.exports.AccessDeniedError = require('./errors/accessDeniedError');
 module.exports.expectedVersion = expectedVersion;
 module.exports.positions = positions;
+module.exports.systemMetadata = require('./common/systemMetadata');
 
 // Helper functions
 module.exports.createConnection = module.exports.EventStoreConnection.create;

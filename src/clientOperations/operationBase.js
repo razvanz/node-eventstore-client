@@ -5,7 +5,7 @@ var TcpCommand = require('../systemData/tcpCommand');
 var TcpFlags = require('../systemData/tcpFlags');
 var InspectionDecision = require('../systemData/inspectionDecision');
 var ClientMessage = require('../messages/clientMessage');
-var createInspectionResult = require('./../systemData/inspectionResult');
+var InspectionResult = require('./../systemData/inspectionResult');
 var createBufferSegment = require('../common/bufferSegment');
 
 function OperationBase(log, cb, requestCommand, responseCommand, userCredentials) {
@@ -79,7 +79,7 @@ OperationBase.prototype.inspectPackage = function(pkg) {
     }
   } catch(e) {
     this.fail(e);
-    return createInspectionResult(InspectionDecision.EndOperation, "Error - " + e.message);
+    return new InspectionResult(InspectionDecision.EndOperation, "Error - " + e.message);
   }
 };
 
@@ -91,7 +91,7 @@ OperationBase.prototype._inspectNotAuthenticated = function(pkg)
   } catch(e) {}
   //TODO typed error
   this.fail(new Error("Authentication error: " + message));
-  return createInspectionResult(InspectionDecision.EndOperation, "NotAuthenticated");
+  return new InspectionResult(InspectionDecision.EndOperation, "NotAuthenticated");
 };
 
 OperationBase.prototype._inspectBadRequest = function(pkg)
@@ -102,7 +102,7 @@ OperationBase.prototype._inspectBadRequest = function(pkg)
   } catch(e) {}
   //TODO typed error
   this.fail(new Error("Bad request: " + message));
-  return createInspectionResult(InspectionDecision.EndOperation, "BadRequest - " + message);
+  return new InspectionResult(InspectionDecision.EndOperation, "BadRequest - " + message);
 };
 
 OperationBase.prototype._inspectNotHandled = function(pkg)
@@ -111,20 +111,20 @@ OperationBase.prototype._inspectNotHandled = function(pkg)
   switch (message.reason)
   {
     case ClientMessage.NotHandled.NotHandledReason.NotReady:
-      return createInspectionResult(InspectionDecision.Retry, "NotHandled - NotReady");
+      return new InspectionResult(InspectionDecision.Retry, "NotHandled - NotReady");
 
     case ClientMessage.NotHandled.NotHandledReason.TooBusy:
-      return createInspectionResult(InspectionDecision.Retry, "NotHandled - TooBusy");
+      return new InspectionResult(InspectionDecision.Retry, "NotHandled - TooBusy");
 
     case ClientMessage.NotHandled.NotHandledReason.NotMaster:
       var masterInfo = ClientMessage.NotHandled.MasterInfo.decode(message.additional_info);
-      return new InspectionResult(InspectionDecision.Reconnect, "NotHandled - NotMaster",
+      return new new InspectionResult(InspectionDecision.Reconnect, "NotHandled - NotMaster",
           {host: masterInfo.external_tcp_address, port: masterInfo.external_tcp_port},
           {host: masterInfo.external_secure_tcp_address, port: masterInfo.external_secure_tcp_port});
 
     default:
       this.log.error("Unknown NotHandledReason: %s.", message.reason);
-      return createInspectionResult(InspectionDecision.Retry, "NotHandled - <unknown>");
+      return new InspectionResult(InspectionDecision.Retry, "NotHandled - <unknown>");
   }
 };
 
@@ -141,7 +141,7 @@ OperationBase.prototype._inspectUnexpectedCommand = function(pkg, expectedComman
       this.constructor.name, this, pkg.data);
 
   this.fail(new Error(util.format("Unexpected command. Expecting %s got %s.", TcpCommand.getName(expectedCommand), TcpCommand.getName(pkg.command))));
-  return createInspectionResult(InspectionDecision.EndOperation, "Unexpected command - " + TcpCommand.getName(pkg.command));
+  return new InspectionResult(InspectionDecision.EndOperation, "Unexpected command - " + TcpCommand.getName(pkg.command));
 };
 
 

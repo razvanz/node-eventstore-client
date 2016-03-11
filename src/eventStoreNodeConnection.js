@@ -96,8 +96,10 @@ EventStoreNodeConnection.prototype.close = function() {
  * @returns {Promise.<DeleteResult>}
  */
 EventStoreNodeConnection.prototype.deleteStream = function(stream, expectedVersion, hardDelete, userCredentials) {
-  if (typeof stream !== 'string' || stream === '') throw new TypeError("stream must be an non-empty string.");
-  if (typeof expectedVersion !== 'number' || expectedVersion % 1 !== 0) throw new TypeError("expectedVersion must be an integer.");
+  ensure.notNullOrEmpty(stream, "stream");
+  ensure.isInteger(expectedVersion, "expectedVersion");
+  hardDelete = !!hardDelete;
+  userCredentials = userCredentials || null;
 
   var self = this;
   return new Promise(function(resolve, reject) {
@@ -107,8 +109,7 @@ EventStoreNodeConnection.prototype.deleteStream = function(stream, expectedVersi
     }
 
     var deleteStreamOperation = new DeleteStreamOperation(
-        self._settings.log, cb, self._settings.requireMaster, stream, expectedVersion,
-        !!hardDelete, userCredentials || null);
+        self._settings.log, cb, self._settings.requireMaster, stream, expectedVersion, hardDelete, userCredentials);
     self._enqueueOperation(deleteStreamOperation);
   });
 };
@@ -117,14 +118,17 @@ EventStoreNodeConnection.prototype.deleteStream = function(stream, expectedVersi
  * Append events to a stream (async)
  * @param {string} stream The name of the stream to which to append.
  * @param {number} expectedVersion The version at which we currently expect the stream to be in order that an optimistic concurrency check can be performed.
- * @param {Array.<EventData>} events The events to append.
+ * @param {EventData[]|EventData} events The event(s) to append.
  * @param {UserCredentials} [userCredentials] User credentials
  * @returns {Promise.<WriteResult>}
  */
 EventStoreNodeConnection.prototype.appendToStream = function(stream, expectedVersion, events, userCredentials) {
-  if (typeof stream !== 'string' || stream === '') throw new TypeError("stream must be an non-empty string.");
-  if (typeof expectedVersion !== 'number' || expectedVersion % 1 !== 0) throw new TypeError("expectedVersion must be an integer.");
-  if (!Array.isArray(events)) throw new TypeError("events must be an array.");
+  ensure.notNullOrEmpty(stream, "stream");
+  ensure.isInteger(expectedVersion, "expectedVersion");
+  if (!Array.isArray(events))
+    events = [events];
+  ensure.isArrayOf(EventData, events, "events");
+  userCredentials = userCredentials || null;
 
   var self = this;
   return new Promise(function(resolve, reject) {
@@ -133,7 +137,7 @@ EventStoreNodeConnection.prototype.appendToStream = function(stream, expectedVer
       resolve(result);
     }
     var operation = new AppendToStreamOperation(self._settings.log, cb, self._settings.requireMaster, stream,
-        expectedVersion, events, userCredentials || null);
+        expectedVersion, events, userCredentials);
     self._enqueueOperation(operation);
   });
 };
@@ -590,7 +594,7 @@ EventStoreNodeConnection.prototype.getStreamMetadataRaw = function(stream, userC
           case results.EventReadStatus.NoStream:
             return new results.RawStreamMetadataResult(stream, false, -1, null);
           case results.EventReadStatus.StreamDeleted:
-            return new results.RawStreamMetadataResult(stream, true, Number.MAX_VALUE, null);
+            return new results.RawStreamMetadataResult(stream, true, 0x7fffffff, null);
           default:
             throw new Error(util.format("Unexpected ReadEventResult: %s.", res.status));
         }
