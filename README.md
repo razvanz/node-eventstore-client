@@ -13,11 +13,12 @@ Unstable
 
 Incomplete/missing features:
 
+- Ssl connection: not implemented yet
 - Typed errors: currently most errors are direct instance of Error, which is not practical for error handling
-- Ssl connection: Ssl connetion is not implemented yet
-- Set system settings: not implemented yet
 - Performance: there's still some while loop in the code that could be problematic with node.js
 - Tests: tests are only covering happy path scenarios for now
+- Cluster connection: not implemented yet
+- Set system settings: not implemented yet
 - NPM package: no package released yet, I will release one when code is stable
 
 ## Porting .Net Task to Node.js
