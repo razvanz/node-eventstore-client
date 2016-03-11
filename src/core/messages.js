@@ -1,4 +1,5 @@
 var util = require('util');
+var ensure = require('../common/utils/ensure');
 
 function Message() {
 }
@@ -76,6 +77,22 @@ util.inherits(TcpConnectionClosedMessage, Message);
 function TimerTickMessage() {}
 util.inherits(TimerTickMessage, Message);
 
+function StartPersistentSubscriptionMessage(
+    cb, subscriptionId, streamId, bufferSize, userCredentials, eventAppeared, subscriptionDropped,
+    maxRetries, operationTimeout
+) {
+  this.cb = cb;
+  this.subscriptionId = subscriptionId;
+  this.streamId = streamId;
+  this.bufferSize = bufferSize;
+  this.userCredentials = userCredentials;
+  this.eventAppeared = eventAppeared;
+  this.subscriptionDropped = subscriptionDropped;
+  this.maxRetries = maxRetries;
+  this.timeout = operationTimeout;
+}
+util.inherits(StartPersistentSubscriptionMessage, Message);
+
 module.exports = {
   StartConnectionMessage: StartConnectionMessage,
   CloseConnectionMessage: CloseConnectionMessage,
@@ -86,5 +103,6 @@ module.exports = {
   TcpConnectionErrorMessage: TcpConnectionErrorMessage,
   TcpConnectionEstablishedMessage: TcpConnectionEstablishedMessage,
   TcpConnectionClosedMessage: TcpConnectionClosedMessage,
-  TimerTickMessage: TimerTickMessage
+  TimerTickMessage: TimerTickMessage,
+  StartPersistentSubscriptionMessage: StartPersistentSubscriptionMessage
 };

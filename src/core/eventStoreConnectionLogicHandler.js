@@ -7,6 +7,7 @@ var TcpPackageConnection = require('../transport/tcp/tcpPackageConnection');
 var OperationsManager = require('./operationsManager');
 var SubscriptionsManager = require('./subscriptionsManager');
 var VolatileSubscriptionOperation = require('../clientOperations/volatileSubscriptionOperation');
+var ConnectToPersistentSubscriptionOperation = require('../clientOperations/connectToPersistentSubscriptionOperation');
 var messages = require('./messages');
 
 var TcpPackage = require('../systemData/tcpPackage');
@@ -69,6 +70,9 @@ function EventStoreConnectionLogicHandler(esConnection, settings) {
   });
   this._queue.registerHandler(messages.StartSubscriptionMessage, function(msg) {
     self._startSubscription(msg);
+  });
+  this._queue.registerHandler(messages.StartPersistentSubscriptionMessage, function(msg) {
+    self._startPersistentSubscription(msg);
   });
 
   this._queue.registerHandler(messages.EstablishTcpConnectionMessage, function(msg) {
@@ -249,7 +253,7 @@ function createSubscriptionItem(operation, maxRetries, timeout) {
     isSubscribed: false
   };
   subscriptionItem.toString = (function(){
-    return util.format("Subscription %s (%s): %s, is subscribed: %s, retry count: %d, created: %d, last updated: %d",
+    return util.format("Subscription %s (%s): %s, is subscribed: %s, retry count: %d, created: %s, last updated: %s",
         this.operation.constructor.name, this.correlationId, this.operation, this.isSubscribed, this.retryCount,
         new Date(this.createdTime).toISOString().substr(11,12),
         new Date(this.lastUpdated).toISOString().substr(11,12));
@@ -269,7 +273,9 @@ EventStoreConnectionLogicHandler.prototype._startSubscription = function(msg) {
       var operation = new VolatileSubscriptionOperation(this._settings.log, msg.cb, msg.streamId, msg.resolveLinkTos,
               msg.userCredentials, msg.eventAppeared, msg.subscriptionDropped,
               this._settings.verboseLogging, function() { return self._connection });
-      this._logDebug("StartSubscription %s %s, %s, %d, %d.", operation.constructor.name, operation, msg.maxRetries, msg.timeout, this._state === ConnectionState.Connected ? "fire" : "enqueue");
+      this._logDebug("StartSubscription %s %s, %s, %d, %d.",
+          this._state === ConnectionState.Connected ? "fire" : "enqueue",
+          operation.constructor.name, operation, msg.maxRetries, msg.timeout);
       var subscription = createSubscriptionItem(operation, msg.maxRetries, msg.timeout);
       if (this._state === ConnectionState.Connecting)
         this._subscriptions.enqueueSubscription(subscription);
@@ -281,6 +287,34 @@ EventStoreConnectionLogicHandler.prototype._startSubscription = function(msg) {
       break;
     default:
       throw new Error(util.format("Unknown state: %s.", this._state));
+  }
+};
+
+EventStoreConnectionLogicHandler.prototype._startPersistentSubscription = function(msg) {
+  var self = this;
+  switch (this._state)
+  {
+    case ConnectionState.Init:
+      msg.cb(new Error(util.format("EventStoreConnection '%s' is not active.", this._esConnection.connectionName)));
+      break;
+    case ConnectionState.Connecting:
+    case ConnectionState.Connected:
+      var operation = new ConnectToPersistentSubscriptionOperation(this._settings.log, msg.cb, msg.subscriptionId,
+              msg.bufferSize, msg.streamId, msg.userCredentials, msg.eventAppeared, msg.subscriptionDropped,
+              this._settings.verboseLogging, function() { return self._connection });
+      this._logDebug("StartSubscription %s %s, %s, %d, %d.",
+          this._state === ConnectionState.Connected ? "fire" : "enqueue",
+          operation.constructor.name, operation, msg.maxRetries, msg.timeout);
+      var subscription = createSubscriptionItem(operation, msg.maxRetries, msg.timeout);
+      if (this._state === ConnectionState.Connecting)
+        this._subscriptions.enqueueSubscription(subscription);
+      else
+        this._subscriptions.startSubscription(subscription, this._connection);
+      break;
+    case ConnectionState.Closed:
+      msg.cb(new Error("Connection closed. " + this._esConnection.connectionName));
+      break;
+    default: throw new Error(util.format("Unknown state: %s.", this._state));
   }
 };
 
@@ -397,7 +431,7 @@ EventStoreConnectionLogicHandler.prototype._tcpConnectionClosed = function(conne
   this._state = ConnectionState.Connecting;
   this._connectingPhase = ConnectingPhase.Reconnecting;
 
-  this._logDebug("TCP connection to [%j, L%j, %s] closed.", connection.remoteEndPoint, connection.localEndPoint, connection.connectionId);
+  this._logDebug("TCP connection to [%j, L%j, %s] closed. %s", connection.remoteEndPoint, connection.localEndPoint, connection.connectionId, error);
 
   this._subscriptions.purgeSubscribedAndDroppedSubscriptions(this._connection.connectionId);
   this._reconnInfo = {

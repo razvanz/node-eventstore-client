@@ -51,7 +51,7 @@ OperationBase.prototype._succeed = function() {
 
 OperationBase.prototype.createNetworkPackage = function(correlationId) {
   var dto = this._createRequestDto();
-  var buf = dto.encode().toBuffer();
+  var buf = dto.toBuffer();
   return new TcpPackage(
       this._requestCommand,
       this.userCredentials ? TcpFlags.Authenticated : TcpFlags.None,

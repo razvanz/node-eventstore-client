@@ -15,7 +15,6 @@ Incomplete/missing features:
 
 - Typed errors: currently most errors are direct instance of Error, which is not practical for error handling
 - Ssl connection: Ssl connetion is not implemented yet
-- Persistent subscription: create/update/delete/connec to a persistent subscription are not implemented yet
 - Set system settings: not implemented yet
 - Performance: there's still some while loop in the code that could be problematic with node.js
 - Tests: tests are only covering happy path scenarios for now

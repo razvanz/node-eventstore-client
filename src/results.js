@@ -285,6 +285,57 @@ function RawStreamMetadataResult(stream, isStreamDeleted, metastreamVersion, str
   });
 }
 
+const PersistentSubscriptionCreateStatus = {
+  Success: 'success',
+  NotFound: 'notFound',
+  Failure: 'failure'
+};
+
+/**
+ * @param {string} status
+ * @constructor
+ * @property {string} status
+ */
+function PersistentSubscriptionCreateResult(status) {
+  Object.defineProperties(this, {
+    status: {enumerable: true, value: status}
+  });
+}
+
+const PersistentSubscriptionUpdateStatus = {
+  Success: 'success',
+  NotFound: 'notFound',
+  Failure: 'failure',
+  AccessDenied: 'accessDenied'
+};
+
+/**
+ * @param {string} status
+ * @constructor
+ * @property {string} status
+ */
+function PersistentSubscriptionUpdateResult(status) {
+  Object.defineProperties(this, {
+    status: {enumerable: true, value: status}
+  });
+}
+
+const PersistentSubscriptionDeleteStatus = {
+  Success: 'success',
+  Failure: 'failure'
+};
+
+/**
+ * @param {string} status
+ * @constructor
+ * @property {string} status
+ */
+function PersistentSubscriptionDeleteResult(status) {
+  Object.defineProperties(this, {
+    status: {enumerable: true, value: status}
+  });
+}
+
 // Exports Constructors
 module.exports.Position = Position;
 module.exports.toNumber = toNumber;
@@ -296,3 +347,9 @@ module.exports.StreamEventsSlice = StreamEventsSlice;
 module.exports.AllEventsSlice = AllEventsSlice;
 module.exports.DeleteResult = DeleteResult;
 module.exports.RawStreamMetadataResult = RawStreamMetadataResult;
+module.exports.PersistentSubscriptionCreateResult = PersistentSubscriptionCreateResult;
+module.exports.PersistentSubscriptionCreateStatus = PersistentSubscriptionCreateStatus;
+module.exports.PersistentSubscriptionUpdateResult = PersistentSubscriptionUpdateResult;
+module.exports.PersistentSubscriptionUpdateStatus = PersistentSubscriptionUpdateStatus;
+module.exports.PersistentSubscriptionDeleteResult = PersistentSubscriptionDeleteResult;
+module.exports.PersistentSubscriptionDeleteStatus = PersistentSubscriptionDeleteStatus;

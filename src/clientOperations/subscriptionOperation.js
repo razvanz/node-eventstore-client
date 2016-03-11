@@ -39,6 +39,10 @@ function SubscriptionOperation(
   this._actionQueue = [];
 }
 
+SubscriptionOperation.prototype._enqueueSend = function(pkg) {
+  this._getConnection().enqueueSend(pkg);
+};
+
 SubscriptionOperation.prototype.subscribe = function(correlationId, connection) {
   if (connection === null) throw new TypeError("connection is null.");
 
@@ -60,7 +64,7 @@ SubscriptionOperation.prototype.unsubscribe = function() {
 
 SubscriptionOperation.prototype._createUnsubscriptionPackage = function() {
   var msg = new ClientMessage.UnsubscribeFromStream();
-  var data = new BufferSegment(msg.encode().toBuffer());
+  var data = new BufferSegment(msg.toBuffer());
   return new TcpPackage(TcpCommand.UnsubscribeFromStream, TcpFlags.None, this._correlationId, null, null, data);
 };
 
@@ -182,11 +186,12 @@ SubscriptionOperation.prototype.dropSubscription = function(reason, err, connect
       this._log.debug("Subscription %s to %s: closing subscription, reason: %s, exception: %s...",
           this._correlationId, this._streamId || "<all>", reason, err);
 
-    if (reason !== SubscriptionDropReason.UserInitiated)
+    if (reason !== SubscriptionDropReason.UserInitiated && this._subscription === null)
     {
       if (err === null) throw new Error(util.format("No exception provided for subscription drop reason '%s", reason));
       //TODO: this should be last thing to execute
       this._cb(err);
+      return;
     }
 
     if (reason === SubscriptionDropReason.UserInitiated && this._subscription !== null && connection !== null)
@@ -223,7 +228,7 @@ SubscriptionOperation.prototype._onEventAppeared = function(e) {
   if (this._subscription === null) throw new Error("Subscription not confirmed, but event appeared!");
 
   if (this._verboseLogging)
-    this._log.debug("Subscription %s to %s: event appeared (%s, %d, %s @ %j).",
+    this._log.debug("Subscription %s to %s: event appeared (%s, %d, %s @ %s).",
         this._correlationId, this._streamId || "<all>",
         e.originalStreamId, e.originalEventNumber, e.originalEvent.eventType, e.originalPosition);
 
@@ -250,7 +255,7 @@ SubscriptionOperation.prototype._executeActions = function() {
     }
     catch (err)
     {
-      this._log.error(err, "Exception during executing user callback: %s.", err.Message);
+      this._log.error(err, "Exception during executing user callback: %s.", err.message);
     }
     action = this._actionQueue.shift();
   }

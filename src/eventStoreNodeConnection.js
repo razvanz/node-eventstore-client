@@ -16,10 +16,14 @@ var ReadStreamEventsForwardOperation = require('./clientOperations/readStreamEve
 var ReadStreamEventsBackwardOperation = require('./clientOperations/readStreamEventsBackwardOperation');
 var ReadAllEventsForwardOperation = require('./clientOperations/readAllEventsForwardOperation');
 var ReadAllEventsBackwardOperation = require('./clientOperations/readAllEventsBackwardOperation');
+var CreatePersistentSubscriptionOperation = require('./clientOperations/createPersistentSubscriptionOperation');
+var UpdatePersistentSubscriptionOperation = require('./clientOperations/updatePersistentSubscriptionOperation');
+var DeletePersistentSubscriptionOperation = require('./clientOperations/deletePersistentSubscriptionOperation');
 
 var EventStoreTransaction = require('./eventStoreTransaction');
 var EventStoreStreamCatchUpSubscription = require('./eventStoreStreamCatchUpSubscription');
 var EventStoreAllCatchUpSubscription = require('./eventStoreAllCatchUpSubscription');
+var EventStorePersistentSubscription = require('./eventStorePersistentSubscription');
 
 var results = require('./results');
 var systemStreams = require('./common/systemStreams');
@@ -83,7 +87,6 @@ EventStoreNodeConnection.prototype.close = function() {
   this._handler.enqueueMessage(new messages.CloseConnectionMessage("Connection close requested by client.", null));
 };
 
-// --- Writing ---
 /**
  * Delete a stream (async)
  * @param {string} stream
@@ -193,7 +196,6 @@ EventStoreNodeConnection.prototype.commitTransaction = function(transaction, use
   });
 };
 
-// --- Reading ---
 /**
  * Read a single event (async)
  * @param {string} stream
@@ -328,7 +330,6 @@ EventStoreNodeConnection.prototype.readAllEventsBackward = function(
   });
 };
 
-// --- Subscriptions ---
 /**
  * Subscribe to a stream (async)
  * @param {!string} stream
@@ -435,24 +436,99 @@ EventStoreNodeConnection.prototype.subscribeToAllFrom = function(
   return catchUpSubscription;
 };
 
-EventStoreNodeConnection.prototype.connectToPersistentSubscription = function() {
-  //TODO: connect to persistent subscription
-  throw new Error("Not implemented.");
+/**
+ * Subscribe to a persistent subscription
+ * @param {string} stream
+ * @param {string} groupName
+ * @param {function} eventAppeared
+ * @param {function} [subscriptionDropped]
+ * @param {UserCredentials} [userCredentials]
+ * @param {number} [bufferSize]
+ * @param {boolean} [autoAck]
+ */
+EventStoreNodeConnection.prototype.connectToPersistentSubscription = function(
+    stream, groupName, eventAppeared, subscriptionDropped, userCredentials, bufferSize, autoAck
+) {
+  ensure.notNullOrEmpty(groupName, "groupName");
+  ensure.notNullOrEmpty(stream, "stream");
+  ensure.notNull(eventAppeared, "eventAppeared");
+
+  subscriptionDropped = subscriptionDropped || null;
+  userCredentials = userCredentials || null;
+  bufferSize = bufferSize === undefined ? 10 : bufferSize;
+  autoAck = autoAck === undefined ? true : !!autoAck;
+
+  var subscription = new EventStorePersistentSubscription(
+      groupName, stream, eventAppeared, subscriptionDropped, userCredentials, this._settings.log,
+      this._settings.verboseLogging, this._settings, this._handler, bufferSize, autoAck);
+  subscription.start();
+
+  return subscription;
 };
 
-EventStoreNodeConnection.prototype.createPersistentSubscription = function() {
-  //TODO: create persistent subscription
-  throw new Error("Not implemented.");
+/**
+ * @param {string} stream
+ * @param {string} groupName
+ * @param {PersistentSubscriptionSettings} settings
+ * @param {UserCredentials} [userCredentials]
+ * @returns {Promise.<PersistentSubscriptionCreateResult>}
+ */
+EventStoreNodeConnection.prototype.createPersistentSubscription = function(stream, groupName, settings, userCredentials) {
+  ensure.notNullOrEmpty(stream, "stream");
+  ensure.notNullOrEmpty(groupName, "groupName");
+  ensure.notNull(settings, "settings");
+
+  var self = this;
+  return new Promise(function(resolve, reject){
+    function cb(err, result) {
+      if (err) return reject(err);
+      resolve(result);
+    }
+    self._enqueueOperation(
+        new CreatePersistentSubscriptionOperation(self._settings.log, cb, stream, groupName, settings, userCredentials || null));
+  });
 };
 
-EventStoreNodeConnection.prototype.updatePersistentSubscription = function() {
-  //TODO: update persistent subscription
-  throw new Error("Not implemented.");
+/**
+ * @param {string} stream
+ * @param {string} groupName
+ * @param {string} settings
+ * @param {UserCredentials} [userCredentials]
+ * @returns {Promise.<PersistentSubscriptionUpdateResult>}
+ */
+EventStoreNodeConnection.prototype.updatePersistentSubscription = function(stream, groupName, settings, userCredentials) {
+  ensure.notNullOrEmpty(stream, "stream");
+  ensure.notNullOrEmpty(groupName, "groupName");
+  ensure.notNull(settings, "settings");
+  var self = this;
+  return new Promise(function(resolve, reject) {
+    function cb(err, result) {
+      if (err) return reject(err);
+      resolve(result);
+    }
+    self._enqueueOperation(
+        new UpdatePersistentSubscriptionOperation(self._settings.log, cb, stream, groupName, settings, userCredentials || null));
+  });
 };
 
-EventStoreNodeConnection.prototype.deletePersistentSubscription = function() {
-  //TODO: delete persistent subscription
-  throw new Error("Not implemented.");
+/**
+ * @param {string} stream
+ * @param {string} groupName
+ * @param {UserCredentials} [userCredentials]
+ * @returns {Promise.<PersistentSubscriptionDeleteResult>}
+ */
+EventStoreNodeConnection.prototype.deletePersistentSubscription = function(stream, groupName, userCredentials) {
+  ensure.notNullOrEmpty(stream, "stream");
+  ensure.notNullOrEmpty(groupName, "groupName");
+  var self = this;
+  return new Promise(function(resolve, reject) {
+    function cb(err, result) {
+      if (err) return reject(err);
+      resolve(result);
+    }
+    self._enqueueOperation(
+        new DeletePersistentSubscriptionOperation(self._settings.log, cb, stream, groupName, userCredentials || null));
+  });
 };
 
 EventStoreNodeConnection.prototype.setStreamMetadata = function() {

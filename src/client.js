@@ -41,6 +41,8 @@ function eventDataFactory(eventId, type, isJson, data, metadata) {
 module.exports.EventStoreConnection = require('./eventStoreConnection');
 module.exports.UserCredentials = require('./systemData/userCredentials');
 module.exports.EventData = EventData;
+module.exports.PersistentSubscriptionSettings = require('./persistentSubscriptionSettings');
+module.exports.SystemConsumerStrategies = require('./systemConsumerStrategies');
 module.exports.expectedVersion = expectedVersion;
 module.exports.positions = positions;
 

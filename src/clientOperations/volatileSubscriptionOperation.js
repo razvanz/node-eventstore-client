@@ -26,7 +26,7 @@ VolatileSubscriptionOperation.prototype._createSubscriptionPackage = function() 
       this._correlationId,
       this._userCredentials != null ? this._userCredentials.username : null,
       this._userCredentials != null ? this._userCredentials.password : null,
-      new BufferSegment(dto.encode().toBuffer()));
+      new BufferSegment(dto.toBuffer()));
 };
 
 VolatileSubscriptionOperation.prototype._inspectPackage = function(pkg) {
