@@ -1,49 +1,17 @@
 var uuid = require('uuid');
 var client = require('../src/client');
 
-var settings = {};
-if (process.env.TESTS_VERBOSE_LOGGING === '1') {
-  settings.verboseLogging = true;
-  var FileLogger = require('../src/common/log/fileLogger');
-  settings.log = new FileLogger('deleteStream_test.log');
-}
-
 module.exports = {
   setUp: function(cb) {
-    this.testStreamName = 'test-' + uuid.v4();
-    var connected = false;
-    this.conn = client.EventStoreConnection.create(settings, {host: 'localhost', port: 1113});
-    this.conn.connect()
+    var events = [
+      client.createJsonEventData(uuid.v4(), {a: Math.random(), b: uuid.v4()}, null, 'testEvent'),
+      client.createJsonEventData(uuid.v4(), {a: Math.random(), b: uuid.v4()}, null, 'testEvent')
+    ];
+    this.conn.appendToStream(this.testStreamName, client.expectedVersion.noStream, events)
         .then(function() {
-          //Doesn't mean anything, connection is just initiated
+          cb();
         })
-        .catch(function(err) {
-          cb(err);
-        });
-    this.conn.on('closed', function(reason){
-      if (connected) return;
-      cb(new Error("Connection failed: " + reason));
-    });
-    var self = this;
-    this.conn.on('connected', function() {
-      connected = true;
-      var events = [
-        client.createJsonEventData(uuid.v4(), {a: Math.random(), b: uuid.v4()}, null, 'testEvent'),
-        client.createJsonEventData(uuid.v4(), {a: Math.random(), b: uuid.v4()}, null, 'testEvent')
-      ];
-      self.conn.appendToStream(self.testStreamName, client.expectedVersion.noStream, events)
-          .then(function() {
-            cb();
-          })
-          .catch(cb);
-    });
-  },
-  tearDown: function(cb) {
-    this.conn.close();
-    this.conn.on('closed', function() {
-      cb();
-    });
-    this.conn = null;
+        .catch(cb);
   },
   'Test Delete Stream Soft Happy Path': function(test) {
     var self = this;
@@ -53,8 +21,8 @@ module.exports = {
           return self.conn.getStreamMetadataRaw(self.testStreamName);
         })
         .then(function(metadata) {
-          test.ok(metadata.stream === self.testStreamName, "Metadata stream doesn't match.");
-          test.ok(metadata.isStreamDeleted === false, "Metadata says stream is deleted.");
+          test.areEqual("metadata.stream", metadata.stream, self.testStreamName);
+          test.areEqual("metadata.isStreamDeleted", metadata.isStreamDeleted, false);
           test.ok(metadata.streamMetadata.$tb, "Expected Truncate Before to be set");
           test.done();
         })
@@ -62,12 +30,6 @@ module.exports = {
           test.done(err);
         });
   },
-  /*
-  This test fails because of a protobufjs error.
-  Client.ReadEventCompleted fails to decode because ResolvedIndexedEvent.event is null and it's marked as required.
-  Test will pass if messages.proto is modified so that ResolvedIndexedEvent.event is optional.
-  Unsure if it's a protobufjs issue or a GES issue. Need to duplicate this test with .Net Client.
-
   'Test Delete Stream Hard Happy Path': function(test) {
     var self = this;
     this.conn.deleteStream(this.testStreamName, 1, true)
@@ -76,15 +38,62 @@ module.exports = {
           return self.conn.getStreamMetadataRaw(self.testStreamName);
         })
         .then(function(metadata) {
-          test.ok(metadata.stream === self.testStreamName, "Metadata stream doesn't match.");
-          test.ok(metadata.isStreamDeleted === true, "Metadata says stream is deleted.");
-          test.ok(metadata.streamMetadata === null, "Expected streamMetadata to be null.");
+          test.areEqual("metadata.stream", metadata.stream, self.testStreamName);
+          test.areEqual("metadata.isStreamDeleted", metadata.isStreamDeleted, true);
+          test.areEqual("metadata.streamMetadata", metadata.streamMetadata, null);
           test.done();
         })
         .catch(function(err) {
           test.done(err);
         });
+  },
+  'Test Delete Stream With Wrong Expected Version': function(test) {
+    this.conn.deleteStream(this.testStreamName, 10)
+        .then(function(result) {
+          test.fail("Delete succeeded but should have failed.");
+          test.done();
+        })
+        .catch(function(err) {
+          var isWrongExpectedVersion = err instanceof client.WrongExpectedVersionError;
+          test.ok(isWrongExpectedVersion, "Expected WrongExpectedVersionError, but got " + err.constructor.name);
+          if (isWrongExpectedVersion) return test.done();
+          test.done(err);
+        });
+  },
+  'Test Delete Stream With No Access': function(test) {
+    var self = this;
+    this.conn.setStreamMetadataRaw(this.testStreamName, client.expectedVersion.any, {$acl: {$d: "$admins"}})
+        .then(function() {
+          return self.conn.deleteStream(self.testStreamName, 10);
+        })
+        .then(function(result) {
+          test.fail("Delete succeeded but should have failed.");
+          test.done();
+        })
+        .catch(function(err) {
+          var isAccessDenied = err instanceof client.AccessDeniedError;
+          test.ok(isAccessDenied, "Expected AccessDeniedError, but got " + err.constructor.name);
+          if (isAccessDenied) return test.done();
+          test.done(err);
+        });
+  },
+  'Test Delete Stream Hard When Already Deleted': function(test) {
+    var self = this;
+    this.conn.deleteStream(this.testStreamName, 1, true)
+        .then(function() {
+          return self.conn.deleteStream(self.testStreamName, 1, true);
+        })
+        .then(function(result) {
+          test.fail("Delete succeeded but should have failed.");
+          test.done();
+        })
+        .catch(function(err) {
+          var isStreamDeleted = err instanceof client.StreamDeletedError;
+          test.ok(isStreamDeleted, "Expected StreamDeletedError, but got " + err.constructor.name);
+          if (isStreamDeleted) return test.done();
+          test.done(err);
+        });
   }
-  */
-
 };
+
+require('./common/base_test').init(module.exports);

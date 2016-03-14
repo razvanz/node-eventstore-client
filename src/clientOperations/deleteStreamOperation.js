@@ -6,6 +6,9 @@ var InspectionDecision = require('../systemData/inspectionDecision');
 var InspectionResult = require('./../systemData/inspectionResult');
 var ClientMessage = require('../messages/clientMessage');
 var results = require('../results');
+var WrongExpectedVersionError = require('../errors/wrongExpectedVersionError');
+var StreamDeletedError = require('../errors/streamDeletedError');
+var AccessDeniedError = require('../errors/accessDeniedError');
 
 var OperationBase = require('../clientOperations/operationBase');
 
@@ -38,17 +41,16 @@ DeleteStreamOperation.prototype._inspectResponse = function(response) {
     case ClientMessage.OperationResult.ForwardTimeout:
       return new InspectionResult(InspectionDecision.Retry, "ForwardTimeout");
     case ClientMessage.OperationResult.WrongExpectedVersion:
-      var err = util.format("Delete stream failed due to WrongExpectedVersion. Stream: %s, Expected version: %d.", this._stream, this._expectedVersion);
-      this.fail(new Error("Wrong expected version: " + err));
+      this.fail(new WrongExpectedVersionError("Delete", this._stream, this._expectedVersion));
       return new InspectionResult(InspectionDecision.EndOperation, "WrongExpectedVersion");
     case ClientMessage.OperationResult.StreamDeleted:
-      this.fail(new Error("Stream deleted: " + this._stream));
+      this.fail(new StreamDeletedError(this._stream));
       return new InspectionResult(InspectionDecision.EndOperation, "StreamDeleted");
     case ClientMessage.OperationResult.InvalidTransaction:
       this.fail(new Error("Invalid transaction."));
       return new InspectionResult(InspectionDecision.EndOperation, "InvalidTransaction");
     case ClientMessage.OperationResult.AccessDenied:
-      this.fail(new Error(util.format("Write access denied for stream '%s'.", this._stream)));
+      this.fail(new AccessDeniedError("Delete", this._stream));
       return new InspectionResult(InspectionDecision.EndOperation, "AccessDenied");
     default:
       throw new Error(util.format("Unexpected OperationResult: %d.", response.result));

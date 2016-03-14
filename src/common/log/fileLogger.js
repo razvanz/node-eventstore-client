@@ -13,7 +13,7 @@ function FileLogger(filePath, append) {
 
 function createLine(level, args, argsStartIndex) {
   var msg = util.format.apply(util, Array.prototype.slice.call(args, argsStartIndex));
-  return util.format('%s %s - %s%s', new Date().toISOString(), level, msg, os.EOL);
+  return util.format('%s %s - %s%s', new Date().toISOString().substr(11,12), level, msg, os.EOL);
 }
 
 FileLogger.prototype.debug = function() {

@@ -1,53 +1,40 @@
-var util = require('util');
 var client = require('../src/client.js');
 
-var consoleLogger = {
-  debug: function() {
-    var msg = util.format.apply(util, Array.prototype.slice.call(arguments));
-    util.log(msg);
-  },
-  info: function() {},
-  error: function() {}
-};
-
-var settings = {};//verboseLogging: true, log: consoleLogger};
+var testBase = require('./common/base_test');
 
 module.exports = {
   'Connect To Endpoint Happy Path': function(test) {
     var tcpEndpoint = {hostname: 'localhost', port: 1113};
-    var conn = client.EventStoreConnection.create({}, tcpEndpoint);
+    var conn = client.EventStoreConnection.create(testBase.settings(), tcpEndpoint);
     conn.connect()
-        .catch(function(e) {
-          test.done(e);
+        .catch(function(err) {
+          test.done(err);
         });
     conn.on('connected', function(endPoint){
-      test.deepEqual(endPoint, tcpEndpoint);
+      test.areEqual("connected endPoint", endPoint, tcpEndpoint);
       done();
     });
     conn.on('error', done);
 
-    function done(e) {
+    function done(err) {
       conn.close();
-      if (e) {
-        test.done(e);
-        return;
-      }
+      if (err) return test.done(err);
       test.done();
     }
   },
   'Connect To Endpoint That Don\'t Exist': function(test) {
     var tcpEndpoint = {hostname: 'localhost', port: 1114};
-    var conn = client.EventStoreConnection.create({maxReconnections: 1}, tcpEndpoint);
+    var conn = client.EventStoreConnection.create(testBase.settings({maxReconnections:1}), tcpEndpoint);
     conn.connect()
-        .catch(function (e) {
-          test.done(e);
+        .catch(function (err) {
+          test.done(err);
         });
     conn.on('connected', function () {
-      test.ok(false, "Should not be able to connect.");
+      test.fail("Should not be able to connect.");
       test.done();
     });
-    conn.on('error', function (e) {
-      test.done(e);
+    conn.on('error', function (err) {
+      test.done(err);
     });
     conn.on('closed', function(reason) {
       test.ok(reason.indexOf("Reconnection limit reached") === 0, "Wrong expected reason.");
@@ -55,3 +42,5 @@ module.exports = {
     });
   }
 };
+
+testBase.init(module.exports, false);

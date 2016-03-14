@@ -5,6 +5,7 @@ var ClientMessage = require('../messages/clientMessage');
 var InspectionResult = require('./../systemData/inspectionResult');
 var InspectionDecision = require('../systemData/inspectionDecision');
 var results = require('../results');
+var AccessDeniedError = require('../errors/accessDeniedError');
 
 var OperationBase = require('./operationBase');
 
@@ -42,7 +43,7 @@ ReadEventOperation.prototype._inspectResponse = function(response) {
       this.fail(new Error("Server error: " + response.error));
       return new InspectionResult(InspectionDecision.EndOperation, "Error");
     case ClientMessage.ReadEventCompleted.ReadEventResult.AccessDenied:
-      this.fail(new Error(util.format("Read access denied for stream '%s'.", this._stream)));
+      this.fail(new AccessDeniedError("Read", this._stream));
       return new InspectionResult(InspectionDecision.EndOperation, "AccessDenied");
     default:
       throw new Error(util.format("Unexpected ReadEventResult: %s.", response.result));

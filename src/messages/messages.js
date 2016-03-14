@@ -111,7 +111,12 @@ module.exports = require("protobufjs").newBuilder({})['import']({
             "name": "ResolvedIndexedEvent",
             "fields": [
                 {
-                    "rule": "required",
+                    /*
+                     rule changed from required to optional
+                     because protobufjs doesn't allow null value for required object
+                     and in the case of a non-success result, event will be null
+                    */
+                    "rule": "optional",
                     "type": "EventRecord",
                     "name": "event",
                     "id": 1

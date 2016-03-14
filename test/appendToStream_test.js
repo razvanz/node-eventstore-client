@@ -1,46 +1,12 @@
 var uuid = require('uuid');
 var client = require('../src/client');
 
-var settings = {};
-if (process.env.TESTS_VERBOSE_LOGGING === '1') {
-  settings.verboseLogging = true;
-  var FileLogger = require('../src/common/log/fileLogger');
-  settings.log = new FileLogger('appendToStream_test.log');
-}
-
 module.exports = {
-  setUp: function(cb) {
-    this.testStreamName = 'test-' + uuid.v4();
-    var connected = false;
-    this.conn = client.EventStoreConnection.create(settings, {host: 'localhost', port: 1113});
-    this.conn.connect()
-        .then(function() {
-          //Doesn't mean anything, connection is just initiated
-        })
-        .catch(function(err) {
-          cb(err);
-        });
-    this.conn.on('closed', function(reason){
-      if (connected) return;
-      cb(new Error("Connection failed: " + reason));
-    });
-    this.conn.on('connected', function() {
-      connected = true;
-      cb();
-    });
-  },
-  tearDown: function(cb) {
-    this.conn.close();
-    this.conn.on('closed', function() {
-      cb();
-    });
-    this.conn = null;
-  },
   'Append One Event To Stream Happy Path': function(test) {
     var event = client.createJsonEventData(uuid.v4(), {a: Math.random(), b: uuid.v4()}, null, 'testEvent');
     this.conn.appendToStream(this.testStreamName, client.expectedVersion.any, event)
         .then(function(result) {
-          test.ok(result.nextExpectedVersion === 0, "Expected nextExpectedVersion === 0, but was " + result.nextExpectedVersion);
+          test.areEqual("nextExpectedVersion", result.nextExpectedVersion, 0);
           test.ok(result.logPosition, "No log position in result.");
           test.done();
         })
@@ -55,7 +21,7 @@ module.exports = {
     ];
     this.conn.appendToStream(this.testStreamName, client.expectedVersion.any, events)
         .then(function(result) {
-          test.ok(result.nextExpectedVersion === 1, "Expected nextExpectedVersion === 1, but was " + result.nextExpectedVersion);
+          test.areEqual("result.nextExpectedVersion", result.nextExpectedVersion, 1);
           test.ok(result.logPosition, "No log position in result.");
           test.done();
         })
@@ -67,17 +33,14 @@ module.exports = {
     var event = client.createJsonEventData(uuid.v4(), {a: Math.random(), b: uuid.v4()}, null, 'testEvent');
     this.conn.appendToStream(this.testStreamName, 10, event)
         .then(function(result) {
-          test.ok(false, "Append succeeded but should have failed.");
+          test.fail("Append succeeded but should have failed.");
           test.done();
         })
         .catch(function(err) {
           var isWrongExpectedVersion = err instanceof client.WrongExpectedVersionError;
           test.ok(isWrongExpectedVersion, "Expected WrongExpectedVersionError, got " + err.constructor.name);
-          if (!isWrongExpectedVersion) {
-            test.done(err);
-            return;
-          }
-          test.done();
+          if (isWrongExpectedVersion) return test.done();
+          test.done(err);
         });
   },
   'Append To Stream Deleted': function(test) {
@@ -88,17 +51,14 @@ module.exports = {
           return self.conn.appendToStream(self.testStreamName, client.expectedVersion.any, event)
         })
         .then(function(result) {
-          test.ok(false, "Append succeeded but should have failed.");
+          test.fail("Append succeeded but should have failed.");
           test.done();
         })
         .catch(function(err) {
           var isStreamDeleted = err instanceof client.StreamDeletedError;
           test.ok(isStreamDeleted, "Expected StreamDeletedError, got " + err.constructor.name);
-          if (!isStreamDeleted) {
-            test.done(err);
-            return;
-          }
-          test.done();
+          if (isStreamDeleted) return test.done();
+          test.done(err);
         });
   },
   'Append To Stream Access Denied': function(test) {
@@ -110,17 +70,16 @@ module.exports = {
           return self.conn.appendToStream(self.testStreamName, client.expectedVersion.any, event)
         })
         .then(function(result) {
-          test.ok(false, "Append succeeded but should have failed.");
+          test.fail("Append succeeded but should have failed.");
           test.done();
         })
         .catch(function(err) {
           var isStreamDeleted = err instanceof client.AccessDeniedError;
           test.ok(isStreamDeleted, "Expected AccessDeniedError, got " + err.constructor.name);
-          if (!isStreamDeleted) {
-            test.done(err);
-            return;
-          }
-          test.done();
+          if (isStreamDeleted) return test.done();
+          test.done(err);
         });
   }
 };
+
+require('./common/base_test').init(module.exports);

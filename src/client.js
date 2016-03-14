@@ -38,18 +38,21 @@ function eventDataFactory(eventId, type, isJson, data, metadata) {
   return new EventData(eventId, type, isJson, data, metadata);
 }
 
+// Exporting classes
 module.exports.EventStoreConnection = require('./eventStoreConnection');
 module.exports.UserCredentials = require('./systemData/userCredentials');
 module.exports.EventData = EventData;
 module.exports.PersistentSubscriptionSettings = require('./persistentSubscriptionSettings');
 module.exports.SystemConsumerStrategies = require('./systemConsumerStrategies');
+// Exporting errors
 module.exports.WrongExpectedVersionError = require('./errors/wrongExpectedVersionError');
 module.exports.StreamDeletedError = require('./errors/streamDeletedError');
 module.exports.AccessDeniedError = require('./errors/accessDeniedError');
+// Exporting enums/constants
 module.exports.expectedVersion = expectedVersion;
 module.exports.positions = positions;
 module.exports.systemMetadata = require('./common/systemMetadata');
-
+module.exports.eventReadStatus = results.EventReadStatus;
 // Helper functions
 module.exports.createConnection = module.exports.EventStoreConnection.create;
 module.exports.createEventData = eventDataFactory;
