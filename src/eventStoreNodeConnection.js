@@ -30,6 +30,8 @@ var systemStreams = require('./common/systemStreams');
 var systemEventTypes = require('./common/systemEventTypes');
 var EventData = require('./eventData');
 
+const MaxReadSize = 4096;
+
 /**
  * @param settings
  * @param endpointDiscoverer
@@ -209,6 +211,12 @@ EventStoreNodeConnection.prototype.commitTransaction = function(transaction, use
  * @returns {Promise.<EventReadResult>}
  */
 EventStoreNodeConnection.prototype.readEvent = function(stream, eventNumber, resolveLinkTos, userCredentials) {
+  ensure.notNullOrEmpty(stream, "stream");
+  ensure.isInteger(eventNumber, "eventNumber");
+  if (eventNumber < -1) throw new Error("eventNumber out of range.");
+  resolveLinkTos = !!resolveLinkTos;
+  userCredentials = userCredentials || null;
+
   if (typeof stream !== 'string' || stream === '') throw new TypeError("stream must be an non-empty string.");
   if (typeof eventNumber !== 'number' || eventNumber % 1 !== 0) throw new TypeError("eventNumber must be an integer.");
   if (eventNumber < -1) throw new Error("eventNumber out of range.");
@@ -220,8 +228,8 @@ EventStoreNodeConnection.prototype.readEvent = function(stream, eventNumber, res
       if (err) return reject(err);
       resolve(result);
     }
-    var operation = new ReadEventOperation(self._settings.log, cb, stream, eventNumber, resolveLinkTos || false,
-        self._settings.requireMaster, userCredentials || null);
+    var operation = new ReadEventOperation(self._settings.log, cb, stream, eventNumber, resolveLinkTos,
+        self._settings.requireMaster, userCredentials);
     self._enqueueOperation(operation);
   });
 };
@@ -238,10 +246,14 @@ EventStoreNodeConnection.prototype.readEvent = function(stream, eventNumber, res
 EventStoreNodeConnection.prototype.readStreamEventsForward = function(
     stream, start, count, resolveLinkTos, userCredentials
 ) {
-  if (typeof stream !== 'string' || stream === '') throw new TypeError("stream must be an non-empty string.");
-  if (typeof start !== 'number' || start % 1 !== 0) throw new TypeError("start must be an integer.");
-  if (typeof count !== 'number' || count % 1 !== 0) throw new TypeError("count must be an integer.");
-  if (resolveLinkTos && typeof resolveLinkTos !== 'boolean') throw new TypeError("resolveLinkTos must be a boolean.");
+  ensure.notNullOrEmpty(stream, "stream");
+  ensure.isInteger(start, "start");
+  ensure.nonNegative(start, "start");
+  ensure.isInteger(count, "count");
+  ensure.positive(count, "count");
+  if (count > MaxReadSize) throw new Error(util.format("Count should be less than %d. For larger reads you should page.", MaxReadSize));
+  resolveLinkTos = !!resolveLinkTos;
+  userCredentials = userCredentials || null;
 
   var self = this;
   return new Promise(function(resolve, reject) {
@@ -250,7 +262,7 @@ EventStoreNodeConnection.prototype.readStreamEventsForward = function(
       resolve(result);
     }
     var operation = new ReadStreamEventsForwardOperation(self._settings.log, cb, stream, start, count,
-        resolveLinkTos || false, self._settings.requireMaster, userCredentials || null);
+        resolveLinkTos, self._settings.requireMaster, userCredentials);
     self._enqueueOperation(operation);
   });
 };
@@ -267,10 +279,13 @@ EventStoreNodeConnection.prototype.readStreamEventsForward = function(
 EventStoreNodeConnection.prototype.readStreamEventsBackward = function(
     stream, start, count, resolveLinkTos, userCredentials
 ) {
-  if (typeof stream !== 'string' || stream === '') throw new TypeError("stream must be an non-empty string.");
-  if (typeof start !== 'number' || start % 1 !== 0) throw new TypeError("start must be an integer.");
-  if (typeof count !== 'number' || count % 1 !== 0) throw new TypeError("count must be an integer.");
-  if (resolveLinkTos && typeof resolveLinkTos !== 'boolean') throw new TypeError("resolveLinkTos must be a boolean.");
+  ensure.notNullOrEmpty(stream, "stream");
+  ensure.isInteger(start, "start");
+  ensure.isInteger(count, "count");
+  ensure.positive(count, "count");
+  if (count > MaxReadSize) throw new Error(util.format("Count should be less than %d. For larger reads you should page.", MaxReadSize));
+  resolveLinkTos = !!resolveLinkTos;
+  userCredentials = userCredentials || null;
 
   var self = this;
   return new Promise(function(resolve, reject) {
@@ -279,7 +294,7 @@ EventStoreNodeConnection.prototype.readStreamEventsBackward = function(
       resolve(result);
     }
     var operation = new ReadStreamEventsBackwardOperation(self._settings.log, cb, stream, start, count,
-        resolveLinkTos || false, self._settings.requireMaster, userCredentials || null);
+        resolveLinkTos, self._settings.requireMaster, userCredentials);
     self._enqueueOperation(operation);
   });
 };
@@ -295,7 +310,12 @@ EventStoreNodeConnection.prototype.readStreamEventsBackward = function(
 EventStoreNodeConnection.prototype.readAllEventsForward = function(
     position, maxCount, resolveLinkTos, userCredentials
 ) {
-  //TODO validations
+  ensure.isTypeOf(results.Position, position, "position");
+  ensure.isInteger(maxCount, "maxCount");
+  ensure.positive(maxCount, "maxCount");
+  if (maxCount > MaxReadSize) throw new Error(util.format("Count should be less than %d. For larger reads you should page.", MaxReadSize));
+  resolveLinkTos = !!resolveLinkTos;
+  userCredentials = userCredentials || null;
 
   var self = this;
   return new Promise(function(resolve, reject) {
@@ -304,7 +324,7 @@ EventStoreNodeConnection.prototype.readAllEventsForward = function(
       resolve(result);
     }
     var operation = new ReadAllEventsForwardOperation(self._settings.log, cb, position, maxCount,
-        resolveLinkTos || false, self._settings.requireMaster, userCredentials || null);
+        resolveLinkTos, self._settings.requireMaster, userCredentials);
     self._enqueueOperation(operation);
   });
 };
@@ -320,7 +340,12 @@ EventStoreNodeConnection.prototype.readAllEventsForward = function(
 EventStoreNodeConnection.prototype.readAllEventsBackward = function(
     position, maxCount, resolveLinkTos, userCredentials
 ) {
-  //TODO validations
+  ensure.isTypeOf(results.Position, position, "position");
+  ensure.isInteger(maxCount, "maxCount");
+  ensure.positive(maxCount, "maxCount");
+  if (maxCount > MaxReadSize) throw new Error(util.format("Count should be less than %d. For larger reads you should page.", MaxReadSize));
+  resolveLinkTos = !!resolveLinkTos;
+  userCredentials = userCredentials || null;
 
   var self = this;
   return new Promise(function(resolve, reject) {

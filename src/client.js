@@ -13,17 +13,17 @@ const positions = {
 
 /**
  * @param {string} eventId
- * @param {object} data
+ * @param {object} event
  * @param {object} [metadata]
  * @param {string} [type]
  * @returns {EventData}
  */
-function jsonEventDataFactory(eventId, data, metadata, type) {
-  if (!data || typeof data !== 'object') throw new TypeError("data must be an object.");
+function jsonEventDataFactory(eventId, event, metadata, type) {
+  if (!event || typeof event !== 'object') throw new TypeError("data must be an object.");
 
-  var d = new Buffer(JSON.stringify(data));
-  var m = metadata ? new Buffer(JSON.stringify(metadata)) : null;
-  return new EventData(eventId, type || data.constructor.name, true, d, m);
+  var eventBuf = new Buffer(JSON.stringify(event));
+  var metaBuf = metadata ? new Buffer(JSON.stringify(metadata)) : null;
+  return new EventData(eventId, type || event.constructor.name, true, eventBuf, metaBuf);
 }
 
 /**
@@ -53,6 +53,7 @@ module.exports.expectedVersion = expectedVersion;
 module.exports.positions = positions;
 module.exports.systemMetadata = require('./common/systemMetadata');
 module.exports.eventReadStatus = results.EventReadStatus;
+module.exports.sliceReadStatus = require('./sliceReadStatus');
 // Helper functions
 module.exports.createConnection = module.exports.EventStoreConnection.create;
 module.exports.createEventData = eventDataFactory;

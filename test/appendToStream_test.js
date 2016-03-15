@@ -15,13 +15,17 @@ module.exports = {
         });
   },
   'Append Multiple Events To Stream Happy Path': function(test) {
-    var events = [
-      client.createJsonEventData(uuid.v4(), {a: Math.random(), b: uuid.v4()}, null, 'testEvent'),
-      client.createJsonEventData(uuid.v4(), {b: Math.random(), a: uuid.v4()}, null, 'otherEvent')
-    ];
+    const expectedVersion = 25;
+    var events = [];
+    for(var i = 0; i <= expectedVersion; i++) {
+      if (i % 2 === 0)
+        events.push(client.createJsonEventData(uuid.v4(), {a: Math.random(), b: uuid.v4()}, null, 'testEvent'));
+      else
+        events.push(client.createJsonEventData(uuid.v4(), {b: Math.random(), a: uuid.v4()}, null, 'otherEvent'));
+    }
     this.conn.appendToStream(this.testStreamName, client.expectedVersion.any, events)
         .then(function(result) {
-          test.areEqual("result.nextExpectedVersion", result.nextExpectedVersion, 1);
+          test.areEqual("result.nextExpectedVersion", result.nextExpectedVersion, expectedVersion);
           test.ok(result.logPosition, "No log position in result.");
           test.done();
         })

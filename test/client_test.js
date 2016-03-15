@@ -50,6 +50,7 @@ module.exports = {
     });
     this.conn = null;
   },
+/*
   'Test Connection': function(test) {
     test.ok(this.connError === null, "Connection error: " + this.connError);
     test.done();
@@ -66,7 +67,7 @@ module.exports = {
         .catch(function (err) {
           test.done(err);
         });
-  },
+  },*/
   'Test Commit Two Events Using Transaction': function(test) {
     this.conn.startTransaction(testStreamName, client.expectedVersion.any)
         .then(function(trx) {
@@ -89,6 +90,7 @@ module.exports = {
           test.done(err);
         });
   },
+  /*
   'Test Read One Event': function(test) {
     this.conn.readEvent(testStreamName, 0)
         .then(function(result) {
@@ -162,7 +164,7 @@ module.exports = {
         .catch(function(err) {
           test.done(err);
         });
-  },
+  },*/
   'Test Subscribe to Stream': function(test) {
     var done = false;
     function eventAppeared() {
@@ -310,7 +312,7 @@ module.exports = {
         .catch(function(err) {
           test.done(err);
         });
-  },
+  }/*,
   'Test Delete Stream': function(test) {
     this.conn.deleteStream(testStreamName, client.expectedVersion.any)
         .then(function(result) {
@@ -320,5 +322,5 @@ module.exports = {
         .catch(function(err) {
           test.done(err);
         });
-  }
+  }*/
 };

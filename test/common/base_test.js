@@ -49,16 +49,26 @@ function tearDown(cb) {
   this.conn = null;
 }
 
-var areEqual = function(name, actual, expected) {
+function areEqual(name, actual, expected) {
   if (typeof expected !== 'object' || expected === null)
     this.strictEqual(actual, expected, util.format("Failed %s === %s, got %s.", name, expected, actual));
   else
     this.deepEqual(actual, expected, util.format("Failed %s deepEqual %j, got %j.", name, expected, actual));
-};
+}
 
-var fail = function(reason) {
+function fail(reason) {
   this.ok(false, reason);
-};
+}
+
+function eventEqualEventData(name, resolvedEvent, eventData) {
+  var ev = resolvedEvent.originalEvent;
+  this.ok(ev !== null, util.format("Failed %s !== null.", name + ".originalEvent"));
+  if (ev === null) return;
+  this.areEqual(name + ".originalEvent.eventId", ev.eventId, eventData.eventId);
+  this.areEqual(name + ".originalEvent.eventType", ev.eventType, eventData.type);
+  this.ok(Buffer.compare(ev.data, eventData.data) === 0, name + ".originalEvent.data is not equal to original data.");
+  this.ok(Buffer.compare(ev.metadata, eventData.metadata) === 0, name + ".originalEvent.metadata is not equal to original metadata.");
+}
 
 var _ = {
   'setUp': setUp,
@@ -72,6 +82,7 @@ function wrap(name, testFunc) {
       settings.log.debug('--- %s ---', name);
       test.areEqual = areEqual.bind(test);
       test.fail = fail.bind(test);
+      test.eventEqualEventData = eventEqualEventData.bind(test);
       return testFunc.call(this, test);
     }
   }
