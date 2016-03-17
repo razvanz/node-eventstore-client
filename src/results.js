@@ -1,45 +1,41 @@
 var util = require('util');
 var uuid = require('uuid');
+var Long = require('long');
 var ensure = require('./common/utils/ensure');
 
-function toNumber(obj) {
-  if (typeof obj === 'number')
-    return obj;
-  if (typeof obj !== 'object')
-    throw new TypeError(util.format("'%s' is not a number.", obj));
-  if (!obj.hasOwnProperty('low') || !obj.hasOwnProperty('high') || !obj.hasOwnProperty('unsigned'))
-    throw new Error("Invalid number.");
-  return (obj.low + (obj.high * 0xffffffff));
-}
-
 /**
- * @param {!number} commitPosition
- * @param {!number} preparePosition
+ * @param {!number|!Long} commitPosition
+ * @param {!number|!Long} preparePosition
  * @constructor
- * @property {!number} commitPosition
- * @property {!number} preparePosition
+ * @property {!Long} commitPosition
+ * @property {!Long} preparePosition
  */
 function Position(commitPosition, preparePosition) {
+  ensure.notNull(commitPosition, "commitPosition");
+  ensure.notNull(preparePosition, "preparePosition");
+  commitPosition = Long.fromValue(commitPosition);
+  preparePosition = Long.fromValue(preparePosition);
+
   Object.defineProperties(this, {
     commitPosition: {
-      enumerable: true, value: toNumber(commitPosition)
+      enumerable: true, value: commitPosition
     },
     preparePosition: {
-      enumerable: true, value: toNumber(preparePosition)
+      enumerable: true, value: preparePosition
     }
   });
 }
 
 Position.prototype.compareTo = function(other) {
-  if (this.commitPosition < other.commitPosition || (this.commitPosition === other.commitPosition && this.preparePosition < other.preparePosition))
+  if (this.commitPosition.lt(other.commitPosition) || (this.commitPosition.eq(other.commitPosition)&& this.preparePosition.lt(other.preparePosition)))
     return -1;
-  if (this.commitPosition > other.commitPosition || (this.commitPosition === other.commitPosition && this.preparePosition > other.preparePosition))
+  if (this.commitPosition.gt(other.commitPosition) || (this.commitPosition.eq(other.commitPosition) && this.preparePosition.gt(other.preparePosition)))
     return 1;
   return 0;
 };
 
 Position.prototype.toString = function() {
-  return util.format("%d/%d", this.commitPosition, this.preparePosition);
+  return [this.commitPosition.toString(), this.preparePosition.toString()].join("/");
 };
 
 
@@ -69,8 +65,8 @@ function RecordedEvent(ev) {
     eventNumber: {enumerable: true, value: ev.event_number},
     eventType: {enumerable: true, value: ev.event_type},
     //Javascript doesn't have .Net precision for time, so we use created_epoch for created
-    created: {enumerable: true, value: new Date(ev.created_epoch || 0)},
-    createdEpoch: {enumerable: true, value: ev.created_epoch ? toNumber(ev.created_epoch) : 0},
+    created: {enumerable: true, value: new Date(ev.created_epoch ? ev.created_epoch.toInt() : 0)},
+    createdEpoch: {enumerable: true, value: ev.created_epoch ? ev.created_epoch.toInt() : 0},
     data: {enumerable: true, value: ev.data ? ev.data.toBuffer() : new Buffer(0)},
     metadata: {enumerable: true, value: ev.metadata ? ev.metadata.toBuffer() : new Buffer(0)},
     isJson: {enumerable: true, value: ev.data_content_type == 1}
@@ -338,7 +334,6 @@ function PersistentSubscriptionDeleteResult(status) {
 
 // Exports Constructors
 module.exports.Position = Position;
-module.exports.toNumber = toNumber;
 module.exports.ResolvedEvent = ResolvedEvent;
 module.exports.EventReadStatus = EventReadStatus;
 module.exports.EventReadResult = EventReadResult;

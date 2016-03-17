@@ -22,9 +22,12 @@
   },
   "homepage": "https://github.com/nicdex/eventstore-node#readme",
   "dependencies": {
+    "long": "^3.0.3",
     "protobufjs": "^5.0.1",
     "uuid": "^2.0.1"
   },
-  "engines": { "node": ">=0.12" },
+  "engines": {
+    "node": ">=0.12"
+  },
   "engineStrict": true
 }

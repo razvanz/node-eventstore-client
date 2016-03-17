@@ -12,12 +12,13 @@ function EventStoreTransaction(transactionId, userCredentials, connection) {
 
   this._isCommitted = false;
   this._isRolledBack = false;
+
+  Object.defineProperties(this, {
+    transactionId: {
+      enumerable: true, get: function() { return this._transactionId; }
+    }
+  });
 }
-Object.defineProperty(EventStoreTransaction.prototype, 'transactionId', {
-  get: function() {
-    return this._transactionId;
-  }
-});
 
 /**
  * Commit (async)

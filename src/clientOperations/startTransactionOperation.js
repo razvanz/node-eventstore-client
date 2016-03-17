@@ -56,7 +56,7 @@ StartTransactionOperation.prototype._inspectResponse = function(response) {
 };
 
 StartTransactionOperation.prototype._transformResponse = function(response) {
-  return new EventStoreTransaction(results.toNumber(response.transaction_id), this.userCredentials, this._parentConnection);
+  return new EventStoreTransaction(response.transaction_id, this.userCredentials, this._parentConnection);
 };
 
 StartTransactionOperation.prototype.toString = function() {
