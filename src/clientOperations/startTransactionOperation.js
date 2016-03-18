@@ -7,7 +7,9 @@ var InspectionResult = require('./../systemData/inspectionResult');
 var ClientMessage = require('../messages/clientMessage');
 var EventStoreTransaction = require('../eventStoreTransaction');
 var results = require('../results');
-
+var AccessDeniedError = require('../errors/accessDeniedError');
+var WrongExpectedVersionError = require('../errors/wrongExpectedVersionError');
+var StreamDeletedError = require('../errors/streamDeletedError');
 var OperationBase = require('../clientOperations/operationBase');
 
 function StartTransactionOperation(log, cb, requireMaster, stream, expectedVersion, parentConnection, userCredentials) {
@@ -38,17 +40,16 @@ StartTransactionOperation.prototype._inspectResponse = function(response) {
     case ClientMessage.OperationResult.ForwardTimeout:
       return new InspectionResult(InspectionDecision.Retry, "ForwardTimeout");
     case ClientMessage.OperationResult.WrongExpectedVersion:
-      var err = util.format("Start transaction failed due to WrongExpectedVersion. Stream: %s, Expected version: %d.", this._stream, this._expectedVersion);
-      this.fail(new Error(err));
+      this.fail(new WrongExpectedVersionError("Start transaction", this._stream, this._expectedVersion));
       return new InspectionResult(InspectionDecision.EndOperation, "WrongExpectedVersion");
     case ClientMessage.OperationResult.StreamDeleted:
-      this.fail(new Error("Stream deleted: " + this._stream));
+      this.fail(new StreamDeletedError(this._stream));
       return new InspectionResult(InspectionDecision.EndOperation, "StreamDeleted");
     case ClientMessage.OperationResult.InvalidTransaction:
       this.fail(new Error("Invalid transaction."));
       return new InspectionResult(InspectionDecision.EndOperation, "InvalidTransaction");
     case ClientMessage.OperationResult.AccessDenied:
-      this.fail(new Error(util.format("Write access denied for stream '%s'.", this._stream)));
+      this.fail(new AccessDeniedError("Write", this._stream));
       return new InspectionResult(InspectionDecision.EndOperation, "AccessDenied");
     default:
       throw new Error(util.format("Unexpected OperationResult: %s.", response.result));

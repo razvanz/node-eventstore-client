@@ -33,13 +33,13 @@ EventStoreTransaction.prototype.commit = function() {
 
 /**
  * Write events (async)
- * @param {Array.<EventData>} events
+ * @param {EventData|EventData[]} eventOrEvents
  * @returns {Promise}
  */
-EventStoreTransaction.prototype.write = function(events) {
+EventStoreTransaction.prototype.write = function(eventOrEvents) {
   if (this._isRolledBack) throw new Error("can't write to a rolledback transaction");
   if (this._isCommitted) throw new Error("Transaction is already committed");
-  if (!Array.isArray(events)) throw new Error("events must be an array.");
+  var events = Array.isArray(eventOrEvents) ? eventOrEvents : [eventOrEvents];
   return this._connection.transactionalWrite(this, events);
 };
 

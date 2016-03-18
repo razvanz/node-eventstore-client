@@ -152,7 +152,10 @@ EventStoreNodeConnection.prototype.appendToStream = function(stream, expectedVer
  * @returns {Promise.<EventStoreTransaction>}
  */
 EventStoreNodeConnection.prototype.startTransaction = function(stream, expectedVersion, userCredentials) {
-  //TODO validations
+  ensure.notNullOrEmpty(stream, "stream");
+  ensure.isInteger(expectedVersion, "expectedVersion");
+  userCredentials = userCredentials || null;
+
   var self = this;
   return new Promise(function(resolve, reject) {
     function cb(err, result) {
@@ -160,7 +163,7 @@ EventStoreNodeConnection.prototype.startTransaction = function(stream, expectedV
       resolve(result);
     }
     var operation = new StartTransactionOperation(self._settings.log, cb, self._settings.requireMaster, stream,
-        expectedVersion, self, userCredentials || null);
+        expectedVersion, self, userCredentials);
     self._enqueueOperation(operation);
   });
 };
@@ -172,11 +175,16 @@ EventStoreNodeConnection.prototype.startTransaction = function(stream, expectedV
  * @returns {EventStoreTransaction}
  */
 EventStoreNodeConnection.prototype.continueTransaction = function(transactionId, userCredentials) {
-  //TODO validations
+  ensure.nonNegative(transactionId, "transactionId");
+
   return new EventStoreTransaction(transactionId, userCredentials, this);
 };
 
 EventStoreNodeConnection.prototype.transactionalWrite = function(transaction, events, userCredentials) {
+  ensure.isTypeOf(EventStoreTransaction, transaction, "transaction");
+  ensure.isArrayOf(EventData, events, "events");
+  userCredentials = userCredentials || null;
+
   var self = this;
   return new Promise(function(resolve, reject) {
     function cb(err) {
@@ -190,6 +198,8 @@ EventStoreNodeConnection.prototype.transactionalWrite = function(transaction, ev
 };
 
 EventStoreNodeConnection.prototype.commitTransaction = function(transaction, userCredentials) {
+  ensure.isTypeOf(EventStoreTransaction, transaction, "transaction");
+
   var self = this;
   return new Promise(function(resolve, reject) {
     function cb(err, result) {

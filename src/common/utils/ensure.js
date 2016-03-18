@@ -19,12 +19,12 @@ module.exports.isArrayOf = function(expectedType, value, name) {
   if (!Array.isArray(value))
     throw new TypeError(name + " should be an array.");
   if (!value.every(function(x) { return x instanceof expectedType; }))
-    throw new TypeError([name, " should be an array of ", expectedType, "."].join(""));
+    throw new TypeError([name, " should be an array of ", expectedType.name, "."].join(""));
 };
 
 module.exports.isTypeOf = function(expectedType, value, name) {
   if (!(value instanceof expectedType))
-    throw new TypeError([name, " should be of type '", expectedType, "'."].join(""));
+    throw new TypeError([name, " should be of type '", expectedType.name, "'."].join(""));
 };
 
 module.exports.positive = function(value, name) {

@@ -6,6 +6,9 @@ var InspectionDecision = require('../systemData/inspectionDecision');
 var InspectionResult = require('./../systemData/inspectionResult');
 var ClientMessage = require('../messages/clientMessage');
 var results = require('../results');
+var WrongExpectedVersionError = require('../errors/wrongExpectedVersionError');
+var StreamDeletedError = require('../errors/streamDeletedError');
+var AccessDeniedError = require('../errors/accessDeniedError');
 
 var OperationBase = require('../clientOperations/operationBase');
 
@@ -36,17 +39,16 @@ CommitTransactionOperation.prototype._inspectResponse = function(response) {
     case ClientMessage.OperationResult.ForwardTimeout:
       return new InspectionResult(InspectionDecision.Retry, "ForwardTimeout");
     case ClientMessage.OperationResult.WrongExpectedVersion:
-      var err = util.format("Commit transaction failed due to WrongExpectedVersion. TransactionID: %d.", this._transactionId);
-      this.fail(new Error(err));
+      this.fail(new WrongExpectedVersionError("Commit", this._transactionId));
       return new InspectionResult(InspectionDecision.EndOperation, "WrongExpectedVersion");
     case ClientMessage.OperationResult.StreamDeleted:
-      this.fail(new Error("Stream deleted."));
+      this.fail(new StreamDeletedError(this._transactionId));
       return new InspectionResult(InspectionDecision.EndOperation, "StreamDeleted");
     case ClientMessage.OperationResult.InvalidTransaction:
       this.fail(new Error("Invalid transaction."));
       return new InspectionResult(InspectionDecision.EndOperation, "InvalidTransaction");
     case ClientMessage.OperationResult.AccessDenied:
-      this.fail(new Error("Write access denied."));
+      this.fail(new AccessDeniedError("Write", this._transactionId));
       return new InspectionResult(InspectionDecision.EndOperation, "AccessDenied");
     default:
       throw new Error(util.format("Unexpected OperationResult: %s.", response.result));

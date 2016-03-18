@@ -67,7 +67,7 @@ module.exports = {
         .catch(function (err) {
           test.done(err);
         });
-  },*/
+  },
   'Test Commit Two Events Using Transaction': function(test) {
     this.conn.startTransaction(testStreamName, client.expectedVersion.any)
         .then(function(trx) {
@@ -90,7 +90,6 @@ module.exports = {
           test.done(err);
         });
   },
-  /*
   'Test Read One Event': function(test) {
     this.conn.readEvent(testStreamName, 0)
         .then(function(result) {
@@ -231,14 +230,15 @@ module.exports = {
     function liveProcessingStarted() {
       liveProcessing = true;
       var events = [createRandomEvent()];
-      self.conn.appendToStream('test', client.expectedVersion.any, events);
+      self.conn.appendToStream(testStreamName, client.expectedVersion.any, events);
     }
     function subscriptionDropped(connection, reason, error) {
       test.ok(liveEvents.length === 1, "Expecting 1 live event, got " + liveEvents.length);
-      test.ok(catchUpEvents.length > 1, "Expecting at least 1 catchUp event, got " + catchUpEvents.length);
+      test.ok(catchUpEvents.length >= 1, "Expecting at least 1 catchUp event, got " + catchUpEvents.length);
       test.done(error);
     }
-    var subscription = this.conn.subscribeToStreamFrom('test', null, false, eventAppeared, liveProcessingStarted, subscriptionDropped);
+    //this.conn.appendToStream()
+    var subscription = this.conn.subscribeToStreamFrom(testStreamName, null, false, eventAppeared, liveProcessingStarted, subscriptionDropped);
   },
   'Test Subscribe to All From': function(test) {
     var self = this;

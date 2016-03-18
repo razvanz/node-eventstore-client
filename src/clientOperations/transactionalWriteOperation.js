@@ -5,6 +5,7 @@ var TcpCommand = require('../systemData/tcpCommand');
 var InspectionDecision = require('../systemData/inspectionDecision');
 var InspectionResult = require('./../systemData/inspectionResult');
 var ClientMessage = require('../messages/clientMessage');
+var AccessDeniedError = require('../errors/accessDeniedError');
 
 var OperationBase = require('../clientOperations/operationBase');
 
@@ -43,7 +44,7 @@ TransactionalWriteOperation.prototype._inspectResponse = function(response) {
     case ClientMessage.OperationResult.ForwardTimeout:
       return new InspectionResult(InspectionDecision.Retry, "ForwardTimeout");
     case ClientMessage.OperationResult.AccessDenied:
-      this.fail(new Error("Write access denied."));
+      this.fail(new AccessDeniedError("Write", "trx:" + this._transactionId));
       return new InspectionResult(InspectionDecision.EndOperation, "AccessDenied");
     default:
       throw new Error(util.format("Unexpected OperationResult: %s.", response.result));
