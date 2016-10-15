@@ -35,7 +35,9 @@ Examples
 
 ## Porting .Net Task to Node.js
 
-I used Promise to replace .Net Task, so when executing an async command, i.e. appendToStream you'll have to wait for result/error like this:
+.Net Task have been replace with Promise. When executing an async command, i.e. appendToStream you can use then/catch to wait for result/error.
+
+*Example*
 
     connection
       .appendToStream('myStream', client.expectedVersion.any, events, userCredentials)
@@ -51,7 +53,6 @@ I used Promise to replace .Net Task, so when executing an async command, i.e. ap
 To run the tests you will need
 
 - To install the dependencies (`npm install`)
-- To install nodeunit (`npm install -g nodeunit`)
 - Run an instance of EventStore >= 3.3.0 (competing consumers are required for test) on localhost:1113 (Download [here](https://geteventstore.com/downloads/))
 
 To execute the tests suites simply run test with npm

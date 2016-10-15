@@ -44,6 +44,7 @@ module.exports.UserCredentials = require('./systemData/userCredentials');
 module.exports.EventData = EventData;
 module.exports.PersistentSubscriptionSettings = require('./persistentSubscriptionSettings');
 module.exports.SystemConsumerStrategies = require('./systemConsumerStrategies');
+module.exports.GossipSeed = require('./gossipSeed');
 // Exporting errors
 module.exports.WrongExpectedVersionError = require('./errors/wrongExpectedVersionError');
 module.exports.StreamDeletedError = require('./errors/streamDeletedError');

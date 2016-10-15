@@ -624,7 +624,7 @@ EventStoreConnectionLogicHandler.prototype._timerTick = function() {
 };
 
 EventStoreConnectionLogicHandler.prototype._manageHeartbeats = function() {
-  if (this._connection == null) throw new Error();
+  if (this._connection == null) return;
 
   var timeout = this._heartbeatInfo.isIntervalStage ? this._settings.heartbeatInterval : this._settings.heartbeatTimeout;
   if (Date.now() - this._heartbeatInfo.timeStamp < timeout)
