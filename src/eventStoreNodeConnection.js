@@ -381,8 +381,10 @@ EventStoreNodeConnection.prototype.readAllEventsBackward = function(
 EventStoreNodeConnection.prototype.subscribeToStream = function(
     stream, resolveLinkTos, eventAppeared, subscriptionDropped, userCredentials
 ) {
-  if (typeof stream !== 'string' || stream === '') throw new TypeError("stream must be a non-empty string.");
-  if (typeof eventAppeared !== 'function') throw new TypeError("eventAppeared must be a function.");
+  ensure.notNullOrEmpty(stream, "stream");
+  ensure.isTypeOf(Function, eventAppeared, "eventAppeared");
+  if (subscriptionDropped)
+    ensure.isTypeOf(Function, subscriptionDropped, "subscriptionDropped");
 
   var self = this;
   return new Promise(function(resolve,reject) {

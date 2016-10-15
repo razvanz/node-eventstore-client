@@ -43,13 +43,21 @@ function merge(a,b) {
 /**
  * Create an EventStore connection
  * @param {object} settings
- * @param {object} tcpEndPoint
+ * @param {string|object} endPoint
  * @param {string} [connectionName]
  * @returns {EventStoreNodeConnection}
  */
-module.exports.create = function(settings, tcpEndPoint, connectionName) {
-  //TODO: cluster connection
-  var mergedSettings = merge(defaultConnectionSettings, settings || {});
-  var endpointDiscoverer = new StaticEndpointDiscoverer(tcpEndPoint, settings.useSslConnection);
-  return new EventStoreNodeConnection(mergedSettings, endpointDiscoverer, connectionName || null);
+module.exports.create = function(settings, endPoint, connectionName) {
+  if (typeof endPoint === 'object') {
+    var mergedSettings = merge(defaultConnectionSettings, settings || {});
+    var endpointDiscoverer = new StaticEndpointDiscoverer(endPoint, settings.useSslConnection);
+    return new EventStoreNodeConnection(mergedSettings, endpointDiscoverer, connectionName || null);
+  }
+  if (typeof endPoint === 'string') {
+    //TODO: tcpEndpoint represented as tcp://hostname:port
+    //TODO: cluster discovery via dns represented as discover://dns:?port
+    throw new Error('Not implemented.');
+  }
+  //TODO: cluster discovery via gossip seeds in settings
+  throw new Error('Not implemented.');
 };

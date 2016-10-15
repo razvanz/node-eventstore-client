@@ -189,7 +189,6 @@ SubscriptionOperation.prototype.dropSubscription = function(reason, err, connect
     if (reason !== SubscriptionDropReason.UserInitiated && this._subscription === null)
     {
       if (err === null) throw new Error(util.format("No exception provided for subscription drop reason '%s", reason));
-      //TODO: this should be last thing to execute
       this._cb(err);
       return;
     }

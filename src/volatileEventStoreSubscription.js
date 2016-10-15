@@ -10,15 +10,15 @@ var EventStoreSubsription = require('./eventStoreSubscription');
  * @constructor
  * @augments {EventStoreSubscription}
  */
-function VolatileEventStoreConnection(subscriptionOperation, streamId, lastCommitPosition, lastEventNumber) {
+function VolatileEventStoreSubscription(subscriptionOperation, streamId, lastCommitPosition, lastEventNumber) {
   EventStoreSubsription.call(this, streamId, lastCommitPosition, lastEventNumber);
 
   this._subscriptionOperation = subscriptionOperation;
 }
-util.inherits(VolatileEventStoreConnection, EventStoreSubsription);
+util.inherits(VolatileEventStoreSubscription, EventStoreSubsription);
 
-VolatileEventStoreConnection.prototype.unsubscribe = function() {
+VolatileEventStoreSubscription.prototype.unsubscribe = function() {
   this._subscriptionOperation.unsubscribe();
 };
 
-module.exports = VolatileEventStoreConnection;
+module.exports = VolatileEventStoreSubscription;

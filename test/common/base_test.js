@@ -17,6 +17,7 @@ var tcpEndPoint = {host: 'localhost', port: 1113};
 function setUp(cb) {
   this.log = settings.log;
   this.testStreamName = 'test-' + uuid.v4();
+  this.log.info('A', this.testStreamName);
   var connected = false;
   this.conn = client.EventStoreConnection.create(settings, tcpEndPoint);
   this.conn.connect()

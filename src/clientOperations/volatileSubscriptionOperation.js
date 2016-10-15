@@ -9,7 +9,7 @@ var BufferSegment = require('../common/bufferSegment');
 var InspectionDecision = require('../systemData/inspectionDecision');
 var InspectionResult = require('./../systemData/inspectionResult');
 var results = require('../results');
-var VolatileEventStoreSubscription = require('../volatileEventStoreConnection');
+var VolatileEventStoreSubscription = require('../volatileEventStoreSubscription');
 
 function VolatileSubscriptionOperation(
     log, cb, streamId, resolveLinkTos, userCredentials, eventAppeared,

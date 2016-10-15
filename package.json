@@ -3,7 +3,14 @@
   "version": "0.0.2",
   "description": "A port of the EventStore .Net ClientAPI to Node.js",
   "main": "index.js",
+  "directories": {
+    "lib": "lib",
+    "test": "test"
+  },
   "scripts": {
+    "clean": "rm lib/dist.js",
+    "build": "webpack",
+    "pretest": "npm run build",
     "test": "nodeunit"
   },
   "repository": {
@@ -22,12 +29,16 @@
   },
   "homepage": "https://github.com/nicdex/eventstore-node#readme",
   "dependencies": {
-    "long": "^3.0.3",
-    "protobufjs": "^5.0.1",
-    "uuid": "^2.0.1"
+    "long": "^3.2",
+    "protobufjs": "^5.0",
+    "uuid": "^2.0"
   },
   "engines": {
     "node": ">=0.12"
   },
-  "engineStrict": true
+  "engineStrict": true,
+  "devDependencies": {
+    "nodeunit": "^0.10.2",
+    "webpack": "^1.13.2"
+  }
 }

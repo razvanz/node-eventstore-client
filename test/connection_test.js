@@ -22,7 +22,7 @@ module.exports = {
       test.done();
     }
   },
-  'Connect To Endpoint That Don\'t Exist': function(test) {
+  'Connect To Endpoint That Doesn\'t Exist': function(test) {
     var tcpEndpoint = {hostname: 'localhost', port: 1114};
     var conn = client.EventStoreConnection.create(testBase.settings({maxReconnections:1}), tcpEndpoint);
     conn.connect()

@@ -163,7 +163,7 @@ module.exports = {
         .catch(function(err) {
           test.done(err);
         });
-  },*/
+  },
   'Test Subscribe to Stream': function(test) {
     var done = false;
     function eventAppeared() {
@@ -188,7 +188,7 @@ module.exports = {
           done = true;
           test.done(err);
         })
-  },
+  }
   'Test Subscribe to All': function(test) {
     var done = false;
     function eventAppeared() {
@@ -233,11 +233,12 @@ module.exports = {
       self.conn.appendToStream(testStreamName, client.expectedVersion.any, events);
     }
     function subscriptionDropped(connection, reason, error) {
+      console.log(reason);
       test.ok(liveEvents.length === 1, "Expecting 1 live event, got " + liveEvents.length);
       test.ok(catchUpEvents.length >= 1, "Expecting at least 1 catchUp event, got " + catchUpEvents.length);
       test.done(error);
     }
-    //this.conn.appendToStream()
+    this.conn.appendToStream(testStreamName, client.expectedVersion.noStream, )
     var subscription = this.conn.subscribeToStreamFrom(testStreamName, null, false, eventAppeared, liveProcessingStarted, subscriptionDropped);
   },
   'Test Subscribe to All From': function(test) {
@@ -264,55 +265,8 @@ module.exports = {
       test.done(error);
     }
     var subscription = this.conn.subscribeToAllFrom(null, false, eventAppeared, liveProcessingStarted, subscriptionDropped, userCredentialsForAll);
-  },
-  'Test Set Stream Metadata Raw': function(test) {
-    this.conn.setStreamMetadataRaw(testStreamName, client.expectedVersion.emptyStream, {$maxCount: 100})
-        .then(function(result) {
-          test.done();
-        })
-        .catch(function(err) {
-          test.done(err);
-        });
-  },
-  'Test Get Stream Metadata Raw': function(test) {
-    this.conn.getStreamMetadataRaw(testStreamName)
-        .then(function(result) {
-          test.done();
-        })
-        .catch(function(err) {
-          test.done(err);
-        });
-  },
-  'Test Create Persistent Subscription': function(test) {
-    var settings = client.PersistentSubscriptionSettings.create();
-    this.conn.createPersistentSubscription(testStreamName, 'consumer-1', settings, userCredentialsForAll)
-        .then(function(result) {
-          test.done();
-        })
-        .catch(function(err) {
-          test.done(err);
-        });
-  },
-  //TODO: Update Persistent Subscription
-  'Test ConnectTo Persistent Subscription': function(test) {
-    function eventAppeared(s, e) {
-      s.stop();
-    }
-    function subscriptionDropped(connection, reason, error) {
-      test.done(error);
-    }
-    var subscription = this.conn.connectToPersistentSubscription(testStreamName, 'consumer-1', eventAppeared, subscriptionDropped);
-    this.conn.appendToStream(testStreamName, client.expectedVersion.any, [createRandomEvent()]);
-  },
-  'Test Delete Persistent Subscription': function(test) {
-    this.conn.deletePersistentSubscription(testStreamName, 'consumer-1', userCredentialsForAll)
-        .then(function(result) {
-          test.done();
-        })
-        .catch(function(err) {
-          test.done(err);
-        });
-  }/*,
+  },*/
+  /*,
   'Test Delete Stream': function(test) {
     this.conn.deleteStream(testStreamName, client.expectedVersion.any)
         .then(function(result) {
