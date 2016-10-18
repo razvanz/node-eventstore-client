@@ -31,7 +31,7 @@ module.exports = {
           test.done(err);
         });
     conn.on('connected', function () {
-      test.fail("Should not be able to connect.");
+      test.ok(false, "Should not be able to connect.");
       test.done();
     });
     conn.on('error', function (err) {
@@ -41,7 +41,7 @@ module.exports = {
       test.ok(reason.indexOf("Reconnection limit reached") === 0, "Wrong expected reason.");
       test.done();
     });
-  },
+  }/*,
   'Connect to Cluster using gossip seeds': function (test) {
     test.expect(1);
     var gossipSeeds = [
@@ -65,7 +65,7 @@ module.exports = {
       if (err) return test.done(err);
       test.done();
     }
-  }
+  }*/
 };
 
 testBase.init(module.exports, false);

@@ -32,6 +32,7 @@ function TcpConnection(log, connectionId, remoteEndPoint, onConnectionClosed) {
 TcpConnection.prototype._initSocket = function(socket) {
   this._socket = socket;
   this._localEndPoint = {host: socket.localAddress, port: socket.localPort};
+  this._remoteEndPoint.host = socket.remoteAddress;
 
   this._socket.on('error', this._processError.bind(this));
   this._socket.on('data', this._processReceive.bind(this));
@@ -120,13 +121,13 @@ TcpConnection.prototype._closeInternal = function(err, reason) {
   if (this._closed) return;
   this._closed = true;
 
-  if (this._socket != null) {
+  if (this._socket !== null) {
     this._socket.end();
     this._socket.unref();
     this._socket = null;
   }
 
-  if (this._onConnectionClosed != null)
+  if (this._onConnectionClosed !== null)
       this._onConnectionClosed(this, err);
 };
 

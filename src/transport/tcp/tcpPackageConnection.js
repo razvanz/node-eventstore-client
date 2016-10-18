@@ -120,26 +120,26 @@ TcpPackageConnection.prototype._incomingMessageArrived = function(data) {
     var message = util.format("TcpPackageConnection: [%j, L%j, %s] ERROR for %s. Connection will be closed.",
         this.remoteEndPoint, this.localEndPoint, this._connectionId,
         valid ? TcpCommand.getName(pkg.command) : "<invalid package>");
-    if (this._onError != null)
+    if (this._onError !== null)
       this._onError(this, e);
     this._log.debug(e, message);
   }
 };
 
 TcpPackageConnection.prototype.startReceiving = function() {
-  if (this._connection == null)
+  if (this._connection === null)
     throw new Error("Failed connection.");
   this._connection.receive(this._onRawDataReceived.bind(this));
 };
 
 TcpPackageConnection.prototype.enqueueSend = function(pkg) {
-  if (this._connection == null)
+  if (this._connection === null)
     throw new Error("Failed connection.");
   this._connection.enqueueSend(this._framer.frameData(pkg.asBufferSegment()));
 };
 
 TcpPackageConnection.prototype.close = function(reason) {
-  if (this._connection == null)
+  if (this._connection === null)
     throw new Error("Failed connection.");
   this._connection.close(reason);
 };

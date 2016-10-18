@@ -42,7 +42,7 @@ SubscriptionsManager.prototype.purgeSubscribedAndDroppedSubscriptions = function
   var self = this;
   var subscriptionsToRemove = [];
   this._activeSubscriptions.forEach(function(_, subscription) {
-    if (subscription.isSubscribed && subscription.connectionId == connectionId) {
+    if (subscription.isSubscribed && subscription.connectionId === connectionId) {
       subscription.operation.connectionClosed();
       subscriptionsToRemove.push(subscription);
     }
@@ -60,7 +60,7 @@ SubscriptionsManager.prototype.checkTimeoutsAndRetry = function(connection) {
   var removeSubscriptions = [];
   this._activeSubscriptions.forEach(function(_, subscription) {
     if (subscription.isSubscribed) return;
-    if (subscription.connectionId != connection.connectionId)
+    if (subscription.connectionId !== connection.connectionId)
     {
       retrySubscriptions.push(subscription);
     }
@@ -165,7 +165,7 @@ SubscriptionsManager.prototype._logDebug = function(message) {
   if (!this._settings.verboseLogging) return;
 
   var parameters = Array.prototype.slice.call(arguments, 1);
-  this._settings.log.debug("EventStoreConnection '%s': %s.", this._connectionName, parameters.length == 0 ? message : util.format(message, parameters));
+  this._settings.log.debug("EventStoreConnection '%s': %s.", this._connectionName, parameters.length === 0 ? message : util.format(message, parameters));
 };
 
 module.exports = SubscriptionsManager;

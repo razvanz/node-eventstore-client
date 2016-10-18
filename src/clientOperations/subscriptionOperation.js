@@ -46,7 +46,7 @@ SubscriptionOperation.prototype._enqueueSend = function(pkg) {
 SubscriptionOperation.prototype.subscribe = function(correlationId, connection) {
   if (connection === null) throw new TypeError("connection is null.");
 
-  if (this._subscription != null || this._unsubscribed != 0)
+  if (this._subscription !== null || this._unsubscribed)
     return false;
 
   this._correlationId = correlationId;
@@ -128,7 +128,7 @@ SubscriptionOperation.prototype.inspectPackage = function(pkg) {
 
       case TcpCommand.NotHandled:
       {
-        if (this._subscription != null)
+        if (this._subscription !== null)
           throw new Error("NotHandled command appeared while we already subscribed.");
 
         var message = ClientMessage.NotHandled.decode(pkg.data.toBuffer());

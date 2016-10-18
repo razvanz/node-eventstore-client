@@ -55,7 +55,7 @@ OperationsManager.prototype.checkTimeoutsAndRetry = function(connection) {
   var removeOperations = [];
   var self = this;
   this._activeOperations.forEach(function(correlationId, operation) {
-    if (operation.connectionId != connection.connectionId)
+    if (operation.connectionId !== connection.connectionId)
     {
       retryOperations.push(operation);
     }

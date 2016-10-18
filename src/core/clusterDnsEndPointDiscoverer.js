@@ -38,7 +38,7 @@ ClusterDnsEndPointDiscoverer.prototype.discover = function(failedTcpEndPoint) {
         return endPoints;
       })
       .catch(function (exc) {
-        self._log.info(util.format("Discovering attempt %d/%d failed with error: %s.", attempt, self._maxDiscoverAttempts, exc));
+        self._log.info(util.format("Discovering attempt %d/%d failed with error: %s.\n%s", attempt, self._maxDiscoverAttempts, exc, exc.stack));
       })
       .then(function (endPoints) {
         if (endPoints)
@@ -67,6 +67,7 @@ ClusterDnsEndPointDiscoverer.prototype._discoverEndPoint = function (failedTcpEn
     var self = this;
     var promise = Promise.resolve();
     var j = 0;
+    self._log.debug('Gossip candidates', gossipCandidates);
     for (var i = 0; i < gossipCandidates.length; i++) {
       promise = promise.then(function (endPoints) {
         if (endPoints) return endPoints;
@@ -90,10 +91,9 @@ ClusterDnsEndPointDiscoverer.prototype._discoverEndPoint = function (failedTcpEn
 };
 
 ClusterDnsEndPointDiscoverer.prototype._getGossipCandidatesFromOldGossip = function (oldGossip, failedTcpEndPoint) {
-  if (failedTcpEndPoint === null) return oldGossip;
+  if (failedTcpEndPoint === null) return this._arrangeGossipCandidates(oldGossip);
   var gossipCandidates = oldGossip.filter(function(x) {
-    //TODO: failedTcpEndpoint.host might not be an ip
-    return (x.externalTcpPort !== failedTcpEndPoint.port && x.externalTcpIp !== failedTcpEndPoint.host);
+    return !(x.externalTcpPort === failedTcpEndPoint.port && x.externalTcpIp === failedTcpEndPoint.host);
   });
   return this._arrangeGossipCandidates(gossipCandidates);
 };
@@ -133,6 +133,7 @@ ClusterDnsEndPointDiscoverer.prototype._getGossipCandidatesFromDns = function ()
 
 ClusterDnsEndPointDiscoverer.prototype._tryGetGossipFrom = function (endPoint) {
   var options = {
+    host: endPoint.endPoint.host,
     hostname: endPoint.endPoint.hostname,
     port: endPoint.endPoint.port,
     path: '/gossip?format=json'
@@ -140,6 +141,7 @@ ClusterDnsEndPointDiscoverer.prototype._tryGetGossipFrom = function (endPoint) {
   if (endPoint.hostHeader) {
     options.headers = {'Host': endPoint.hostHeader};
   }
+  this._log.info('Try get gossip from', endPoint);
   var self = this;
   return new Promise(function (resolve, reject) {
     try {
@@ -215,7 +217,7 @@ ClusterDnsEndPointDiscoverer.prototype._tryDetermineBestNode = function (members
   var secTcp = node.externalSecureTcpPort > 0
     ? {host: externalTcpIp, port: node.externalSecureTcpPort}
     : null;
-  this._log.info(util.format("Discovering: found best choice [%j,%j] (%s).", normTcp, secTcp == null ? "n/a" : secTcp, node.state));
+  this._log.info(util.format("Discovering: found best choice [%j,%j] (%s).", normTcp, secTcp === null ? "n/a" : secTcp, node.state));
   return new NodeEndPoints(normTcp, secTcp);
 };
 

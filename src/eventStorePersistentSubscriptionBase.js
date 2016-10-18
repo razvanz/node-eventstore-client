@@ -38,6 +38,7 @@ EventStorePersistentSubscriptionBase.prototype.start = function() {
   this._startSubscription(this._subscriptionId, this._streamId, this._bufferSize, this._userCredentials,
                           this._onEventAppeared.bind(this), this._onSubscriptionDropped.bind(this), this._settings)
       .then(function(subscription) {
+        console.log('Subscription started.');
         self._subscription = subscription;
       });
 };
@@ -145,7 +146,7 @@ EventStorePersistentSubscriptionBase.prototype._processQueue = function() {
       e = this._queue.shift();
     }
     this._isProcessing = false;
-  //} while (_queue.Count > 0 && Interlocked.CompareExchange(ref _isProcessing, 1, 0) == 0);
+  //} while (_queue.Count > 0 && Interlocked.CompareExchange(ref _isProcessing, 1, 0) === 0);
 };
 
 EventStorePersistentSubscriptionBase.prototype._dropSubscription = function(reason, error) {

@@ -37,38 +37,38 @@ ConnectToPersistentSubscriptionOperation.prototype._createSubscriptionPackage = 
 };
 
 ConnectToPersistentSubscriptionOperation.prototype._inspectPackage = function(pkg) {
-  if (pkg.command == TcpCommand.PersistentSubscriptionConfirmation)
+  if (pkg.command === TcpCommand.PersistentSubscriptionConfirmation)
   {
     var dto = ClientMessage.PersistentSubscriptionConfirmation.decode(pkg.data.toBuffer());
     this._confirmSubscription(dto.last_commit_position, dto.last_event_number);
     this._subscriptionId = dto.subscription_id;
     return new InspectionResult(InspectionDecision.Subscribed, "SubscriptionConfirmation");
   }
-  if (pkg.command == TcpCommand.PersistentSubscriptionStreamEventAppeared)
+  if (pkg.command === TcpCommand.PersistentSubscriptionStreamEventAppeared)
   {
     var dto = ClientMessage.PersistentSubscriptionStreamEventAppeared.decode(pkg.data.toBuffer());
     this._onEventAppeared(new results.ResolvedEvent(dto.event));
     return new InspectionResult(InspectionDecision.DoNothing, "StreamEventAppeared");
   }
-  if (pkg.command == TcpCommand.SubscriptionDropped)
+  if (pkg.command === TcpCommand.SubscriptionDropped)
   {
     var dto = ClientMessage.SubscriptionDropped.decode(pkg.data.toBuffer());
-    if (dto.reason == ClientMessage.SubscriptionDropped.SubscriptionDropReason.AccessDenied)
+    if (dto.reason === ClientMessage.SubscriptionDropped.SubscriptionDropReason.AccessDenied)
     {
       this.dropSubscription(SubscriptionDropReason.AccessDenied, new Error("You do not have access to the stream."));
       return new InspectionResult(InspectionDecision.EndOperation, "SubscriptionDropped");
     }
-    if (dto.reason == ClientMessage.SubscriptionDropped.SubscriptionDropReason.NotFound)
+    if (dto.reason === ClientMessage.SubscriptionDropped.SubscriptionDropReason.NotFound)
     {
       this.dropSubscription(SubscriptionDropReason.NotFound, new Error("Subscription not found"));
       return new InspectionResult(InspectionDecision.EndOperation, "SubscriptionDropped");
     }
-    if (dto.reason == ClientMessage.SubscriptionDropped.SubscriptionDropReason.PersistentSubscriptionDeleted)
+    if (dto.reason === ClientMessage.SubscriptionDropped.SubscriptionDropReason.PersistentSubscriptionDeleted)
     {
       this.dropSubscription(SubscriptionDropReason.PersistentSubscriptionDeleted, new Error("Persistent subscription deleted."));
       return new InspectionResult(InspectionDecision.EndOperation, "SubscriptionDropped");
     }
-    if (dto.reason == ClientMessage.SubscriptionDropped.SubscriptionDropReason.SubscriberMaxCountReached)
+    if (dto.reason === ClientMessage.SubscriptionDropped.SubscriptionDropReason.SubscriberMaxCountReached)
     {
       this.dropSubscription(SubscriptionDropReason.MaxSubscribersReached, new Error("Maximum subscribers reached."));
       return new InspectionResult(InspectionDecision.EndOperation, "SubscriptionDropped");
@@ -111,10 +111,10 @@ ConnectToPersistentSubscriptionOperation.prototype.notifyEventsFailed = function
       action);
 
   var pkg = new TcpPackage(TcpCommand.PersistentSubscriptionNakEvents,
-      this._userCredentials != null ? TcpFlags.Authenticated : TcpFlags.None,
+      this._userCredentials !== null ? TcpFlags.Authenticated : TcpFlags.None,
       this._correlationId,
-      this._userCredentials != null ? this._userCredentials.username : null,
-      this._userCredentials != null ? this._userCredentials.password : null,
+      this._userCredentials !== null ? this._userCredentials.username : null,
+      this._userCredentials !== null ? this._userCredentials.password : null,
       createBufferSegment(dto.toBuffer()));
   this._enqueueSend(pkg);
 };

@@ -29,7 +29,7 @@ TcpPackage.fromBufferSegment = function(data) {
 
   var headerSize = MandatorySize;
   var login = null, pass = null;
-  if ((flags & TcpFlags.Authenticated) != 0)
+  if ((flags & TcpFlags.Authenticated) !== 0)
   {
     var loginLen = data.buffer[data.offset + AuthOffset];
     if (AuthOffset + 1 + loginLen + 1 >= data.count)
@@ -48,7 +48,7 @@ TcpPackage.fromBufferSegment = function(data) {
 };
 
 TcpPackage.prototype.asBuffer = function() {
-  if ((this.flags & TcpFlags.Authenticated) != 0) {
+  if ((this.flags & TcpFlags.Authenticated) !== 0) {
     var loginBytes = new Buffer(this.login);
     if (loginBytes.length > 255) throw new Error("Login serialized length should be less than 256 bytes.");
     var passwordBytes = new Buffer(this.password);

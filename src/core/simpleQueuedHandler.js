@@ -13,8 +13,14 @@ function SimpleQueuedHandler() {
 }
 
 SimpleQueuedHandler.prototype.registerHandler = function(type, handler) {
-  type = typeName(type);
-  this._handlers[type] = handler;
+  var typeId = typeName(type);
+  this._handlers[typeId] = function (msg) {
+    try {
+      handler(msg);
+    } catch(e) {
+      console.log('ERROR: ', e);
+    }
+  };
 };
 
 SimpleQueuedHandler.prototype.enqueueMessage = function(msg) {
@@ -28,10 +34,10 @@ SimpleQueuedHandler.prototype.enqueueMessage = function(msg) {
 SimpleQueuedHandler.prototype._processQueue = function() {
   var message = this._messages.shift();
   while(message) {
-    var type = typeName(message);
-    var handler = this._handlers[type];
+    var typeId = typeName(message);
+    var handler = this._handlers[typeId];
     if (!handler)
-        throw new Error("No handler registered for message " + type);
+        throw new Error("No handler registered for message " + typeId);
     setImmediate(handler, message);
     message = this._messages.shift();
   }

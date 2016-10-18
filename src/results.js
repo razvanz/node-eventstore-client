@@ -69,7 +69,7 @@ function RecordedEvent(ev) {
     createdEpoch: {enumerable: true, value: ev.created_epoch ? ev.created_epoch.toInt() : 0},
     data: {enumerable: true, value: ev.data ? ev.data.toBuffer() : new Buffer(0)},
     metadata: {enumerable: true, value: ev.metadata ? ev.metadata.toBuffer() : new Buffer(0)},
-    isJson: {enumerable: true, value: ev.data_content_type == 1}
+    isJson: {enumerable: true, value: ev.data_content_type === 1}
   });
 }
 

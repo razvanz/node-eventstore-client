@@ -1,18 +1,19 @@
 {
   "name": "eventstore-node",
-  "version": "0.0.2",
+  "version": "0.0.6",
   "description": "A port of the EventStore .Net ClientAPI to Node.js",
   "main": "index.js",
-  "directories": {
-    "lib": "lib",
-    "test": "test"
-  },
   "scripts": {
     "clean": "rm lib/dist.js",
     "build": "webpack",
     "pretest": "npm run build",
-    "test": "nodeunit"
+    "test": "nodeunit",
+    "prepublish": "npm run build"
   },
+  "files": [
+    "lib",
+    "src"
+  ],
   "repository": {
     "type": "git",
     "url": "git+https://github.com/nicdex/eventstore-node.git"

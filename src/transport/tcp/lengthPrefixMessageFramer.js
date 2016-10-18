@@ -29,7 +29,7 @@ LengthPrefixMessageFramer.prototype._parse = function(bytes) {
     {
       this._packageLength |= (buffer[i] << (this._headerBytes * 8)); // little-endian order
       ++this._headerBytes;
-      if (this._headerBytes == HeaderLength)
+      if (this._headerBytes === HeaderLength)
       {
         if (this._packageLength <= 0 || this._packageLength > this._maxPackageSize)
           throw new Error(["Package size is out of bounds: ", this._packageLength, "(max: ", this._maxPackageSize, "."].join(''));
@@ -44,9 +44,9 @@ LengthPrefixMessageFramer.prototype._parse = function(bytes) {
       this._bufferIndex += copyCnt;
       i += copyCnt - 1;
 
-      if (this._bufferIndex == this._packageLength)
+      if (this._bufferIndex === this._packageLength)
       {
-        if (this._receivedHandler != null)
+        if (this._receivedHandler !== null)
           this._receivedHandler(createBufferSegment(this._messageBuffer, 0, this._bufferIndex));
         this.reset();
       }

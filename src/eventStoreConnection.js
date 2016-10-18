@@ -31,7 +31,7 @@ var defaultConnectionSettings = {
 
   // Cluster Settings
   clusterDns: '',
-  maxDiscoverAttemps: 10,
+  maxDiscoverAttempts: 10,
   externalGossipPort: 0,
   gossipTimeout: 1000
 };
@@ -85,7 +85,7 @@ function createFromGossipSeeds(connectionSettings, gossipSeeds, connectionName) 
     maxDiscoverAttempts: mergedSettings.maxDiscoverAttempts,
     gossipTimeout: mergedSettings.gossipTimeout
   };
-  var endPointDiscoverer = new ClusterDnsEndPointDiscoverer(connectionSettings.log,
+  var endPointDiscoverer = new ClusterDnsEndPointDiscoverer(mergedSettings.log,
     clusterSettings.clusterDns,
     clusterSettings.maxDiscoverAttempts,
     clusterSettings.externalGossipPort,

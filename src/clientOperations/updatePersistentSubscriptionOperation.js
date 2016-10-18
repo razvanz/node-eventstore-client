@@ -39,7 +39,7 @@ UpdatePersistentSubscriptionOperation.prototype._createRequestDto = function() {
   return new ClientMessage.UpdatePersistentSubscription(this._groupName, this._stream, this._resolveLinkTos,
       this._startFromBeginning, this._messageTimeoutMilliseconds, this._recordStatistics, this._liveBufferSize,
       this._readBatchSize, this._bufferSize, this._maxRetryCount,
-      this._namedConsumerStrategy == SystemConsumerStrategies.RoundRobin, this._checkPointAfter,
+      this._namedConsumerStrategy === SystemConsumerStrategies.RoundRobin, this._checkPointAfter,
       this._maxCheckPointCount, this._minCheckPointCount, this._maxSubscriberCount, this._namedConsumerStrategy);
 };
 

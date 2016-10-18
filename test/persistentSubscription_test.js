@@ -7,7 +7,7 @@ function createRandomEvent() {
   return client.createJsonEventData(uuid.v4(), {a: uuid.v4(), b: Math.random()}, {createdAt: Date.now()}, 'testEvent');
 }
 
-var testStreamName = 'test' + uuid.v4();
+var testStreamName = 'test-' + uuid.v4();
 
 module.exports = {
   'Test Create Persistent Subscription': function(test) {
@@ -29,7 +29,6 @@ module.exports = {
       test.done(error);
     }
     var subscription = this.conn.connectToPersistentSubscription(testStreamName, 'consumer-1', eventAppeared, subscriptionDropped);
-    this.log.info('ABC', subscription);
     this.conn.appendToStream(testStreamName, client.expectedVersion.any, [createRandomEvent()]);
   },
   'Test Delete Persistent Subscription': function(test) {

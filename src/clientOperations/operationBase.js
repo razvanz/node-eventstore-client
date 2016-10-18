@@ -42,7 +42,7 @@ OperationBase.prototype._succeed = function() {
   if (!this._completed) {
     this._completed = true;
 
-    if (this._response != null)
+    if (this._response)
       this._cb(null, this._transformResponse(this._response));
     else
       this._cb(new Error("No result."))
@@ -118,7 +118,7 @@ OperationBase.prototype._inspectNotHandled = function(pkg)
 
     case ClientMessage.NotHandled.NotHandledReason.NotMaster:
       var masterInfo = ClientMessage.NotHandled.MasterInfo.decode(message.additional_info);
-      return new new InspectionResult(InspectionDecision.Reconnect, "NotHandled - NotMaster",
+      return new InspectionResult(InspectionDecision.Reconnect, "NotHandled - NotMaster",
           {host: masterInfo.external_tcp_address, port: masterInfo.external_tcp_port},
           {host: masterInfo.external_secure_tcp_address, port: masterInfo.external_secure_tcp_port});
 
@@ -130,7 +130,7 @@ OperationBase.prototype._inspectNotHandled = function(pkg)
 
 OperationBase.prototype._inspectUnexpectedCommand = function(pkg, expectedCommand)
 {
-  if (pkg.command == expectedCommand)
+  if (pkg.command === expectedCommand)
     throw new Error("Command shouldn't be " + TcpCommand.getName(pkg.command));
 
   this.log.error("Unexpected TcpCommand received.\n"
