@@ -34,7 +34,8 @@ function setUp(cb) {
     settings.log.error(error, "Connection to %j failed.", tcpEndPoint);
     cb(error);
   });
-  this.conn.on('connected', function () {
+  this.conn.on('connected', function (tcpEndPoint) {
+    if (connected) return;
     settings.log.debug("Connected to %j.", tcpEndPoint);
     connected = true;
     cb();

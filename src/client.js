@@ -38,24 +38,27 @@ function eventDataFactory(eventId, type, isJson, data, metadata) {
   return new EventData(eventId, type, isJson, data, metadata);
 }
 
-// Exporting classes
+// Expose classes
 module.exports.EventStoreConnection = require('./eventStoreConnection');
 module.exports.UserCredentials = require('./systemData/userCredentials');
 module.exports.EventData = EventData;
 module.exports.PersistentSubscriptionSettings = require('./persistentSubscriptionSettings');
 module.exports.SystemConsumerStrategies = require('./systemConsumerStrategies');
 module.exports.GossipSeed = require('./gossipSeed');
-// Exporting errors
+// Expose errors
 module.exports.WrongExpectedVersionError = require('./errors/wrongExpectedVersionError');
 module.exports.StreamDeletedError = require('./errors/streamDeletedError');
 module.exports.AccessDeniedError = require('./errors/accessDeniedError');
-// Exporting enums/constants
+// Expose enums/constants
 module.exports.expectedVersion = expectedVersion;
 module.exports.positions = positions;
 module.exports.systemMetadata = require('./common/systemMetadata');
 module.exports.eventReadStatus = results.EventReadStatus;
 module.exports.sliceReadStatus = require('./sliceReadStatus');
-// Helper functions
+// Expose loggers
+module.exports.NoopLogger = require('./common/log/noopLogger');
+module.exports.FileLogger = require('./common/log/fileLogger');
+// Expose Helper functions
 module.exports.createConnection = module.exports.EventStoreConnection.create;
 module.exports.createEventData = eventDataFactory;
 module.exports.createJsonEventData = jsonEventDataFactory;

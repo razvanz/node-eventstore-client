@@ -6,7 +6,7 @@ function FileLogger(filePath, append) {
   this._filePath = filePath;
   if (!append) {
     try {
-      fs.unlink(filePath);
+      fs.unlinkSync(filePath);
     } catch(e) {}
   }
 }

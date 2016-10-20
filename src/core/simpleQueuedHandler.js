@@ -18,7 +18,7 @@ SimpleQueuedHandler.prototype.registerHandler = function(type, handler) {
     try {
       handler(msg);
     } catch(e) {
-      console.log('ERROR: ', e);
+      console.log('ERROR: ', e.stack);
     }
   };
 };
