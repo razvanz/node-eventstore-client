@@ -60,23 +60,14 @@ esConnection.appendToStream(streamName, esClient.expectedVersion.any, event)
         console.log(err);
     });
 ```
-Create ```package.json```:
+
+Run:
 
 ```json
-{
-  "name": "hello",
-  "version": "1.0.0",
-  "main": "app.js",
-  "dependencies": {
-    "eventstore-node": "latest",
-    "uuid": "latest"
-  }
-}
+npm install uuid
+npm install eventstore-node
+node app.js
 ```
-
-```npm install```
-
-```node app.js```
 
 ## Porting .Net Task to Node.js
 
