@@ -24,29 +24,63 @@ Unstable
 
 ## Getting started
 
-Install the client using npm
+### Install & run Eventstore on localhost
 
-    npm install eventstore-node
-    
-Examples
+See http://docs.geteventstore.com/introduction/3.9.0/ . 
+   
+### Example: Storing an event
 
-    TODO
+1. Save to ```app.js:```
 
+```javascript
+var esClient = require('eventstore-node');
+var uuid = require('uuid');
+
+var streamName = "testStream";
+var esConnection = esClient.createConnection({}, {"hostname": "localhost", "port": 1113});
+esConnection.connect();
+esConnection.once('connected', function (tcpEndPoint) {
+    console.log('Connected to eventstore at ' + tcpEndPoint.hostname + ":" + tcpEndPoint.port);
+});
+
+var eventId = uuid.v4();
+var eventData = {
+    a : Math.random(), 
+    b: uuid.v4()
+};
+var event = esClient.createJsonEventData(eventId, eventData, null, 'testEvent');
+console.log("Appending...");
+esConnection.appendToStream(streamName, esClient.expectedVersion.any, event)
+    .then(function(result) {
+        console.log("Stored event:", eventId);
+        console.log("Look for it at: http://localhost:2113/web/index.html#/streams/testStream");
+        esConnection.close();
+    })
+    .catch(function(err) {
+        console.log(err);
+    });
+```
+2. Create ```package.json```:
+
+```json
+{
+  "name": "hello",
+  "version": "1.0.0",
+  "main": "app.js",
+  "dependencies": {
+    "eventstore-node": "latest",
+    "uuid": "latest"
+  }
+}
+```
+
+3. ```npm install```
+
+4. ```node app.js```
 
 ## Porting .Net Task to Node.js
 
 .Net Task have been replace with Promise. When executing an async command, i.e. appendToStream you can use then/catch to wait for result/error.
-
-*Example*
-
-    connection
-      .appendToStream('myStream', client.expectedVersion.any, events, userCredentials)
-      .then(function(result) {
-        //Do something with the WriteResult here
-      })
-      .catch(function(err) {
-        //Handle error here
-      });
 
 ## Running the tests
 
