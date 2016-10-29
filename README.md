@@ -30,7 +30,7 @@ See http://docs.geteventstore.com/introduction/3.9.0/ .
    
 ### Example: Storing an event
 
-1. Save to ```app.js:```
+Save to ```app.js:```
 
 ```javascript
 var esClient = require('eventstore-node');
@@ -60,7 +60,7 @@ esConnection.appendToStream(streamName, esClient.expectedVersion.any, event)
         console.log(err);
     });
 ```
-2. Create ```package.json```:
+Create ```package.json```:
 
 ```json
 {
@@ -74,9 +74,9 @@ esConnection.appendToStream(streamName, esClient.expectedVersion.any, event)
 }
 ```
 
-3. ```npm install```
+```npm install```
 
-4. ```node app.js```
+```node app.js```
 
 ## Porting .Net Task to Node.js
 
