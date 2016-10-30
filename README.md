@@ -75,12 +75,11 @@ node app.js
 
 ## Running the tests
 
-To run the tests you will need
+To run the tests it is recommended that you use an in-memory instance of the eventstore so you don't pollute your dev instance.
 
-- To install the dependencies (`npm install`)
-- Run an instance of EventStore >= 3.3.0 (competing consumers are required for test) on localhost:1113 (Download [here](https://geteventstore.com/downloads/))
+    EventStore.ClusterNode.exe --memdb
 
-To execute the tests suites simply run test with npm
+To execute the tests suites simply run
 
     npm test
 

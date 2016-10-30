@@ -12,7 +12,7 @@ if (process.env.TESTS_VERBOSE_LOGGING === '1') {
   settings.log = new FileLogger('test-verbose.log');
 }
 
-var tcpEndPoint = {hostname: 'localhost', port: 1112};
+var tcpEndPoint = {hostname: 'localhost', port: 1113};
 
 function setUp(cb) {
   this.log = settings.log;
