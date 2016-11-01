@@ -1,3 +1,5 @@
+// Subscribe to all new events on the $all stream. Filter out any which aren't about "user" aggregates.
+
 var esClient = require('../src/client');      // When  running in 'eventstore-node/samples' folder.
 // var esClient = require('eventstore-node'); // Otherwise
 
@@ -8,6 +10,10 @@ var esConnection = esClient.createConnection({}, {"hostname": "localhost", "port
 esConnection.connect();
 esConnection.once('connected', function (tcpEndPoint) {
     console.log('Connected to eventstore at ' + tcpEndPoint.hostname + ":" + tcpEndPoint.port);
+    esConnection.subscribeToAll(resolveLinkTos, eventAppeared, subscriptionDropped, credentialsForAllEventsStream)
+        .then(function(subscription) {
+        console.log("subscription.isSubscribedToAll: " + subscription.isSubscribedToAll);
+        });
 });
 
 function belongsToAUserAggregate(event) {
@@ -20,22 +26,17 @@ function eventAppeared(subscription, event) {
         var aggregateId = event.originalEvent.eventStreamId;
         var eventId = event.originalEvent.eventId;
         var eventType = event.originalEvent.eventType;
-        var eventCreated = event.originalEvent.created;
-        console.log(aggregateId, eventType, eventId, eventCreated);
+        console.log(aggregateId, eventType, eventId);
         console.log(event.originalEvent.data.toString() + "\n");
     }
 }
 
 function subscriptionDropped(subscription, reason, error) {
-    if (error) return test.done(error);
+    if (error) {
+        console.log(error);
+    }
     console.log('Subscription dropped.');
 }
-
-esConnection.subscribeToAll(resolveLinkTos, eventAppeared, subscriptionDropped, credentialsForAllEventsStream)
-    .then(function(subscription) {
-    console.log("subscription.isSubscribedToAll: " + subscription.isSubscribedToAll);
-    })
-    .catch(console.log("Caught."));
 
 esConnection.on('error', function (err) {
   console.log('Error occurred on connection:', err);
@@ -43,5 +44,4 @@ esConnection.on('error', function (err) {
 
 esConnection.on('closed', function (reason) {
   console.log('Connection closed, reason:', reason);
-  process.exit(-1);
 });

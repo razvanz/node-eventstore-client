@@ -69,9 +69,21 @@ npm install eventstore-node
 node app.js
 ```
 
-## Porting .Net Task to Node.js
+### Example: Subscribing to events
 
-.Net Task have been replace with Promise. When executing an async command, i.e. appendToStream you can use then/catch to wait for result/error.
+```cd samples```
+
+To subscribe to all events from now on (includes example of a filter which ignores events which we aren't interested in):
+
+```node subscribe-all-events.js```
+
+To catch up on all events ever and subscribe to all new ones from now on:
+
+```node subscribe-catchup-all-events.js```
+
+To generate a test event, open a separate console and run:
+
+```node store-event.js```
 
 ## Running the tests
 
@@ -83,6 +95,10 @@ To run the tests you will need
 To execute the tests suites simply run test with npm
 
     npm test
+
+## Porting .Net Task to Node.js
+
+.Net Task have been replace with Promise. When executing an async command, i.e. appendToStream you can use then/catch to wait for result/error.
 
 ## License
 
