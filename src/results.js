@@ -4,6 +4,7 @@ var Long = require('long');
 var ensure = require('./common/utils/ensure');
 
 /**
+ * @public
  * @param {!number|!Long} commitPosition
  * @param {!number|!Long} preparePosition
  * @constructor

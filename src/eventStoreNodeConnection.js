@@ -33,12 +33,8 @@ var EventData = require('./eventData');
 const MaxReadSize = 4096;
 
 /**
- * @param settings
- * @param clusterSettings
- * @param endpointDiscoverer
- * @param connectionName
+ * @protected
  * @constructor
- * @property {string} connectionName
  */
 function EventStoreNodeConnection(settings, clusterSettings, endpointDiscoverer, connectionName) {
   this._connectionName = connectionName || ['ES-', uuid.v4()].join('');
@@ -73,6 +69,8 @@ Object.defineProperty(EventStoreNodeConnection.prototype, 'connectionName', {
 });
 
 /**
+ * Start connection task
+ * @public
  * @returns {Promise}
  */
 EventStoreNodeConnection.prototype.connect = function() {
@@ -87,12 +85,17 @@ EventStoreNodeConnection.prototype.connect = function() {
   });
 };
 
+/**
+ * Close connection
+ * @public
+ */
 EventStoreNodeConnection.prototype.close = function() {
   this._handler.enqueueMessage(new messages.CloseConnectionMessage("Connection close requested by client.", null));
 };
 
 /**
  * Delete a stream (async)
+ * @public
  * @param {string} stream
  * @param {number} expectedVersion
  * @param {boolean} [hardDelete]
@@ -120,6 +123,7 @@ EventStoreNodeConnection.prototype.deleteStream = function(stream, expectedVersi
 
 /**
  * Append events to a stream (async)
+ * @public
  * @param {string} stream The name of the stream to which to append.
  * @param {number} expectedVersion The version at which we currently expect the stream to be in order that an optimistic concurrency check can be performed.
  * @param {EventData[]|EventData} events The event(s) to append.
@@ -148,6 +152,7 @@ EventStoreNodeConnection.prototype.appendToStream = function(stream, expectedVer
 
 /**
  * Start a transaction (async)
+ * @public
  * @param {string} stream
  * @param {number} expectedVersion
  * @param {UserCredentials} [userCredentials]
@@ -172,6 +177,7 @@ EventStoreNodeConnection.prototype.startTransaction = function(stream, expectedV
 
 /**
  * Continue a transaction
+ * @public
  * @param {number} transactionId
  * @param {UserCredentials} userCredentials
  * @returns {EventStoreTransaction}
@@ -199,6 +205,13 @@ EventStoreNodeConnection.prototype.transactionalWrite = function(transaction, ev
   });
 };
 
+/**
+ * Commit a transaction
+ * @public
+ * @param transaction
+ * @param userCredentials
+ * @returns {Promise.<WriteResult>}
+ */
 EventStoreNodeConnection.prototype.commitTransaction = function(transaction, userCredentials) {
   ensure.isTypeOf(EventStoreTransaction, transaction, "transaction");
 
@@ -216,6 +229,7 @@ EventStoreNodeConnection.prototype.commitTransaction = function(transaction, use
 
 /**
  * Read a single event (async)
+ * @public
  * @param {string} stream
  * @param {number} eventNumber
  * @param {boolean} [resolveLinkTos]
@@ -248,6 +262,7 @@ EventStoreNodeConnection.prototype.readEvent = function(stream, eventNumber, res
 
 /**
  * Reading a specific stream forwards (async)
+ * @public
  * @param {string} stream
  * @param {number} start
  * @param {number} count
@@ -281,6 +296,7 @@ EventStoreNodeConnection.prototype.readStreamEventsForward = function(
 
 /**
  * Reading a specific stream backwards (async)
+ * @public
  * @param {string} stream
  * @param {number} start
  * @param {number} count
@@ -313,6 +329,7 @@ EventStoreNodeConnection.prototype.readStreamEventsBackward = function(
 
 /**
  * Reading all events forwards (async)
+ * @public
  * @param {Position} position
  * @param {number} maxCount
  * @param {boolean} [resolveLinkTos]
@@ -343,6 +360,7 @@ EventStoreNodeConnection.prototype.readAllEventsForward = function(
 
 /**
  * Reading all events backwards (async)
+ * @public
  * @param {Position} position
  * @param {number} maxCount
  * @param {boolean} [resolveLinkTos]
@@ -373,6 +391,7 @@ EventStoreNodeConnection.prototype.readAllEventsBackward = function(
 
 /**
  * Subscribe to a stream (async)
+ * @public
  * @param {!string} stream
  * @param {!boolean} resolveLinkTos
  * @param {function} eventAppeared
@@ -402,6 +421,8 @@ EventStoreNodeConnection.prototype.subscribeToStream = function(
 };
 
 /**
+ * Subscribe to a stream from position
+ * @public
  * @param {!string} stream
  * @param {?number} lastCheckpoint
  * @param {!boolean} resolveLinkTos
@@ -430,6 +451,7 @@ EventStoreNodeConnection.prototype.subscribeToStreamFrom = function(
 
 /**
  * Subscribe to all (async)
+ * @public
  * @param {!boolean} resolveLinkTos
  * @param {!function} eventAppeared
  * @param {function} [subscriptionDropped]
@@ -456,6 +478,7 @@ EventStoreNodeConnection.prototype.subscribeToAll = function(
 
 /**
  * Subscribe to all from
+ * @public
  * @param {?Position} lastCheckpoint
  * @param {!boolean} resolveLinkTos
  * @param {!function} eventAppeared
@@ -481,6 +504,7 @@ EventStoreNodeConnection.prototype.subscribeToAllFrom = function(
 
 /**
  * Subscribe to a persistent subscription
+ * @public
  * @param {string} stream
  * @param {string} groupName
  * @param {function} eventAppeared
@@ -488,6 +512,7 @@ EventStoreNodeConnection.prototype.subscribeToAllFrom = function(
  * @param {UserCredentials} [userCredentials]
  * @param {number} [bufferSize]
  * @param {boolean} [autoAck]
+ * @return {EventStorePersistentSubscription}
  */
 EventStoreNodeConnection.prototype.connectToPersistentSubscription = function(
     stream, groupName, eventAppeared, subscriptionDropped, userCredentials, bufferSize, autoAck
@@ -510,6 +535,8 @@ EventStoreNodeConnection.prototype.connectToPersistentSubscription = function(
 };
 
 /**
+ * Create a persistent subscription
+ * @public
  * @param {string} stream
  * @param {string} groupName
  * @param {PersistentSubscriptionSettings} settings
@@ -533,6 +560,8 @@ EventStoreNodeConnection.prototype.createPersistentSubscription = function(strea
 };
 
 /**
+ * Update a persistent subscription
+ * @public
  * @param {string} stream
  * @param {string} groupName
  * @param {string} settings
@@ -555,6 +584,8 @@ EventStoreNodeConnection.prototype.updatePersistentSubscription = function(strea
 };
 
 /**
+ * Delete a persistent subscription
+ * @public
  * @param {string} stream
  * @param {string} groupName
  * @param {UserCredentials} [userCredentials]
@@ -574,6 +605,10 @@ EventStoreNodeConnection.prototype.deletePersistentSubscription = function(strea
   });
 };
 
+/**
+ * Set stream metadata
+ * @private
+ */
 EventStoreNodeConnection.prototype.setStreamMetadata = function() {
   //TODO: set stream metadata (non-raw)
   throw new Error("Not implemented.");
@@ -581,6 +616,7 @@ EventStoreNodeConnection.prototype.setStreamMetadata = function() {
 
 /**
  * Set stream metadata with raw object (async)
+ * @public
  * @param {string} stream
  * @param {number} expectedMetastreamVersion
  * @param {object} metadata
@@ -608,6 +644,12 @@ EventStoreNodeConnection.prototype.setStreamMetadataRaw = function(
   });
 };
 
+/**
+ * Get stream metadata
+ * @private
+ * @param stream
+ * @param userCredentials
+ */
 EventStoreNodeConnection.prototype.getStreamMetadata = function(stream, userCredentials) {
   //TODO: get stream metadata (non-raw)
   throw new Error("Not implemented.");
@@ -615,6 +657,7 @@ EventStoreNodeConnection.prototype.getStreamMetadata = function(stream, userCred
 
 /**
  * Get stream metadata as raw object (async)
+ * @public
  * @param {string} stream
  * @param {UserCredentials} [userCredentials]
  * @returns {Promise.<RawStreamMetadataResult>}
@@ -640,6 +683,10 @@ EventStoreNodeConnection.prototype.getStreamMetadataRaw = function(stream, userC
       });
 };
 
+/**
+ * Set system settings
+ * @private
+ */
 EventStoreNodeConnection.prototype.setSystemSettings = function() {
   //TODO: set system settings
   throw new Error("Not implemented.");

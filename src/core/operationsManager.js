@@ -5,6 +5,7 @@ var Hash = require('../common/hash');
 var TcpCommand = require('../systemData/tcpCommand');
 
 /**
+ * @private
  * @param {string} connectionName
  * @param {object} settings
  * @constructor

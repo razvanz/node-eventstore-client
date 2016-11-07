@@ -36,6 +36,7 @@ const TimerTickMessage = new messages.TimerTickMessage();
 const EmptyGuid = '00000000-0000-0000-0000-000000000000';
 
 /**
+ * @private
  * @param {EventStoreNodeConnection} esConnection
  * @param {Object} settings
  * @constructor

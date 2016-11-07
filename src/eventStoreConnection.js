@@ -97,6 +97,8 @@ function createFromGossipSeeds(connectionSettings, gossipSeeds, connectionName) 
 
 /**
  * Create an EventStore connection
+ * @public
+ * @alias createConnection
  * @param {object} settings
  * @param {string|object|array} endPointOrGossipSeeds
  * @param {string} [connectionName]

@@ -8,7 +8,8 @@
     "build": "webpack",
     "pretest": "npm run build",
     "test": "nodeunit",
-    "prepublish": "npm run build"
+    "prepublish": "npm run build",
+    "gendocs": "rm -rf docs && jsdoc src -r -R README.md -P package.json -d docs"
   },
   "files": [
     "lib",

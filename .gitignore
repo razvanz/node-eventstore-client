@@ -39,4 +39,4 @@ node_modules
 lib/
 .eslintrc.json
 jsconfig.json
-
+docs/

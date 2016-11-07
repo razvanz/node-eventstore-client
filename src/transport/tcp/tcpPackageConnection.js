@@ -7,6 +7,7 @@ var TcpPackage = require('../../systemData/tcpPackage');
 var TcpCommand = require('../../systemData/tcpCommand');
 
 /**
+ * @private
  * @param log
  * @param remoteEndPoint
  * @param connectionId

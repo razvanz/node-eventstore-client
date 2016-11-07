@@ -12,6 +12,7 @@ function isValidId(id) {
 
 /**
  * Create an EventData
+ * @private
  * @param {string} eventId
  * @param {string} type
  * @param {boolean} [isJson]
