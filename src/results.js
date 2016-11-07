@@ -65,8 +65,8 @@ function RecordedEvent(ev) {
     eventNumber: {enumerable: true, value: ev.event_number},
     eventType: {enumerable: true, value: ev.event_type},
     //Javascript doesn't have .Net precision for time, so we use created_epoch for created
-    created: {enumerable: true, value: new Date(ev.created_epoch ? ev.created_epoch.toInt() : 0)},
-    createdEpoch: {enumerable: true, value: ev.created_epoch ? ev.created_epoch.toInt() : 0},
+    created: {enumerable: true, value: new Date(ev.created_epoch ? ev.created_epoch.toNumber() : 0)},
+    createdEpoch: {enumerable: true, value: ev.created_epoch ? ev.created_epoch.toNumber() : 0},
     data: {enumerable: true, value: ev.data ? ev.data.toBuffer() : new Buffer(0)},
     metadata: {enumerable: true, value: ev.metadata ? ev.metadata.toBuffer() : new Buffer(0)},
     isJson: {enumerable: true, value: ev.data_content_type === 1}
