@@ -38,7 +38,7 @@ SubscriptionsManager.prototype.cleanUp = function() {
   this._retryPendingSubscriptions = [];
 };
 
-SubscriptionsManager.prototype.purgeSubscribedAndDroppedSubscriptions = function() {
+SubscriptionsManager.prototype.purgeSubscribedAndDroppedSubscriptions = function(connectionId) {
   var self = this;
   var subscriptionsToRemove = [];
   this._activeSubscriptions.forEach(function(_, subscription) {
