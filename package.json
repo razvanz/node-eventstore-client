@@ -1,6 +1,6 @@
 {
   "name": "eventstore-node",
-  "version": "0.0.8",
+  "version": "0.0.9",
   "description": "A port of the EventStore .Net ClientAPI to Node.js",
   "main": "index.js",
   "scripts": {
@@ -34,10 +34,6 @@
     "protobufjs": "^5.0",
     "uuid": "^2.0"
   },
-  "engines": {
-    "node": ">=0.12"
-  },
-  "engineStrict": true,
   "devDependencies": {
     "nodeunit": "^0.10.2",
     "webpack": "^1.13.2"
