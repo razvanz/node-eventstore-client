@@ -22,6 +22,16 @@ Unstable
 - Performance: there's still some while loop in the code that could be problematic with node.js
 - Tests: tests are only covering happy path scenarios for now
 
+### Documentation
+
+#### Offline
+
+The offline documentation can be found in the module folder `./node_modules/eventstore-node/docs`.
+
+#### Online
+
+The online documentation can be found at [https://dev.nicdex.com/eventstore-node/docs/](https://dev.nicdex.com/eventstore-node/docs/)
+
 ## Getting started
 
 ### Install & run Eventstore on localhost
