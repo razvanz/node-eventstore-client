@@ -75,7 +75,7 @@ OperationBase.prototype.inspectPackage = function(pkg) {
       case TcpCommand.NotHandled:
         return this._inspectNotHandled(pkg);
       default:
-        return this._inspectUnexpectedCommand(package, this._responseCommand);
+        return this._inspectUnexpectedCommand(pkg, this._responseCommand);
     }
   } catch(e) {
     this.fail(e);
@@ -136,7 +136,7 @@ OperationBase.prototype._inspectUnexpectedCommand = function(pkg, expectedComman
   this.log.error("Unexpected TcpCommand received.\n"
       + "Expected: %s, Actual: %s, Flags: %s, CorrelationId: %s\n"
       + "Operation (%s): %s\n"
-      +"TcpPackage Data Dump:\n%j",
+      + "TcpPackage Data Dump:\n%j",
       expectedCommand, TcpCommand.getName(pkg.command), pkg.flags, pkg.correlationId,
       this.constructor.name, this, pkg.data);
 

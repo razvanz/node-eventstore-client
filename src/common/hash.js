@@ -1,4 +1,5 @@
 /**
+ * @private
  * @constructor
  * @property {number} length
  */

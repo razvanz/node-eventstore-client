@@ -1,5 +1,6 @@
 /**
  * Create a buffer segment
+ * @private
  * @param {Buffer} buf
  * @param {number} [offset]
  * @param {number} [count]

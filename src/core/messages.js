@@ -41,6 +41,7 @@ function StartSubscriptionMessage(
 util.inherits(StartSubscriptionMessage, Message);
 
 /**
+ * @private
  * @constructor
  * @property {object} endPoints
  * @property {object} endPoints.secureTcpEndPoint

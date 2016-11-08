@@ -3,6 +3,7 @@ var util = require('util');
 var EventStoreSubsription = require('./eventStoreSubscription');
 
 /**
+ * @private
  * @param {SubscriptionOperation} subscriptionOperation
  * @param {string} streamId
  * @param {Position} lastCommitPosition
