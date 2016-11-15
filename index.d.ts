@@ -13,6 +13,11 @@ export namespace positions {
 }
 
 export interface EventData {
+    readonly eventId: string;
+    readonly type: string;
+    readonly isJson: boolean;
+    readonly data: Buffer;
+    readonly metadata: Buffer;
 }
 
 export function createJsonEventData(eventId: string, event: any, metadata?: any, type?: string): EventData;
@@ -38,6 +43,9 @@ export interface Logger {
 
 export interface UserCredentials {
     new (username: string, password: string);
+
+    readonly username: string;
+    readonly password: string;
 }
 
 export interface ConnectionSettings {
@@ -109,6 +117,32 @@ export interface StreamEventsSlice {
     readonly isEndOfStream: boolean;
 }
 
+export interface AllEventsSlice {
+    readonly readDirection: string; // TODO enum
+    readonly fromPosition: Position;
+    readonly nextPosition: Position;
+    readonly events: ResolvedEvent[];
+    readonly isEndOfStream: boolean;
+}
+
+export interface DeleteResult {
+    readonly logPosition: Position;
+}
+
+export interface EventStoreTransaction {
+    readonly transactionId: number;
+    commit(): Promise<WriteResult>;
+    write(eventOrEvents: EventData | EventData[]): Promise<void>;
+    rollback(): void;
+}
+
+export interface EventReadResult {
+    readonly status: string;
+    readonly stream: string;
+    readonly eventNumber: number;
+    readonly event: ResolvedEvent | null;
+}
+
 export interface EventStoreSubscription {
     readonly isSubscribedToAll: boolean;
     readonly streamId: string;
@@ -119,23 +153,56 @@ export interface EventStoreSubscription {
     unsubscribe(): void;
 }
 
-export interface EventAppearedCallback {
-    (subscription: EventStoreSubscription, event: EventData);
+export interface EventStoreCatchUpSubscription {
+    start(): void;
+    stop(): void;
 }
 
-export interface SubscriptionDroppedCallback {
-    (subscription: EventStoreSubscription, reason: string, error?: Error);
+export interface RawStreamMetadataResult {
+    readonly stream: string;
+    readonly isStreamDeleted: boolean;
+    readonly metastreamVersion: number;
+    readonly streamMetadata: any;
+}
+
+// Callbacks
+export interface EventAppearedCallback<TSubscription> {
+    (subscription: TSubscription, event: EventData): void;
+}
+
+export interface LiveProcessingStartedCallback {
+    (subscription: EventStoreCatchUpSubscription): void;
+}
+
+export interface SubscriptionDroppedCallback<TSubscription> {
+    (subscription: TSubscription, reason: string, error?: Error);
 }
 
 export interface EventStoreNodeConnection {
     connect(): Promise<void>;
     close(): void;
-    appendToStream(stream: string, expectedVersion: number, events: EventData[], userCredentials?: UserCredentials): Promise<WriteResult>;
-    readStreamEventsForward(stream: string, start: number, count: number, resolveLinkTos: boolean, userCredentials?: UserCredentials): Promise<StreamEventsSlice>;
-    subscribeToStream(stream: string, resolveLinkTos: boolean, eventAppeared: EventAppearedCallback, subscriptionDropped?: SubscriptionDroppedCallback, userCredentials?: UserCredentials): Promise<EventStoreSubscription>;
+    // write actions
+    deleteStream(stream: string, expectedVersion: number, hardDelete?: boolean, userCredentials?: UserCredentials): Promise<DeleteResult>;
+    appendToStream(stream: string, expectedVersion: number, eventOrEvents: EventData | EventData[], userCredentials?: UserCredentials): Promise<WriteResult>;
+    startTransaction(stream: string, expectedVersion: number, userCredentials?: UserCredentials): Promise<EventStoreTransaction>;
+    continueTransaction(transactionId: number, userCredentials?: UserCredentials): EventStoreTransaction;
+    // read actions
+    readEvent(stream: string, eventNumber: number, resolveLinkTos?: boolean, userCredentials?: UserCredentials): Promise<EventReadResult>;
+    readStreamEventsForward(stream: string, start: number, count: number, resolveLinkTos?: boolean, userCredentials?: UserCredentials): Promise<StreamEventsSlice>;
+    readStreamEventsBackward(stream: string, start: number, count: number, resolveLinkTos?: boolean, userCredentials?: UserCredentials): Promise<StreamEventsSlice>;
+    readAllEventsForward(position: Position, maxCount: number, resolveLinkTos?: boolean, userCredentials?: UserCredentials): Promise<AllEventsSlice>;
+    readAllEventsBackward(position: Position, maxCount: number, resolveLinkTos?: boolean, userCredentials?: UserCredentials): Promise<AllEventsSlice>;
+    // subscription actions
+    subscribeToStream(stream: string, resolveLinkTos: boolean, eventAppeared: EventAppearedCallback<EventStoreSubscription>, subscriptionDropped?: SubscriptionDroppedCallback<EventStoreSubscription>, userCredentials?: UserCredentials): Promise<EventStoreSubscription>;
+    subscribeToStreamFrom(stream: string, lastCheckpoint: number | null, resolveLinkTos: boolean, eventAppeared: EventAppearedCallback<EventStoreCatchUpSubscription>, liveProcessingStarted?: LiveProcessingStartedCallback, subscriptionDropped?: SubscriptionDroppedCallback<EventStoreCatchUpSubscription>, userCredentials?: UserCredentials, readBatchSize?: number): EventStoreCatchUpSubscription;
+    subscribeToAll(resolveLinkTos: boolean, eventAppeared: EventAppearedCallback<EventStoreSubscription>, subscriptionDropped?: SubscriptionDroppedCallback<EventStoreSubscription>, userCredentials?: UserCredentials): Promise<EventStoreSubscription>;
+    subscribeToAllFrom(lastCheckpoint: Position | null, resolveLinkTos: boolean, eventAppeared: EventAppearedCallback<EventStoreCatchUpSubscription>, liveProcessingStarted?: LiveProcessingStartedCallback, subscriptionDropped?: SubscriptionDroppedCallback<EventStoreCatchUpSubscription>, userCredentials?: UserCredentials, readBatchSize?: number): EventStoreCatchUpSubscription;
+    // metadata actions
+    setStreamMetadataRaw(stream: string, expectedMetastreamVersion: number, metadata: any, userCredentials?: UserCredentials): Promise<WriteResult>;
+    getStreamMetadataRaw(stream: string, userCredentials?: UserCredentials): Promise<RawStreamMetadataResult>;
 
-    on(event: "connected" | "disconnected" | "reconnecting" | "closed" | "error", listener: Function): this;
-    once(event: "connected" | "disconnected" | "reconnecting" | "closed" | "error", listener: Function): this;
+    on(event: "connected" | "disconnected" | "reconnecting" | "closed" | "error", listener: (arg: Error | string | TcpEndPoint) => void): this;
+    once(event: "connected" | "disconnected" | "reconnecting" | "closed" | "error", listener: (arg: Error | string | TcpEndPoint) => void): this;
 }
 
 export function createConnection(settings: ConnectionSettings, endPointOrGossipSeed: string | TcpEndPoint | GossipSeed[], connectionName?: string): EventStoreNodeConnection;
