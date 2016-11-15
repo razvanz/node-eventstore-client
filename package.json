@@ -3,6 +3,7 @@
   "version": "0.0.10",
   "description": "A port of the EventStore .Net ClientAPI to Node.js",
   "main": "index.js",
+  "types": "index.d.ts",
   "scripts": {
     "clean": "rm lib/dist.js",
     "build": "webpack",
@@ -37,6 +38,7 @@
   },
   "homepage": "https://github.com/nicdex/eventstore-node#readme",
   "dependencies": {
+    "@types/es6-promise": "0.0.32",
     "long": "^3.2",
     "protobufjs": "^5.0",
     "uuid": "^2.0"
