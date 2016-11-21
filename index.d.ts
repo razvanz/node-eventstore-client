@@ -167,7 +167,7 @@ export interface RawStreamMetadataResult {
 
 // Callbacks
 export interface EventAppearedCallback<TSubscription> {
-    (subscription: TSubscription, event: EventData): void;
+    (subscription: TSubscription, event: ResolvedEvent): void;
 }
 
 export interface LiveProcessingStartedCallback {
