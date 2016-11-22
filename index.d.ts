@@ -29,8 +29,8 @@ export interface TcpEndPoint {
     hostname: string;
 }
 
-export interface GossipSeed {
-    new (endPoint: TcpEndPoint, hostHeader: string);
+export class GossipSeed {
+    constructor(endPoint: TcpEndPoint, hostHeader: string);
     readonly endPoint: TcpEndPoint;
     readonly hostHeader: string;
 }
@@ -41,9 +41,8 @@ export interface Logger {
     error(fmt: string, ...args: any[]): void;
 }
 
-export interface UserCredentials {
-    new (username: string, password: string);
-
+export class UserCredentials {
+    constructor(username: string, password: string);
     readonly username: string;
     readonly password: string;
 }
