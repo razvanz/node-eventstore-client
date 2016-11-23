@@ -1,6 +1,6 @@
 {
   "name": "eventstore-node",
-  "version": "0.0.16",
+  "version": "0.0.17",
   "description": "A port of the EventStore .Net ClientAPI to Node.js",
   "main": "index.js",
   "types": "index.d.ts",
@@ -40,7 +40,6 @@
   },
   "homepage": "https://github.com/nicdex/eventstore-node#readme",
   "dependencies": {
-    "@types/es6-promise": "^0.0.32",
     "@types/node": "^6.0.47",
     "long": "^3.2",
     "protobufjs": "^5.0",
