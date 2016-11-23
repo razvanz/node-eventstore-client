@@ -1,5 +1,4 @@
 /// <reference types="node" />
-/// <reference types="es6-promise" />
 
 export namespace expectedVersion {
     const any: number;
