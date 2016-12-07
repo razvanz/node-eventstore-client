@@ -41,6 +41,11 @@ module.exports = {
       test.ok(reason.indexOf("Reconnection limit reached") === 0, "Wrong expected reason.");
       test.done();
     });
+  },
+  'Create a connection with tcp://host:port string': function(test) {
+    var conn = client.createConnection({}, 'tcp://localhost:2113');
+    conn.close();
+    test.done();
   }/*,
   'Connect to Cluster using gossip seeds': function (test) {
     test.expect(1);

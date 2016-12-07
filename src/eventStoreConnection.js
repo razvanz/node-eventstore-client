@@ -56,7 +56,7 @@ function createFromTcpEndpoint(settings, tcpEndpoint, connectionName) {
 }
 
 function createFromStringEndpoint(settings, endPoint, connectionName) {
-  var m = endPoint.match(/^(tcp|discover):\/\/([^:]):?(\d+)?$/);
+  var m = endPoint.match(/^(tcp|discover):\/\/([^:]+):?(\d+)?$/);
   if (!m) throw new Error('endPoint string must be tcp://hostname[:port] or discover://dns[:port]');
   var scheme = m[1];
   var hostname = m[2];
