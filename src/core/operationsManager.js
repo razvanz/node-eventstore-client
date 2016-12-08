@@ -121,7 +121,7 @@ OperationsManager.prototype.scheduleOperationRetry = function(operation) {
 };
 
 OperationsManager.prototype.removeOperation = function(operation) {
-  this._activeOperations.remove(operation.connectionId);
+  this._activeOperations.remove(operation.correlationId);
   this._logDebug("RemoveOperation SUCCEEDED for %s.", operation);
   this._totalOperationCount = this._activeOperations.length + this._waitingOperations.length;
   return true;
