@@ -173,7 +173,7 @@ export interface LiveProcessingStartedCallback {
 }
 
 export interface SubscriptionDroppedCallback<TSubscription> {
-    (subscription: TSubscription, reason: string, error?: Error);
+    (subscription: TSubscription, reason: string, error?: Error): void;
 }
 
 export interface EventStoreNodeConnection {
