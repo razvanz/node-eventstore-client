@@ -1,28 +1,33 @@
 # eventstore-node
 A port of the EventStore .Net ClientAPI to Node.js
 
-## Dependencies
-
-- Node.js >= 0.12
-- Modules: [long](https://www.npmjs.org/package/long), [protobufjs](https://www.npmjs.org/package/protobufjs), [uuid](https://www.npmjs.org/package/uuid) (installed via `npm install`)
-
 ## Status
-
-Unstable
 
 ### Missing features:
 
 - Ssl connection
-- Cluster connection
+- Cluster discovery via dns (works using gossip seeds)
 - Set system settings
 
-### Incomplete
+### Areas to improve
 
-- Typed errors: currently most errors are direct instance of Error, which is not practical for error handling
-- Performance: there's still some while loop in the code that could be problematic with node.js
-- Tests: tests are only covering happy path scenarios for now
+- Errors
+  - Use codes or types to differentiate between errors
+- Performance
+  - Performance hasn't been tested yet
+- Tests
+  - Can always do with more tests
 
-### Documentation
+## Getting started
+
+Install using `npm install eventstore-node`
+
+### Dependencies
+
+- Node.js >= 0.12
+- Modules: [long](https://www.npmjs.org/package/long), [protobufjs](https://www.npmjs.org/package/protobufjs), [uuid](https://www.npmjs.org/package/uuid) (installed via `npm install`)
+
+### API Documentation
 
 #### Offline
 
@@ -32,9 +37,7 @@ The offline documentation can be found in the module folder `./node_modules/even
 
 The online documentation can be found at [https://dev.nicdex.com/eventstore-node/docs/](https://dev.nicdex.com/eventstore-node/docs/)
 
-## Getting started
-
-### Install & run Eventstore on localhost
+### Install & run an Eventstore on localhost
 
 See http://docs.geteventstore.com/introduction/3.9.0/ . 
    
@@ -107,7 +110,8 @@ To execute the tests suites simply run
 
 ## Porting .Net Task to Node.js
 
-.Net Task have been replace with Promise. When executing an async command, i.e. appendToStream you can use then/catch to wait for result/error.
+Any async commands returns a [Promise](https://developer.mozilla.org/en/docs/Web/JavaScript/Reference/Global_Objects/Promise) object in replacement of .Net Task.  
+
 
 ## License
 
