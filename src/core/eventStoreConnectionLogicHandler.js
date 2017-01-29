@@ -359,7 +359,7 @@ EventStoreConnectionLogicHandler.prototype._establishTcpConnection = function(en
 };
 
 EventStoreConnectionLogicHandler.prototype._tcpConnectionEstablished = function(connection) {
-  if (this._state !== ConnectionState.Connecting || !this._connection.equals(connection) || connection.isClosed)
+  if (this._state !== ConnectionState.Connecting || !this._connection || !this._connection.equals(connection) || connection.isClosed)
   {
     this._logDebug("IGNORED (_state %s, _conn.Id %s, conn.Id %s, conn.closed %s): TCP connection to [%j, L%j] established.",
         this._state, this._connection === null ? EmptyGuid : this._connection.connectionId, connection.connectionId,
@@ -412,7 +412,7 @@ EventStoreConnectionLogicHandler.prototype._goToConnectedState = function() {
 };
 
 EventStoreConnectionLogicHandler.prototype._tcpConnectionError = function(connection, error) {
-  if (!this._connection.equals(connection)) return;
+  if (!this._connection || !this._connection.equals(connection)) return;
   if (this._state === ConnectionState.Closed) return;
 
   this._logDebug("TcpConnectionError connId %s, exc %s.", connection.connectionId, error);
@@ -421,7 +421,7 @@ EventStoreConnectionLogicHandler.prototype._tcpConnectionError = function(connec
 
 EventStoreConnectionLogicHandler.prototype._tcpConnectionClosed = function(connection, error) {
   if (this._state === ConnectionState.Init) throw new Error();
-  if (this._state === ConnectionState.Closed || !this._connection.equals(connection))
+  if (this._state === ConnectionState.Closed || !this._connection || !this._connection.equals(connection))
   {
     this._logDebug("IGNORED (_state: %s, _conn.ID: %s, conn.ID: %s): TCP connection to [%j, L%j] closed.",
         this._state, this._connection === null ? EmptyGuid : this._connection.connectionId,  connection.connectionId,
@@ -650,9 +650,10 @@ EventStoreConnectionLogicHandler.prototype._manageHeartbeats = function() {
   else
   {
     // TcpMessage.HeartbeatTimeout analog
-    this._logInfo("EventStoreConnection '%s': closing TCP connection [%j, L%j, %s] due to HEARTBEAT TIMEOUT at pkgNum %d.",
+    var msg = util.format("EventStoreConnection '%s': closing TCP connection [%j, L%j, %s] due to HEARTBEAT TIMEOUT at pkgNum %d.",
         this._esConnection.connectionName, this._connection.remoteEndPoint, this._connection.localEndPoint,
         this._connection.connectionId, packageNumber);
+    this._settings.log.info(msg);
     this._closeTcpConnection(msg);
   }
 };
