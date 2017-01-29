@@ -59,19 +59,40 @@ function createFromStringEndpoint(settings, endPoint, connectionName) {
   var m = endPoint.match(/^(tcp|discover):\/\/([^:]+):?(\d+)?$/);
   if (!m) throw new Error('endPoint string must be tcp://hostname[:port] or discover://dns[:port]');
   var scheme = m[1];
-  var host = m[2];
-  var port = m[3] ? parseInt(m[3]) : 1113;
+  var host = m[2] || null;
+  var port = m[3] ? parseInt(m[3]) : null;
   if (scheme === 'tcp') {
     var tcpEndpoint = {
       host: host,
-      port: port
+      port: port || 1113
     };
     return createFromTcpEndpoint(settings, tcpEndpoint, connectionName);
   }
   if (scheme === 'discover') {
-    throw new Error('Not implemented.');
+    return createFromClusterDns(settings, host, port || 2113, connectionName);
   }
   throw new Error('Invalid scheme for endPoint: ' + scheme);
+}
+
+function createFromClusterDns(connectionSettings, clusterDns, externalGossipPort, connectionName) {
+  ensure.notNull(connectionSettings, "connectionSettings");
+  ensure.notNull(clusterDns, "clusterDns");
+  var mergedSettings = merge(defaultConnectionSettings, connectionSettings || {});
+  var clusterSettings = {
+    clusterDns: clusterDns,
+    gossipSeeds: null,
+    externalGossipPort: externalGossipPort,
+    maxDiscoverAttempts: mergedSettings.maxDiscoverAttempts,
+    gossipTimeout: mergedSettings.gossipTimeout
+  };
+  var endPointDiscoverer = new ClusterDnsEndPointDiscoverer(mergedSettings.log,
+    clusterSettings.clusterDns,
+    clusterSettings.maxDiscoverAttempts,
+    clusterSettings.externalGossipPort,
+    clusterSettings.gossipSeeds,
+    clusterSettings.gossipTimeout
+  );
+  return new EventStoreNodeConnection(mergedSettings, clusterSettings, endPointDiscoverer, connectionName);
 }
 
 function createFromGossipSeeds(connectionSettings, gossipSeeds, connectionName) {
