@@ -6,7 +6,6 @@ A port of the EventStore .Net ClientAPI to Node.js
 ### Missing features:
 
 - Ssl connection
-- Cluster discovery via dns (works using gossip seeds)
 - Set system settings
 
 ### Areas to improve
@@ -50,7 +49,18 @@ var esClient = require('eventstore-node');
 var uuid = require('uuid');
 
 var streamName = "testStream";
-var esConnection = esClient.createConnection({}, "tcp://localhost:1113");
+/* 
+  Connecting to a single node using "tcp://localhost:1113"
+  - to connect to a cluster via dns discovery use "discover://my.host:2113"
+  - to connect to a cluster via gossip seeds use 
+  [
+    new esClient.GossipSeed({host: '192.168.1.10', port: 2113}), 
+    new esClient.GossipSeed({host: '192.168.1.11', port: 2113}), 
+    new esClient.GossipSeed({host: '192.168.1.12', port: 2113})
+  ]
+*/
+var connSettings = {};  // Use defaults
+var esConnection = esClient.createConnection(connSettings, "tcp://localhost:1113");
 esConnection.connect();
 esConnection.once('connected', function (tcpEndPoint) {
     console.log('Connected to eventstore at ' + tcpEndPoint.host + ":" + tcpEndPoint.port);
