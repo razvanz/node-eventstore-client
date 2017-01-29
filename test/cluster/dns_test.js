@@ -8,16 +8,10 @@ var settings = {
     debug: console.log
   }
 };
-var gossipSeeds = [
-  new client.GossipSeed({host: '192.168.33.10', port: 1113}),
-  new client.GossipSeed({host: '192.168.33.11', port: 1113}),
-  new client.GossipSeed({host: '192.168.33.12', port: 1113})
-];
-
-var conn = client.createConnection(settings, gossipSeeds);
+var conn = client.createConnection(settings, "discover://es.nicdex.com:2113");
 console.log('Connecting...');
 conn.on('connected', function (tcpEndPoint) {
-  console.log('Connect to', tcpEndPoint);
+  console.log('Connected to', tcpEndPoint);
   setTimeout(function () {
     conn.appendToStream('test-' + uuid.v4(), client.expectedVersion.noStream, [
       client.createJsonEventData(uuid.v4(), {abc: 123}, {}, 'myEvent')
