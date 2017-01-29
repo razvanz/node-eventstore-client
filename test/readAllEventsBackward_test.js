@@ -37,6 +37,7 @@ module.exports = {
         })
   },
   'Read All Events Backward Happy Path': function(test) {
+    test.expect(4 + maxCount);
     var self = this;
     this.conn.readAllEventsBackward(client.positions.end, maxCount, false, allCredentials)
         .then(function(slice) {
@@ -56,6 +57,7 @@ module.exports = {
         })
   },
   'Read All Events Backward With No Access': function(test) {
+    test.expect(1);
     this.conn.readAllEventsBackward(client.positions.end, maxCount)
         .then(function(slice) {
           test.fail("readAllEventsBackward succeeded but should have failed.");

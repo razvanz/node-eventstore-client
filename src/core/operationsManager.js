@@ -30,17 +30,20 @@ OperationsManager.prototype.getActiveOperation = function(correlationId) {
   return this._activeOperations.get(correlationId);
 };
 
-OperationsManager.prototype.cleanUp = function() {
-  var connectionClosedError = new Error(util.format("Connection '%s' was closed.", this._connectionName));
+function cleanUpError(connName, state, operation) {
+    return new Error(util.format("Connection '%s' was closed. %s %s.", connName, state, operation.toString()));
+}
 
+OperationsManager.prototype.cleanUp = function() {
+  var self = this;
   this._activeOperations.forEach(function(correlationId, operation){
-    operation.operation.fail(connectionClosedError);
+    operation.operation.fail(cleanUpError(self._connectionName, 'Active', operation));
   });
   this._waitingOperations.forEach(function(operation) {
-    operation.operation.fail(connectionClosedError);
+    operation.operation.fail(cleanUpError(self._connectionName, 'Waiting', operation));
   });
   this._retryPendingOperations.forEach(function(operation) {
-    operation.operation.fail(connectionClosedError);
+    operation.operation.fail(cleanUpError(self._connectionName, 'Pending', operation));
   });
 
   this._activeOperations.clear();

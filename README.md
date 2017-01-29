@@ -47,10 +47,10 @@ var esClient = require('eventstore-node');
 var uuid = require('uuid');
 
 var streamName = "testStream";
-var esConnection = esClient.createConnection({}, {"hostname": "localhost", "port": 1113});
+var esConnection = esClient.createConnection({}, "tcp://localhost:1113");
 esConnection.connect();
 esConnection.once('connected', function (tcpEndPoint) {
-    console.log('Connected to eventstore at ' + tcpEndPoint.hostname + ":" + tcpEndPoint.port);
+    console.log('Connected to eventstore at ' + tcpEndPoint.host + ":" + tcpEndPoint.port);
 });
 
 var eventId = uuid.v4();

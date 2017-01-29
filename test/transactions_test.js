@@ -7,6 +7,7 @@ module.exports = {
     cb();
   },
   'Start A Transaction Happy Path': function(test) {
+    test.expect(1);
     this.conn.startTransaction(this.testStreamName, client.expectedVersion.noStream)
         .then(function(trx) {
           test.ok(Long.isLong(trx.transactionId), "trx.transactionId should be a Long.");
@@ -46,6 +47,7 @@ module.exports = {
   },
   */
   'Start A Transaction With No Access': function(test) {
+    test.expect(1);
     var self = this;
     var metadata = {$acl: {$w: "$admins"}};
     this.conn.setStreamMetadataRaw(this.testStreamName, -1, metadata)
@@ -84,6 +86,7 @@ module.exports = {
         .catch(test.done);
   },
   'Write/Commit Transaction Happy Path': function(test) {
+    test.expect(2);
     var self = this;
     this.conn.startTransaction(this.testStreamName, client.expectedVersion.emptyStream)
         .then(function(trx) {
@@ -114,6 +117,7 @@ module.exports = {
         .catch(test.done);
   },
   'Write/Commit Transaction With Wrong Expected Version': function(test) {
+    test.expect(1);
     this.conn.startTransaction(this.testStreamName, 10)
         .then(function(trx) {
           return trx.write(client.createJsonEventData(uuid.v4(), {a: Math.random(), b: uuid.v4()}, null, 'anEvent'))
@@ -133,6 +137,7 @@ module.exports = {
         });
   },
   'Write/Commit Transaction With Deleted Stream': function(test) {
+    test.expect(1);
     var self = this;
     this.conn.deleteStream(this.testStreamName, client.expectedVersion.emptyStream, true)
         .then(function() {
@@ -156,6 +161,7 @@ module.exports = {
         });
   },
   'Write/Commit Transaction With No Write Access': function(test) {
+    test.expect(1);
     var self = this;
     this.conn.startTransaction(this.testStreamName, client.expectedVersion.any)
         .then(function(trx) {

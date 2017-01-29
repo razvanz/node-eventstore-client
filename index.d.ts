@@ -25,7 +25,7 @@ export function createEventData(eventId: string, type: string, isJson: boolean, 
 
 export interface TcpEndPoint {
     port: number;
-    hostname: string;
+    host: string;
 }
 
 export class GossipSeed {

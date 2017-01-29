@@ -49,7 +49,7 @@ function merge(a,b) {
 }
 
 function createFromTcpEndpoint(settings, tcpEndpoint, connectionName) {
-  if (!tcpEndpoint.port || !tcpEndpoint.hostname) throw new TypeError('endPoint object must have hostname and port properties.');
+  if (!tcpEndpoint.port || !tcpEndpoint.host) throw new TypeError('endPoint object must have host and port properties.');
   var mergedSettings = merge(defaultConnectionSettings, settings || {});
   var endpointDiscoverer = new StaticEndpointDiscoverer(tcpEndpoint, settings.useSslConnection);
   return new EventStoreNodeConnection(mergedSettings, null, endpointDiscoverer, connectionName || null);
@@ -59,11 +59,11 @@ function createFromStringEndpoint(settings, endPoint, connectionName) {
   var m = endPoint.match(/^(tcp|discover):\/\/([^:]+):?(\d+)?$/);
   if (!m) throw new Error('endPoint string must be tcp://hostname[:port] or discover://dns[:port]');
   var scheme = m[1];
-  var hostname = m[2];
+  var host = m[2];
   var port = m[3] ? parseInt(m[3]) : 1113;
   if (scheme === 'tcp') {
     var tcpEndpoint = {
-      hostname: hostname,
+      host: host,
       port: port
     };
     return createFromTcpEndpoint(settings, tcpEndpoint, connectionName);

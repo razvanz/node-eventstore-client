@@ -16,6 +16,7 @@ module.exports = {
         .catch(cb);
   },
   'Read Event Happy Path': function(test) {
+    test.expect(8);
     var self = this;
     this.conn.readEvent(this.testStreamName, 0)
         .then(function(result) {
@@ -35,6 +36,7 @@ module.exports = {
         })
   },
   'Read Event From Non-Existing Stream': function(test) {
+    test.expect(4);
     var anotherStream = 'test' + uuid.v4();
     this.conn.readEvent(anotherStream, 0)
         .then(function(result) {
@@ -49,6 +51,7 @@ module.exports = {
         });
   },
   'Read Event From Deleted Stream': function(test) {
+    test.expect(4);
     var self = this;
     this.conn.deleteStream(this.testStreamName, 0, true)
         .then(function() {
@@ -66,6 +69,7 @@ module.exports = {
         });
   },
   'Read Event With Inexisting Version': function(test) {
+    test.expect(4);
     var self = this;
     return self.conn.readEvent(self.testStreamName, 1)
         .then(function(result) {
@@ -80,6 +84,7 @@ module.exports = {
         });
   },
   'Read Event With No Access': function(test) {
+    test.expect(1);
     var self = this;
     var metadata = {$acl: {$r: '$admins'}};
     this.conn.setStreamMetadataRaw(self.testStreamName, client.expectedVersion.noStream, metadata)

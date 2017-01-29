@@ -22,14 +22,26 @@ module.exports = {
   },
   //TODO: Update Persistent Subscription
   'Test ConnectTo Persistent Subscription': function(test) {
+    test.expect(2);
+    var _doneCount = 0;
+    function done(err) {
+      test.ok(!err, err ? err.stack : '');
+      _doneCount++;
+      if (_doneCount < 2) return;
+      test.done();
+    }
     function eventAppeared(s, e) {
       s.stop();
     }
     function subscriptionDropped(connection, reason, error) {
-      test.done(error);
+      done(error);
     }
     var subscription = this.conn.connectToPersistentSubscription(testStreamName, 'consumer-1', eventAppeared, subscriptionDropped);
-    this.conn.appendToStream(testStreamName, client.expectedVersion.any, [createRandomEvent()]);
+    this.conn.appendToStream(testStreamName, client.expectedVersion.any, [createRandomEvent()])
+        .then(function () {
+          done();
+        })
+        .catch(done);
   },
   'Test Delete Persistent Subscription': function(test) {
     this.conn.deletePersistentSubscription(testStreamName, 'consumer-1', adminCredentials)

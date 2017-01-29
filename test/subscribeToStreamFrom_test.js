@@ -8,10 +8,19 @@ function createRandomEvent() {
 
 module.exports = {
   'Test Subscribe to Stream From Happy Path': function(test) {
+    test.expect(8);
     var self = this;
     var liveProcessing = false;
     var catchUpEvents = [];
     var liveEvents = [];
+    var _doneCount = 0;
+
+    function done(err) {
+      test.ok(!err, err ? err.stack : '');
+      if (++_doneCount < 2) return;
+      test.done();
+    }
+
     function eventAppeared(s, e) {
       if (liveProcessing) {
         liveEvents.push(e);
@@ -23,12 +32,16 @@ module.exports = {
     function liveProcessingStarted() {
       liveProcessing = true;
       var events = [createRandomEvent()];
-      self.conn.appendToStream(self.testStreamName, client.expectedVersion.any, events);
+      self.conn.appendToStream(self.testStreamName, client.expectedVersion.any, events)
+          .then(function () {
+            done();
+          })
+          .catch(done);
     }
     function subscriptionDropped(connection, reason, error) {
       test.ok(liveEvents.length === 1, "Expecting 1 live event, got " + liveEvents.length);
       test.ok(catchUpEvents.length >= 1, "Expecting at least 1 catchUp event, got " + catchUpEvents.length);
-      test.done(error);
+      done(error);
     }
 
     var events = [createRandomEvent()];
@@ -40,7 +53,8 @@ module.exports = {
         test.areEqual("subscription.isSubscribedToAll", subscription.isSubscribedToAll, false);
         test.areEqual("subscription.readBatchSize", subscription.readBatchSize, 500);
         test.areEqual("subscription.maxPushQueueSize", subscription.maxPushQueueSize, 10000);
-      });
+      })
+      .catch(test.done);
   }
 };
 

@@ -134,7 +134,6 @@ ClusterDnsEndPointDiscoverer.prototype._getGossipCandidatesFromDns = function ()
 ClusterDnsEndPointDiscoverer.prototype._tryGetGossipFrom = function (endPoint) {
   var options = {
     host: endPoint.endPoint.host,
-    hostname: endPoint.endPoint.hostname,
     port: endPoint.endPoint.port,
     path: '/gossip?format=json'
   };

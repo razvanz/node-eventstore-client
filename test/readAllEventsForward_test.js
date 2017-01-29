@@ -37,6 +37,7 @@ module.exports = {
         })
   },
   'Read All Events Forward Happy Path': function(test) {
+    test.expect(5 + maxCount);
     this.conn.readAllEventsForward(client.positions.start, maxCount, false, allCredentials)
         .then(function(slice) {
           test.areEqual('slice.readDirection', slice.readDirection, 'forward');
@@ -57,6 +58,7 @@ module.exports = {
         })
   },
   'Read All Events Forward With No Access': function(test) {
+    test.expect(1);
     this.conn.readAllEventsForward(client.positions.start, maxCount)
         .then(function(slice) {
           test.fail("readAllEventsForward succeeded but should have failed.");

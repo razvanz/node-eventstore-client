@@ -6,6 +6,15 @@ module.exports = {
   'Test Subscribe To All Happy Path': function(test) {
     const resolveLinkTos = false;
     const numberOfPublishedEvents = 5;
+    test.expect(numberOfPublishedEvents + 4);
+
+    var _doneCount = 0;
+    function done(err) {
+      test.ok(!err, err ? err.stack : '');
+      if (++_doneCount < 2) return;
+      test.done();
+    }
+
     var publishedEvents = [];
     for(var i=0;i<numberOfPublishedEvents;i++)
       publishedEvents.push(client.createJsonEventData(uuid.v4(), {a: Math.random(), b: uuid.v4()}, null, 'anEvent'));
@@ -25,10 +34,10 @@ module.exports = {
       if (receivedEvents.length === numberOfPublishedEvents) subscription.close();
     }
     function subscriptionDropped(subscription, reason, error) {
-      if (error) return test.done(error);
+      if (error) return done(error);
       testAllPublishedEventsAppeared();
       testEventsAppearedInCorrectOrder();
-      test.done();
+      done();
     }
     var self = this;
     this.conn.subscribeToAll(resolveLinkTos, eventAppeared, subscriptionDropped, allCredentials)
@@ -36,6 +45,9 @@ module.exports = {
         test.areEqual("subscription.isSubscribedToAll", subscription.isSubscribedToAll, true);
 
         return self.conn.appendToStream(self.testStreamName, client.expectedVersion.emptyStream, publishedEvents);
+      })
+      .then(function () {
+        done();
       })
       .catch(test.done)
   }

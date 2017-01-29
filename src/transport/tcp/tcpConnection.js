@@ -136,7 +136,7 @@ TcpConnection.createConnectingConnection = function(
     onConnectionEstablished, onConnectionFailed, onConnectionClosed
 ) {
   var connection = new TcpConnection(log, connectionId, remoteEndPoint, onConnectionClosed);
-  var socket = net.connect(remoteEndPoint.port, remoteEndPoint.hostname);
+  var socket = net.connect(remoteEndPoint.port, remoteEndPoint.host);
   function onError(err) {
     if (onConnectionFailed)
       onConnectionFailed(connection, err);

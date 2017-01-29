@@ -5,7 +5,8 @@ var testBase = require('./common/base_test');
 
 module.exports = {
   'Connect To Endpoint Happy Path': function(test) {
-    var tcpEndpoint = {hostname: 'localhost', port: 1113};
+    test.expect(1);
+    var tcpEndpoint = {host: '192.168.33.10', port: 1113};
     var conn = client.EventStoreConnection.create(testBase.settings(), tcpEndpoint);
     conn.connect()
         .catch(function(err) {
@@ -24,7 +25,8 @@ module.exports = {
     }
   },
   'Connect To Endpoint That Doesn\'t Exist': function(test) {
-    var tcpEndpoint = {hostname: 'localhost', port: 11112};
+    test.expect(1);
+    var tcpEndpoint = {host: 'localhost', port: 11112};
     var conn = client.EventStoreConnection.create(testBase.settings({maxReconnections:1}), tcpEndpoint);
     conn.connect()
         .catch(function (err) {
@@ -43,16 +45,16 @@ module.exports = {
     });
   },
   'Create a connection with tcp://host:port string': function(test) {
-    var conn = client.createConnection({}, 'tcp://localhost:2113');
+    var conn = client.createConnection({}, 'tcp://192.168.33.10:1113');
     conn.close();
     test.done();
   }/*,
   'Connect to Cluster using gossip seeds': function (test) {
     test.expect(1);
     var gossipSeeds = [
-      new GossipSeed({hostname: 'localhost', port: 1113}),
-      new GossipSeed({hostname: 'localhost', port: 2113}),
-      new GossipSeed({hostname: 'localhost', port: 3113})
+      new GossipSeed({host: 'localhost', port: 1113}),
+      new GossipSeed({host: 'localhost', port: 2113}),
+      new GossipSeed({host: 'localhost', port: 3113})
     ];
     var conn = client.EventStoreConnection.create(testBase.settings(), gossipSeeds);
     conn.connect()

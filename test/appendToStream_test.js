@@ -3,6 +3,7 @@ var client = require('../src/client');
 
 module.exports = {
   'Append One Event To Stream Happy Path': function(test) {
+    test.expect(2);
     var event = client.createJsonEventData(uuid.v4(), {a: Math.random(), b: uuid.v4()}, null, 'testEvent');
     this.conn.appendToStream(this.testStreamName, client.expectedVersion.any, event)
         .then(function(result) {
@@ -15,6 +16,7 @@ module.exports = {
         });
   },
   'Append Multiple Events To Stream Happy Path': function(test) {
+    test.expect(2);
     const expectedVersion = 25;
     var events = [];
     for(var i = 0; i <= expectedVersion; i++) {
@@ -34,6 +36,7 @@ module.exports = {
         });
   },
   'Append To Stream Wrong Expected Version': function(test) {
+    test.expect(1);
     var event = client.createJsonEventData(uuid.v4(), {a: Math.random(), b: uuid.v4()}, null, 'testEvent');
     this.conn.appendToStream(this.testStreamName, 10, event)
         .then(function(result) {
@@ -48,6 +51,7 @@ module.exports = {
         });
   },
   'Append To Stream Deleted': function(test) {
+    test.expect(1);
     var self = this;
     this.conn.deleteStream(this.testStreamName, client.expectedVersion.noStream, true)
         .then(function() {
@@ -66,6 +70,7 @@ module.exports = {
         });
   },
   'Append To Stream Access Denied': function(test) {
+    test.expect(1);
     var self = this;
     var metadata = {$acl: {$w: "$admins"}};
     this.conn.setStreamMetadataRaw(this.testStreamName, client.expectedVersion.noStream, metadata)

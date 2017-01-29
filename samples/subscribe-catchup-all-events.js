@@ -9,7 +9,7 @@ const credentialsForAllEventsStream = new esClient.UserCredentials("admin", "cha
 var esConnection = esClient.createConnection({}, {"hostname": "localhost", "port": 1113});
 esConnection.connect();
 esConnection.once('connected', function (tcpEndPoint) {
-    console.log('Connected to eventstore at ' + tcpEndPoint.hostname + ":" + tcpEndPoint.port);
+    console.log('Connected to eventstore at ' + tcpEndPoint.host + ":" + tcpEndPoint.port);
     var subscription = esConnection.subscribeToAllFrom(null, true, eventAppeared, liveProcessingStarted, subscriptionDropped, credentialsForAllEventsStream);
     console.log("subscription.isSubscribedToAll: " + subscription.isSubscribedToAll);    
 });

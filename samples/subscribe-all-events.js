@@ -9,7 +9,7 @@ const resolveLinkTos = false;
 var esConnection = esClient.createConnection({}, {"hostname": "localhost", "port": 1113});
 esConnection.connect();
 esConnection.once('connected', function (tcpEndPoint) {
-    console.log('Connected to eventstore at ' + tcpEndPoint.hostname + ":" + tcpEndPoint.port);
+    console.log('Connected to eventstore at ' + tcpEndPoint.host + ":" + tcpEndPoint.port);
     esConnection.subscribeToAll(resolveLinkTos, eventAppeared, subscriptionDropped, credentialsForAllEventsStream)
         .then(function(subscription) {
         console.log("subscription.isSubscribedToAll: " + subscription.isSubscribedToAll);

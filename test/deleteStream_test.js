@@ -14,6 +14,7 @@ module.exports = {
         .catch(cb);
   },
   'Test Delete Stream Soft Happy Path': function(test) {
+    test.expect(4);
     var self = this;
     this.conn.deleteStream(this.testStreamName, 1, false)
         .then(function(result) {
@@ -31,6 +32,7 @@ module.exports = {
         });
   },
   'Test Delete Stream Hard Happy Path': function(test) {
+    test.expect(4);
     var self = this;
     this.conn.deleteStream(this.testStreamName, 1, true)
         .then(function(result) {
@@ -48,6 +50,7 @@ module.exports = {
         });
   },
   'Test Delete Stream With Wrong Expected Version': function(test) {
+    test.expect(1);
     this.conn.deleteStream(this.testStreamName, 10)
         .then(function(result) {
           test.fail("Delete succeeded but should have failed.");
@@ -61,6 +64,7 @@ module.exports = {
         });
   },
   'Test Delete Stream With No Access': function(test) {
+    test.expect(1);
     var self = this;
     this.conn.setStreamMetadataRaw(this.testStreamName, client.expectedVersion.any, {$acl: {$d: "$admins"}})
         .then(function() {
@@ -78,6 +82,7 @@ module.exports = {
         });
   },
   'Test Delete Stream Hard When Already Deleted': function(test) {
+    test.expect(1);
     var self = this;
     this.conn.deleteStream(this.testStreamName, 1, true)
         .then(function() {

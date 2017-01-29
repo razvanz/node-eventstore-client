@@ -40,3 +40,6 @@ lib/
 .eslintrc.json
 jsconfig.json
 docs/
+
+# Vagrant
+.vagrant
