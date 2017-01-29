@@ -6,7 +6,7 @@ var testBase = require('./common/base_test');
 module.exports = {
   'Connect To Endpoint Happy Path': function(test) {
     test.expect(1);
-    var tcpEndpoint = {host: '192.168.33.10', port: 1113};
+    var tcpEndpoint = {host: 'localhost', port: 1113};
     var conn = client.EventStoreConnection.create(testBase.settings(), tcpEndpoint);
     conn.connect()
         .catch(function(err) {
@@ -45,7 +45,7 @@ module.exports = {
     });
   },
   'Create a connection with tcp://host:port string': function(test) {
-    var conn = client.createConnection({}, 'tcp://192.168.33.10:1113');
+    var conn = client.createConnection({}, 'tcp://localhost:1113');
     conn.close();
     test.done();
   }/*,

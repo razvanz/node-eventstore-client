@@ -9,9 +9,9 @@ var settings = {
   }
 };
 var gossipSeeds = [
-  new client.GossipSeed({host: 'localhost', port: 1113}),
-  new client.GossipSeed({host: 'localhost', port: 2113}),
-  new client.GossipSeed({host: 'localhost', port: 3113})
+  new client.GossipSeed({host: '192.168.33.10', port: 1113}),
+  new client.GossipSeed({host: '192.168.33.11', port: 1113}),
+  new client.GossipSeed({host: '192.168.33.12', port: 1113})
 ];
 
 var conn = client.createConnection(settings, gossipSeeds);
