@@ -1,9 +1,15 @@
 /// <reference types="node" />
+/// <reference types="Long" />
 
 export namespace expectedVersion {
     const any: number;
     const noStream: number;
     const emptyStream: number;
+}
+
+export interface Position {
+    readonly commitPosition: Long;
+    readonly preparePosition: Long;
 }
 
 export namespace positions {
