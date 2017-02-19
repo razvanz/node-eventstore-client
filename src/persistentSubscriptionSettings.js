@@ -21,6 +21,8 @@ function PersistentSubscriptionSettings(
   this.namedConsumerStrategy = namedConsumerStrategy;
 }
 
-module.exports.create = function() {
+PersistentSubscriptionSettings.create = function() {
   return new PersistentSubscriptionSettings(false, -1, false, 30000, 500, 500, 10, 20, 2000, 10, 1000, 0, SystemConsumerStrategies.RoundRobin);
 };
+
+module.exports = PersistentSubscriptionSettings;

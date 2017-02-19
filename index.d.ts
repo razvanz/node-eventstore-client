@@ -1,37 +1,32 @@
 /// <reference types="node" />
 /// <reference types="Long" />
 
-export namespace expectedVersion {
-    const any: number;
-    const noStream: number;
-    const emptyStream: number;
-}
-
-export interface Position {
+export class Position {
+    constructor(commitPosition: number|Long, preparePosition: number|Long);
     readonly commitPosition: Long;
     readonly preparePosition: Long;
 }
 
-export namespace positions {
-    const start: Position;
-    const end: Position;
+// Expose classes
+
+export class UserCredentials {
+    constructor(username: string, password: string);
+    readonly username: string;
+    readonly password: string;
 }
 
-export interface EventData {
-    readonly eventId: string;
-    readonly type: string;
-    readonly isJson: boolean;
-    readonly data: Buffer;
-    readonly metadata: Buffer;
+export class PersistentSubscriptionSettings {
+    constructor(resolveLinkTos: boolean, startFrom: number, extraStatistics: boolean, messageTimeout: number,
+                maxRetryCount: number, liveBufferSize: number, readBatchSize: number, historyBufferSize: number,
+                checkPointAfter: number, minCheckPointCount: number, maxCheckPointCount: number,
+                maxSubscriberCount: number, namedConsumerStrategy: string)
+    static create();
 }
 
-export function createJsonEventData(eventId: string, event: any, metadata?: any, type?: string): EventData;
-
-export function createEventData(eventId: string, type: string, isJson: boolean, data: Buffer, metadata?: Buffer): EventData;
-
-export interface TcpEndPoint {
-    port: number;
-    host: string;
+export namespace SystemConsumerStrategies {
+    const DispatchToSingle: string;
+    const RoundRobin: string;
+    const Pinned: string
 }
 
 export class GossipSeed {
@@ -40,49 +35,70 @@ export class GossipSeed {
     readonly hostHeader: string;
 }
 
+// Expose errors
+export class WrongExpectedVersionError {
+    readonly name: string;
+    readonly action: string;
+    readonly message: string;
+    readonly stream?: string;
+    readonly expectedVersion?: number;
+    readonly transactionId?: Long;
+}
+
+export class StreamDeletedError {
+    readonly message: string;
+    readonly stream?: string;
+    readonly transactionId?: Long;
+}
+
+export class AccessDeniedError {
+    readonly name: string;
+    readonly action: string;
+    readonly message: string;
+    readonly stream?: string;
+    readonly transactionId?: Long;
+}
+
+// Expose enums/constants
+
+export namespace expectedVersion {
+    const any: number;
+    const noStream: number;
+    const emptyStream: number;
+}
+
+export namespace positions {
+    const start: Position;
+    const end: Position;
+}
+
+// systemMetadata
+// eventReadStatus
+// sliceReadStatus
+
+// Expose loggers
+
 export interface Logger {
     debug(fmt: string, ...args: any[]): void;
     info(fmt: string, ...args: any[]): void;
     error(fmt: string, ...args: any[]): void;
 }
 
-export class UserCredentials {
-    constructor(username: string, password: string);
-    readonly username: string;
-    readonly password: string;
+export class NoOpLogger implements Logger {
+    constructor()
+    debug(fmt: string, ...args: any[]): void;
+    info(fmt: string, ...args: any[]): void;
+    error(fmt: string, ...args: any[]): void;
 }
 
-export interface ConnectionSettings {
-    log?: Logger,
-    verboseLogging?: boolean,
-
-    maxQueueSize?: number,
-    maxConcurrentItems?: number,
-    maxRetries?: number,
-    maxReconnections?: number,
-
-    requireMaster?: boolean,
-
-    reconnectionDelay?: number,
-    operationTimeout?: number,
-    operationTimeoutCheckPeriod?: number,
-
-    defaultUserCredentials?: UserCredentials,
-    useSslConnection?: boolean,
-    targetHost?: TcpEndPoint,
-    validateServer?: boolean,
-
-    failOnNoServerResponse?: boolean,
-    heartbeatInterval?: number,
-    heartbeatTimeout?: number,
-    clientConnectionTimeout?: number,
-
-    // Cluster Settings
-    clusterDns?: string,
-    maxDiscoverAttempts?: number,
-    externalGossipPort?: number,
-    gossipTimeout?: number
+export class FileLogger implements Logger {
+    constructor(filePath: string, append: boolean);
+    debug(fmt: string, ...args: any[]): void;
+    info(fmt: string, ...args: any[]): void;
+    error(fmt: string, ...args: any[]): void;
 }
+
+//
 
 export interface WriteResult {
     readonly nextExpectedVersion: number;
@@ -182,6 +198,19 @@ export interface SubscriptionDroppedCallback<TSubscription> {
     (subscription: TSubscription, reason: string, error?: Error): void;
 }
 
+export interface TcpEndPoint {
+    port: number;
+    host: string;
+}
+
+export interface EventData {
+    readonly eventId: string;
+    readonly type: string;
+    readonly isJson: boolean;
+    readonly data: Buffer;
+    readonly metadata: Buffer;
+}
+
 export interface EventStoreNodeConnection {
     connect(): Promise<void>;
     close(): void;
@@ -209,4 +238,40 @@ export interface EventStoreNodeConnection {
     once(event: "connected" | "disconnected" | "reconnecting" | "closed" | "error", listener: (arg: Error | string | TcpEndPoint) => void): this;
 }
 
+// Expose helper functions
+
+export interface ConnectionSettings {
+    log?: Logger,
+    verboseLogging?: boolean,
+
+    maxQueueSize?: number,
+    maxConcurrentItems?: number,
+    maxRetries?: number,
+    maxReconnections?: number,
+
+    requireMaster?: boolean,
+
+    reconnectionDelay?: number,
+    operationTimeout?: number,
+    operationTimeoutCheckPeriod?: number,
+
+    defaultUserCredentials?: UserCredentials,
+    useSslConnection?: boolean,
+    targetHost?: TcpEndPoint,
+    validateServer?: boolean,
+
+    failOnNoServerResponse?: boolean,
+    heartbeatInterval?: number,
+    heartbeatTimeout?: number,
+    clientConnectionTimeout?: number,
+
+    // Cluster Settings
+    clusterDns?: string,
+    maxDiscoverAttempts?: number,
+    externalGossipPort?: number,
+    gossipTimeout?: number
+}
+
 export function createConnection(settings: ConnectionSettings, endPointOrGossipSeed: string | TcpEndPoint | GossipSeed[], connectionName?: string): EventStoreNodeConnection;
+export function createJsonEventData(eventId: string, event: any, metadata?: any, type?: string): EventData;
+export function createEventData(eventId: string, type: string, isJson: boolean, data: Buffer, metadata?: Buffer): EventData;

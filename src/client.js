@@ -20,13 +20,13 @@ const positions = {
  * @param {string} [type]     Event type
  * @returns {EventData}
  */
-module.exports.createJsonEventData = function (eventId, event, metadata, type) {
+function createJsonEventData(eventId, event, metadata, type) {
   if (!event || typeof event !== 'object') throw new TypeError("data must be an object.");
 
   var eventBuf = new Buffer(JSON.stringify(event));
   var metaBuf = metadata ? new Buffer(JSON.stringify(metadata)) : null;
   return new EventData(eventId, type || event.constructor.name, true, eventBuf, metaBuf);
-};
+}
 
 /**
  * Create an EventData object from event/metadata buffer(s)
@@ -38,17 +38,17 @@ module.exports.createJsonEventData = function (eventId, event, metadata, type) {
  * @param {Buffer} [metadata] Metadata buffer
  * @returns {EventData}
  */
-module.exports.createEventData = function (eventId, type, isJson, data, metadata) {
+function createEventData(eventId, type, isJson, data, metadata) {
   return new EventData(eventId, type, isJson, data, metadata);
-};
+}
 
 // Expose classes
-module.exports.EventStoreConnection = require('./eventStoreConnection');
+module.exports.Position = results.Position;
 module.exports.UserCredentials = require('./systemData/userCredentials');
-module.exports.EventData = EventData;
 module.exports.PersistentSubscriptionSettings = require('./persistentSubscriptionSettings');
 module.exports.SystemConsumerStrategies = require('./systemConsumerStrategies');
 module.exports.GossipSeed = require('./gossipSeed');
+module.exports.EventStoreConnection = require('./eventStoreConnection');
 // Expose errors
 module.exports.WrongExpectedVersionError = require('./errors/wrongExpectedVersionError');
 module.exports.StreamDeletedError = require('./errors/streamDeletedError');
@@ -63,4 +63,6 @@ module.exports.sliceReadStatus = require('./sliceReadStatus');
 module.exports.NoopLogger = require('./common/log/noopLogger');
 module.exports.FileLogger = require('./common/log/fileLogger');
 // Expose Helper functions
-module.exports.createConnection = module.exports.EventStoreConnection.create;
+module.exports.createConnection = require('./eventStoreConnection').create;
+module.exports.createJsonEventData = createJsonEventData;
+module.exports.createEventData = createEventData;
