@@ -1,6 +1,6 @@
 {
   "name": "eventstore-node",
-  "version": "0.0.27",
+  "version": "0.0.28",
   "description": "A port of the EventStore .Net ClientAPI to Node.js",
   "main": "index.js",
   "types": "index.d.ts",
@@ -9,6 +9,7 @@
     "build": "webpack",
     "pretest": "npm run build",
     "test": "nodeunit",
+    "test-debug": "TESTS_VERBOSE_LOGGING=1 nodeunit",
     "prepublish": "npm run build && npm run gendocs",
     "gendocs": "rm -rf docs && jsdoc src -r -d docs"
   },

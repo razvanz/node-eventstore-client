@@ -22,9 +22,10 @@ module.exports.isArrayOf = function(expectedType, value, name) {
     throw new TypeError([name, " should be an array of ", expectedType.name, "."].join(""));
 };
 
-module.exports.isTypeOf = function(expectedType, value, name) {
+module.exports.isTypeOf = function(expectedType, value, name, nullAllowed) {
+  if (nullAllowed && value === null) return;
   if (!(value instanceof expectedType))
-    throw new TypeError([name, " should be of type '", expectedType.name, "'."].join(""));
+    throw new TypeError([name, " should be of type '", expectedType.name, "'", nullAllowed ? " or null": "", "."].join(""));
 };
 
 module.exports.positive = function(value, name) {

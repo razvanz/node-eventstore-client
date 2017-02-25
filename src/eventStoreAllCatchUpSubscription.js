@@ -46,8 +46,6 @@ EventStoreAllCatchUpSubscription.prototype._readEventsTill = function(
                 var done = lastCommitPosition === null
                     ? slice.isEndOfStream
                     : slice.nextPosition.compareTo(new results.Position(lastCommitPosition, lastCommitPosition)) >= 0;
-                if (!done && slice.isEndOfStream)
-                    return Promise.resolve(done).delay(10);
                 return Promise.resolve(done);
               });
         })

@@ -492,7 +492,10 @@ EventStoreNodeConnection.prototype.subscribeToAllFrom = function(
     lastCheckpoint, resolveLinkTos, eventAppeared, liveProcessingStarted, subscriptionDropped,
     userCredentials, readBatchSize
 ) {
-  if (typeof eventAppeared !== 'function') throw new TypeError("eventAppeared must be a function.");
+  ensure.isTypeOf(results.Position, lastCheckpoint, "lastCheckpoint", true);
+  ensure.isTypeOf(Function, eventAppeared, "eventAppeared", false);
+  if (liveProcessingStarted) ensure.isTypeOf(Function, liveProcessingStarted, "liveProcessingStarted", false);
+  if (subscriptionDropped) ensure.isTypeOf(Function, subscriptionDropped, "subscriptionDropped", false);
 
   var catchUpSubscription =
       new EventStoreAllCatchUpSubscription(this, this._settings.log, lastCheckpoint, resolveLinkTos,
