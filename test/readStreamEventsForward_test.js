@@ -16,7 +16,7 @@ module.exports = {
         .catch(cb);
   },
   'Read Stream Events Forward Happy Path': function(test) {
-    test.expect(7 + (streamSize * 6));
+    test.expect(7 + (streamSize * 11));
     var self = this;
     this.conn.readStreamEventsForward(this.testStreamName, 0, streamSize)
         .then(function(slice) {
@@ -29,7 +29,7 @@ module.exports = {
           test.areEqual('slice.isEndOfStream', slice.isEndOfStream, true);
           for(var i = 0; i < streamSize; i++) {
             test.eventEqualEventData('slice.events[' + i + ']', slice.events[i], self.eventsData[i]);
-            test.areEqual('slice.events[' + i + '].originalEventNumber', slice.events[i].originalEventNumber, i);
+            test.testReadEvent('slice.events[' + i + ']', slice.events[i], i);
           }
           test.done();
         })

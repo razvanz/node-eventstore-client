@@ -8,7 +8,7 @@ function createRandomEvent() {
 
 module.exports = {
   'Test Subscribe to Stream From Happy Path': function(test) {
-    test.expect(8);
+    test.expect(20);
     var self = this;
     var liveProcessing = false;
     var catchUpEvents = [];
@@ -40,7 +40,9 @@ module.exports = {
     }
     function subscriptionDropped(connection, reason, error) {
       test.ok(liveEvents.length === 1, "Expecting 1 live event, got " + liveEvents.length);
-      test.ok(catchUpEvents.length >= 1, "Expecting at least 1 catchUp event, got " + catchUpEvents.length);
+      test.testLiveEvent('liveEvents[0]', liveEvents[0]);
+      test.ok(catchUpEvents.length === 1, "Expecting 1 catchUp event, got " + catchUpEvents.length);
+      test.testReadEvent('catchUpEvents[0]', catchUpEvents[0]);
       done(error);
     }
 

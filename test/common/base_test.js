@@ -71,6 +71,32 @@ function eventEqualEventData(name, resolvedEvent, eventData) {
   this.ok(Buffer.compare(ev.metadata, eventData.metadata) === 0, name + ".originalEvent.metadata is not equal to original metadata.");
 }
 
+function testLiveEvent(name, event, evNumber) {
+  this.ok(event.event, name + ".event not defined (or null)");
+  this.ok(event.originalEvent, name + ".originalEvent not defined (or null)");
+  this.ok(event.isResolved === false, name + ".isResolved should be true");
+  this.ok(event.originalPosition instanceof client.Position, name + ".originalPosition is not an instance of Position");
+  this.ok(event.originalStreamId, name + ".originalStreamId not defined (or null)");
+  if (typeof evNumber === 'number') {
+    this.ok(event.originalEventNumber === evNumber, name + '.originalEventNumber expected ' + evNumber + ' got ' + event.originalEventNumber);
+  } else {
+    this.ok(typeof event.originalEventNumber === 'number', name + ".originalEventNumber is not a number");
+  }
+}
+
+function testReadEvent(name, event, evNumber) {
+  this.ok(event.event, name + ".event not defined (or null)");
+  this.ok(event.originalEvent, name + ".originalEvent not defined (or null)");
+  this.ok(event.isResolved === false, name + ".isResolved should be true");
+  this.ok(event.originalPosition === null, name + ".originalPosition is not null");
+  this.ok(event.originalStreamId, name + ".originalStreamId not defined (or null)");
+  if (typeof evNumber === 'number') {
+    this.ok(event.originalEventNumber === evNumber, name + '.originalEventNumber expected ' + evNumber + ' got ' + event.originalEventNumber);
+  } else {
+    this.ok(typeof event.originalEventNumber === 'number', name + ".originalEventNumber is not a number");
+  }
+}
+
 var _ = {
   'setUp': setUp,
   'tearDown': tearDown
@@ -84,6 +110,8 @@ function wrap(name, testFunc) {
       test.areEqual = areEqual.bind(test);
       test.fail = fail.bind(test);
       test.eventEqualEventData = eventEqualEventData.bind(test);
+      test.testLiveEvent = testLiveEvent.bind(test);
+      test.testReadEvent = testReadEvent.bind(test);
       return testFunc.call(this, test);
     }
   }
