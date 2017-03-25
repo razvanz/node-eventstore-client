@@ -35,6 +35,26 @@ module.exports = {
           test.done(err);
         });
   },
+  'Append Multiple Events To Stream Happy Path Stress Test': function(test) {
+    test.expect(2);
+    const expectedVersion = 1000;
+    var events = [];
+    for(var i = 0; i <= expectedVersion; i++) {
+      if (i % 2 === 0)
+        events.push(client.createJsonEventData(uuid.v4(), {a: Math.random(), b: uuid.v4()}, null, 'testEvent'));
+      else
+        events.push(client.createJsonEventData(uuid.v4(), {b: Math.random(), a: uuid.v4()}, null, 'otherEvent'));
+    }
+    this.conn.appendToStream(this.testStreamName, client.expectedVersion.any, events)
+        .then(function(result) {
+          test.areEqual("result.nextExpectedVersion", result.nextExpectedVersion, expectedVersion);
+          test.ok(result.logPosition, "No log position in result.");
+          test.done();
+        })
+        .catch(function(err) {
+          test.done(err);
+        });
+  },
   'Append To Stream Wrong Expected Version': function(test) {
     test.expect(1);
     var event = client.createJsonEventData(uuid.v4(), {a: Math.random(), b: uuid.v4()}, null, 'testEvent');
