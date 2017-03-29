@@ -55,6 +55,21 @@ module.exports = {
           test.done(err);
         });
   },
+  'Append Large event': function(test) {
+    test.expect(2);
+    const largeData = Buffer.alloc(3 * 1024 *1024, 1);
+    const event = client.createJsonEventData(uuid.v4(), {a: largeData.toString()}, null, 'largePayloadEvent');
+    
+    this.conn.appendToStream(this.testStreamName, client.expectedVersion.any, event)
+        .then(function(result) {
+          test.areEqual("result.nextExpectedVersion", result.nextExpectedVersion, 0);
+          test.ok(result.logPosition, "No log position in result.");
+          test.done();
+        })
+        .catch(function(err) {
+          test.done(err);
+        });
+  },
   'Append To Stream Wrong Expected Version': function(test) {
     test.expect(1);
     var event = client.createJsonEventData(uuid.v4(), {a: Math.random(), b: uuid.v4()}, null, 'testEvent');
