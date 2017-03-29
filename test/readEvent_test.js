@@ -112,7 +112,7 @@ module.exports = {
   'Read a Large Event': function(test) {
     test.expect(8);
     var self = this;
-    const largeData = Buffer.alloc(3 * 1024 * 1024, 1);
+    const largeData = Buffer.alloc(3 * 1024 * 1024, " ");
 
     const largeEvent = client.createJsonEventData(uuid.v4(), {
       a: largeData.toString()

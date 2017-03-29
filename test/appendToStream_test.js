@@ -57,7 +57,7 @@ module.exports = {
   },
   'Append Large event': function(test) {
     test.expect(2);
-    const largeData = Buffer.alloc(3 * 1024 *1024, 1);
+    const largeData = Buffer.alloc(3 * 1024 *1024, " ");
     const event = client.createJsonEventData(uuid.v4(), {a: largeData.toString()}, null, 'largePayloadEvent');
     
     this.conn.appendToStream(this.testStreamName, client.expectedVersion.any, event)
