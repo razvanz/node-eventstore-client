@@ -20,7 +20,7 @@ export class PersistentSubscriptionSettings {
                 maxRetryCount: number, liveBufferSize: number, readBatchSize: number, historyBufferSize: number,
                 checkPointAfter: number, minCheckPointCount: number, maxCheckPointCount: number,
                 maxSubscriberCount: number, namedConsumerStrategy: string)
-    static create();
+    static create(): PersistentSubscriptionSettings;
 }
 
 export namespace SystemConsumerStrategies {
