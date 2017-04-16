@@ -23,7 +23,10 @@ function CommitTransactionOperation(log, cb, requireMaster, transactionId, userC
 util.inherits(CommitTransactionOperation, OperationBase);
 
 CommitTransactionOperation.prototype._createRequestDto = function() {
-  return new ClientMessage.TransactionCommit(this._transactionId, this._requireMaster);
+  return new ClientMessage.TransactionCommit({
+    transactionId: this._transactionId,
+    requireMaster: this._requireMaster
+  });
 };
 
 CommitTransactionOperation.prototype._inspectResponse = function(response) {
@@ -56,8 +59,8 @@ CommitTransactionOperation.prototype._inspectResponse = function(response) {
 };
 
 CommitTransactionOperation.prototype._transformResponse = function(response) {
-  var logPosition = new results.Position(response.prepare_position || -1, response.commit_position || -1);
-  return new results.WriteResult(response.last_event_number, logPosition);
+  var logPosition = new results.Position(response.preparePosition || -1, response.commitPosition || -1);
+  return new results.WriteResult(response.lastEventNumber, logPosition);
 };
 
 CommitTransactionOperation.prototype.toString = function() {

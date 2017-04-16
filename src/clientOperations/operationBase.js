@@ -51,7 +51,7 @@ OperationBase.prototype._succeed = function() {
 
 OperationBase.prototype.createNetworkPackage = function(correlationId) {
   var dto = this._createRequestDto();
-  var buf = dto.toBuffer();
+  var buf = dto.constructor.encode(dto).finish();
   return new TcpPackage(
       this._requestCommand,
       this.userCredentials ? TcpFlags.Authenticated : TcpFlags.None,
@@ -117,10 +117,10 @@ OperationBase.prototype._inspectNotHandled = function(pkg)
       return new InspectionResult(InspectionDecision.Retry, "NotHandled - TooBusy");
 
     case ClientMessage.NotHandled.NotHandledReason.NotMaster:
-      var masterInfo = ClientMessage.NotHandled.MasterInfo.decode(message.additional_info);
+      var masterInfo = ClientMessage.NotHandled.MasterInfo.decode(message.additionalInfo);
       return new InspectionResult(InspectionDecision.Reconnect, "NotHandled - NotMaster",
-          {host: masterInfo.external_tcp_address, port: masterInfo.external_tcp_port},
-          {host: masterInfo.external_secure_tcp_address, port: masterInfo.external_secure_tcp_port});
+          {host: masterInfo.externalTcpAddress, port: masterInfo.externalTcpPort},
+          {host: masterInfo.externalSecureTcpAddress, port: masterInfo.externalSecureTcpPort});
 
     default:
       this.log.error("Unknown NotHandledReason: %s.", message.reason);

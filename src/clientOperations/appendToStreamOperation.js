@@ -27,16 +27,17 @@ util.inherits(AppendToStreamOperation, OperationBase);
 AppendToStreamOperation.prototype._createRequestDto = function() {
   var dtos = this._events.map(function(ev) {
     var eventId = new Buffer(uuidParse.parse(ev.eventId));
-    return new ClientMessage.NewEvent({
-      event_id: eventId, event_type: ev.type,
-      data_content_type: ev.isJson ? 1 : 0, metadata_content_type: 0,
-      data: ev.data, metadata: ev.metadata});
+    return {
+      eventId: eventId, eventType: ev.type,
+      dataContentType: ev.isJson ? 1 : 0, metadataContentType: 0,
+      data: ev.data, metadata: ev.metadata
+    };
   });
   return new ClientMessage.WriteEvents({
-    event_stream_id: this._stream,
-    expected_version: this._expectedVersion,
+    eventStreamId: this._stream,
+    expectedVersion: this._expectedVersion,
     events: dtos,
-    require_master: this._requireMaster});
+    requireMaster: this._requireMaster});
 };
 
 AppendToStreamOperation.prototype._inspectResponse = function(response) {
@@ -72,7 +73,7 @@ AppendToStreamOperation.prototype._inspectResponse = function(response) {
 };
 
 AppendToStreamOperation.prototype._transformResponse = function(response) {
-  return new WriteResult(response.last_event_number, new Position(response.prepare_position || -1, response.commit_position || -1));
+  return new WriteResult(response.lastEventNumber, new Position(response.preparePosition || -1, response.commitPosition || -1));
 };
 
 AppendToStreamOperation.prototype.toString = function() {

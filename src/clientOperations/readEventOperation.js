@@ -21,7 +21,12 @@ function ReadEventOperation(log, cb, stream, eventNumber, resolveLinkTos, requir
 util.inherits(ReadEventOperation, OperationBase);
 
 ReadEventOperation.prototype._createRequestDto = function() {
-  return new ClientMessage.ReadEvent(this._stream, this._eventNumber, this._resolveLinkTos, this._requireMaster);
+  return new ClientMessage.ReadEvent({
+      eventStreamId: this._stream,
+      eventNumber: this._eventNumber,
+      resolveLinkTos: this._resolveLinkTos,
+      requireMaster: this._requireMaster
+  });
 };
 
 ReadEventOperation.prototype._inspectResponse = function(response) {

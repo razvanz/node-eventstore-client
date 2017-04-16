@@ -23,12 +23,17 @@ util.inherits(TransactionalWriteOperation, OperationBase);
 TransactionalWriteOperation.prototype._createRequestDto = function() {
   var dtos = this._events.map(function(ev) {
     var eventId = new Buffer(uuidParse.parse(ev.eventId));
-    return new ClientMessage.NewEvent({
-      event_id: eventId, event_type: ev.type,
-      data_content_type: ev.isJson ? 1 : 0, metadata_content_type: 0,
-      data: ev.data, metadata: ev.metadata});
+    return {
+      eventId: eventId, eventType: ev.type,
+      dataContentType: ev.isJson ? 1 : 0, metadataContentType: 0,
+      data: ev.data, metadata: ev.metadata
+    };
   });
-  return new ClientMessage.TransactionWrite(this._transactionId, dtos, this._requireMaster);
+  return new ClientMessage.TransactionWrite({
+    transactionId: this._transactionId,
+    events: dtos,
+    requireMaster: this._requireMaster
+  });
 };
 
 TransactionalWriteOperation.prototype._inspectResponse = function(response) {

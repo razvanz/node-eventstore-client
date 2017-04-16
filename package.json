@@ -44,7 +44,7 @@
     "@types/long": "^3.0.31",
     "@types/node": "^6.0.47",
     "long": "^3.2",
-    "protobufjs": "^5.0",
+    "protobufjs": "^6.7.3",
     "uuid": "^3.0.1",
     "uuid-parse": "^1.0.0"
   },

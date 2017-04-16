@@ -24,7 +24,11 @@ function StartTransactionOperation(log, cb, requireMaster, stream, expectedVersi
 util.inherits(StartTransactionOperation, OperationBase);
 
 StartTransactionOperation.prototype._createRequestDto = function() {
-  return new ClientMessage.TransactionStart(this._stream, this._expectedVersion, this._requireMaster);
+  return new ClientMessage.TransactionStart({
+      eventStreamId: this._stream,
+      expectedVersion: this._expectedVersion,
+      requireMaster: this._requireMaster
+  });
 };
 
 StartTransactionOperation.prototype._inspectResponse = function(response) {
@@ -57,7 +61,7 @@ StartTransactionOperation.prototype._inspectResponse = function(response) {
 };
 
 StartTransactionOperation.prototype._transformResponse = function(response) {
-  return new EventStoreTransaction(response.transaction_id, this.userCredentials, this._parentConnection);
+  return new EventStoreTransaction(response.transactionId, this.userCredentials, this._parentConnection);
 };
 
 StartTransactionOperation.prototype.toString = function() {

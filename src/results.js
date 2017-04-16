@@ -53,15 +53,15 @@ Object.freeze(EventReadStatus);
  * @property {boolean} isJson
  */
 function RecordedEvent(ev) {
-  this.eventStreamId = ev.event_stream_id;
-  this.eventId = uuidParse.unparse(ev.event_id.buffer, ev.event_id.offset);
-  this.eventNumber = ev.event_number;
-  this.eventType = ev.event_type;
-  this.created = new Date(ev.created_epoch ? ev.created_epoch.toNumber() : 0);
-  this.createdEpoch = ev.created_epoch ? ev.created_epoch.toNumber() : 0;
-  this.data = ev.data ? ev.data.toBuffer() : new Buffer(0);
-  this.metadata = ev.metadata ? ev.metadata.toBuffer() : new Buffer(0);
-  this.isJson = ev.data_content_type === 1;
+  this.eventStreamId = ev.eventStreamId;
+  this.eventId = uuidParse.unparse(ev.eventId);
+  this.eventNumber = ev.eventNumber;
+  this.eventType = ev.eventType;
+  this.created = new Date(ev.createdEpoch ? ev.createdEpoch.toNumber() : 0);
+  this.createdEpoch = ev.createdEpoch ? ev.createdEpoch.toNumber() : 0;
+  this.data = ev.data ? ev.data : new Buffer(0);
+  this.metadata = ev.metadata ? ev.metadata : new Buffer(0);
+  this.isJson = ev.dataContentType === 1;
   Object.freeze(this);
 }
 
@@ -81,7 +81,7 @@ function ResolvedEvent(ev) {
   this.link = ev.link === null ? null : new RecordedEvent(ev.link);
   this.originalEvent = this.link || this.event;
   this.isResolved = this.link !== null && this.event !== null;
-  this.originalPosition = (ev.commit_position && ev.prepare_position) ? new Position(ev.commit_position, ev.prepare_position) : null;
+  this.originalPosition = (ev.commitPosition && ev.preparePosition) ? new Position(ev.commitPosition, ev.preparePosition) : null;
   this.originalStreamId = this.originalEvent && this.originalEvent.eventStreamId;
   this.originalEventNumber = this.originalEvent && this.originalEvent.eventNumber;
   Object.freeze(this);

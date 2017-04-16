@@ -21,7 +21,10 @@ function DeletePersistentSubscriptionOperation(log, cb, stream, groupName, userC
 util.inherits(DeletePersistentSubscriptionOperation, OperationBase);
 
 DeletePersistentSubscriptionOperation.prototype._createRequestDto = function() {
-  return new ClientMessage.DeletePersistentSubscription(this._groupName, this._stream);
+  return new ClientMessage.DeletePersistentSubscription({
+      subscriptionGroupName: this._groupName,
+      eventStreamId: this._stream
+  });
 };
 
 DeletePersistentSubscriptionOperation.prototype._inspectResponse = function(response) {

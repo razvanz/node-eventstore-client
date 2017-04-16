@@ -27,7 +27,13 @@ function ReadStreamEventsForwardOperation(
 util.inherits(ReadStreamEventsForwardOperation, OperationBase);
 
 ReadStreamEventsForwardOperation.prototype._createRequestDto = function() {
-  return new ClientMessage.ReadStreamEvents(this._stream, this._fromEventNumber, this._maxCount, this._resolveLinkTos, this._requireMaster);
+  return new ClientMessage.ReadStreamEvents({
+      eventStreamId: this._stream,
+      fromEventNumber: this._fromEventNumber,
+      maxCount: this._maxCount,
+      resolveLinkTos: this._resolveLinkTos,
+      requireMaster: this._requireMaster
+  });
 };
 
 ReadStreamEventsForwardOperation.prototype._inspectResponse = function(response) {
@@ -60,9 +66,9 @@ ReadStreamEventsForwardOperation.prototype._transformResponse = function(respons
       this._fromEventNumber,
       ReadDirection.Forward,
       response.events,
-      response.next_event_number,
-      response.last_event_number,
-      response.is_end_of_stream
+      response.nextEventNumber,
+      response.lastEventNumber,
+      response.isEndOfStream
   )
 };
 

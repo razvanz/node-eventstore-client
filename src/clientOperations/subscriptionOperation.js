@@ -64,7 +64,7 @@ SubscriptionOperation.prototype.unsubscribe = function() {
 
 SubscriptionOperation.prototype._createUnsubscriptionPackage = function() {
   var msg = new ClientMessage.UnsubscribeFromStream();
-  var data = new BufferSegment(msg.toBuffer());
+  var data = new BufferSegment(ClientMessage.UnsubscribeFromStream.encode(msg).finish());
   return new TcpPackage(TcpCommand.UnsubscribeFromStream, TcpFlags.None, this._correlationId, null, null, data);
 };
 
@@ -141,10 +141,10 @@ SubscriptionOperation.prototype.inspectPackage = function(pkg) {
             return new InspectionResult(InspectionDecision.Retry, "NotHandled - TooBusy");
 
           case ClientMessage.NotHandled.NotHandledReason.NotMaster:
-            var masterInfo = ClientMessage.NotHandled.MasterInfo.decode(message.additional_info);
+            var masterInfo = ClientMessage.NotHandled.MasterInfo.decode(message.additionalInfo);
             return new InspectionResult(InspectionDecision.Reconnect, "NotHandled - NotMaster",
-                {host: masterInfo.external_tcp_address, port: masterInfo.external_tcp_port},
-                {host: masterInfo.external_secure_tcp_address, port: masterInfo.external_secure_tcp_port});
+                {host: masterInfo.externalTcpAddress, port: masterInfo.externalTcpPort},
+                {host: masterInfo.externalSecureTcpAddress, port: masterInfo.externalSecureTcpPort});
 
           default:
             this._log.error("Unknown NotHandledReason: %s.", message.reason);

@@ -27,21 +27,25 @@ function ConnectToPersistentSubscriptionOperation(
 util.inherits(ConnectToPersistentSubscriptionOperation, SubscriptionOperation);
 
 ConnectToPersistentSubscriptionOperation.prototype._createSubscriptionPackage = function() {
-  var dto = new ClientMessage.ConnectToPersistentSubscription(this._groupName, this._streamId, this._bufferSize);
+  var dto = new ClientMessage.ConnectToPersistentSubscription({
+    subscriptionId: this._groupName,
+    eventStreamId: this._streamId,
+    allowedInFlightMessages: this._bufferSize
+  });
   return new TcpPackage(TcpCommand.ConnectToPersistentSubscription,
       this._userCredentials !== null ? TcpFlags.Authenticated : TcpFlags.None,
       this._correlationId,
       this._userCredentials !== null ? this._userCredentials.username : null,
       this._userCredentials !== null ? this._userCredentials.password : null,
-      createBufferSegment(dto.toBuffer()));
+      createBufferSegment(ClientMessage.ConnectToPersistentSubscription.encode(dto).finish()));
 };
 
 ConnectToPersistentSubscriptionOperation.prototype._inspectPackage = function(pkg) {
   if (pkg.command === TcpCommand.PersistentSubscriptionConfirmation)
   {
     var dto = ClientMessage.PersistentSubscriptionConfirmation.decode(pkg.data.toBuffer());
-    this._confirmSubscription(dto.last_commit_position, dto.last_event_number);
-    this._subscriptionId = dto.subscription_id;
+    this._confirmSubscription(dto.lastCommitPosition, dto.lastEventNumber);
+    this._subscriptionId = dto.subscriptionId;
     return new InspectionResult(InspectionDecision.Subscribed, "SubscriptionConfirmation");
   }
   if (pkg.command === TcpCommand.PersistentSubscriptionStreamEventAppeared)
@@ -86,8 +90,8 @@ ConnectToPersistentSubscriptionOperation.prototype._createSubscriptionObject = f
 ConnectToPersistentSubscriptionOperation.prototype.notifyEventsProcessed = function(processedEvents) {
   ensure.notNull(processedEvents, "processedEvents");
   var dto = new ClientMessage.PersistentSubscriptionAckEvents({
-    subscription_id: this._subscriptionId,
-    processed_event_ids: processedEvents.map(function (x) {
+    subscriptionId: this._subscriptionId,
+    processedEventIds: processedEvents.map(function (x) {
       return new Buffer(uuidParse.parse(x));
     })
   });
@@ -97,25 +101,26 @@ ConnectToPersistentSubscriptionOperation.prototype.notifyEventsProcessed = funct
       this._correlationId,
       this._userCredentials !== null ? this._userCredentials.username : null,
       this._userCredentials !== null ? this._userCredentials.password : null,
-      createBufferSegment(dto.encode().toBuffer()));
+      createBufferSegment(ClientMessage.PersistentSubscriptionAckEvents.encode(dto).finish()));
   this._enqueueSend(pkg);
 };
 
 ConnectToPersistentSubscriptionOperation.prototype.notifyEventsFailed = function(processedEvents, action, reason) {
   ensure.notNull(processedEvents, "processedEvents");
   ensure.notNull(reason, "reason");
-  var dto = new ClientMessage.PersistentSubscriptionNakEvents(
-      this._subscriptionId,
-      processedEvents.map(function(x) { return new Buffer(uuidParse.parse(x)); }),
-      reason,
-      action);
+  var dto = new ClientMessage.PersistentSubscriptionNakEvents({
+    subscriptionId: this._subscriptionId,
+    processedEventIds: processedEvents.map(function(x) { return new Buffer(uuidParse.parse(x)); }),
+    message: reason,
+    action: action
+  });
 
   var pkg = new TcpPackage(TcpCommand.PersistentSubscriptionNakEvents,
       this._userCredentials !== null ? TcpFlags.Authenticated : TcpFlags.None,
       this._correlationId,
       this._userCredentials !== null ? this._userCredentials.username : null,
       this._userCredentials !== null ? this._userCredentials.password : null,
-      createBufferSegment(dto.toBuffer()));
+      createBufferSegment(ClientMessage.PersistentSubscriptionNakEvents.encode(dto).finish()));
   this._enqueueSend(pkg);
 };
 

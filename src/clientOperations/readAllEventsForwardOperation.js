@@ -25,7 +25,13 @@ function ReadAllEventsForwardOperation(
 util.inherits(ReadAllEventsForwardOperation, OperationBase);
 
 ReadAllEventsForwardOperation.prototype._createRequestDto = function() {
-  return new ClientMessage.ReadAllEvents(this._position.commitPosition, this._position.preparePosition, this._maxCount, this._resolveLinkTos, this._requireMaster);
+  return new ClientMessage.ReadAllEvents({
+      commitPosition: this._position.commitPosition,
+      preparePosition: this._position.preparePosition,
+      maxCount: this._maxCount,
+      resolveLinkTos: this._resolveLinkTos,
+      requireMaster: this._requireMaster
+  });
 };
 
 ReadAllEventsForwardOperation.prototype._inspectResponse = function(response) {
@@ -48,8 +54,8 @@ ReadAllEventsForwardOperation.prototype._inspectResponse = function(response) {
 ReadAllEventsForwardOperation.prototype._transformResponse = function(response) {
   return new results.AllEventsSlice(
       ReadDirection.Forward,
-      new results.Position(response.commit_position, response.prepare_position),
-      new results.Position(response.next_commit_position, response.next_prepare_position),
+      new results.Position(response.commitPosition, response.preparePosition),
+      new results.Position(response.nextCommitPosition, response.nextPreparePosition),
       response.events
   )
 };

@@ -25,7 +25,12 @@ function DeleteStreamOperation(log, cb, requireMaster, stream, expectedVersion, 
 util.inherits(DeleteStreamOperation, OperationBase);
 
 DeleteStreamOperation.prototype._createRequestDto = function() {
-  return new ClientMessage.DeleteStream(this._stream, this._expectedVersion, this._requireMaster, this._hardDelete);
+  return new ClientMessage.DeleteStream({
+    eventStreamId: this._stream,
+    expectedVersion: this._expectedVersion,
+    requireMaster: this._requireMaster,
+    hardDelete: this._hardDelete
+  });
 };
 
 DeleteStreamOperation.prototype._inspectResponse = function(response) {
@@ -58,7 +63,7 @@ DeleteStreamOperation.prototype._inspectResponse = function(response) {
 };
 
 DeleteStreamOperation.prototype._transformResponse = function(response) {
-  return new results.DeleteResult(new results.Position(response.prepare_position || -1, response.commit_position || -1));
+  return new results.DeleteResult(new results.Position(response.preparePosition || -1, response.commitPosition || -1));
 };
 
 DeleteStreamOperation.prototype.toString = function() {

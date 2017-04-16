@@ -20,20 +20,23 @@ function VolatileSubscriptionOperation(
 util.inherits(VolatileSubscriptionOperation, SubscriptionOperation);
 
 VolatileSubscriptionOperation.prototype._createSubscriptionPackage = function() {
-  var dto = new ClientMessage.SubscribeToStream(this._streamId, this._resolveLinkTos);
+  var dto = new ClientMessage.SubscribeToStream({
+      eventStreamId: this._streamId,
+      resolveLinkTos: this._resolveLinkTos
+  });
   return new TcpPackage(TcpCommand.SubscribeToStream,
       this._userCredentials !== null ? TcpFlags.Authenticated : TcpFlags.None,
       this._correlationId,
       this._userCredentials !== null ? this._userCredentials.username : null,
       this._userCredentials !== null ? this._userCredentials.password : null,
-      new BufferSegment(dto.toBuffer()));
+      new BufferSegment(ClientMessage.SubscribeToStream.encode(dto).finish()));
 };
 
 VolatileSubscriptionOperation.prototype._inspectPackage = function(pkg) {
   try {
     if (pkg.command === TcpCommand.SubscriptionConfirmation) {
       var dto = ClientMessage.SubscriptionConfirmation.decode(pkg.data.toBuffer());
-      this._confirmSubscription(dto.last_commit_position, dto.last_event_number);
+      this._confirmSubscription(dto.lastCommitPosition, dto.lastEventNumber);
       return new InspectionResult(InspectionDecision.Subscribed, "SubscriptionConfirmation");
     }
     if (pkg.command === TcpCommand.StreamEventAppeared) {
