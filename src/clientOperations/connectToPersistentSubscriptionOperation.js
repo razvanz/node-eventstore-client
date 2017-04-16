@@ -1,5 +1,5 @@
 var util = require('util');
-var uuid = require('uuid');
+var uuidParse = require('uuid-parse');
 
 var SubscriptionOperation = require('./subscriptionOperation');
 var ClientMessage = require('../messages/clientMessage');
@@ -88,7 +88,7 @@ ConnectToPersistentSubscriptionOperation.prototype.notifyEventsProcessed = funct
   var dto = new ClientMessage.PersistentSubscriptionAckEvents({
     subscription_id: this._subscriptionId,
     processed_event_ids: processedEvents.map(function (x) {
-      return new Buffer(uuid.parse(x));
+      return new Buffer(uuidParse.parse(x));
     })
   });
 
@@ -106,7 +106,7 @@ ConnectToPersistentSubscriptionOperation.prototype.notifyEventsFailed = function
   ensure.notNull(reason, "reason");
   var dto = new ClientMessage.PersistentSubscriptionNakEvents(
       this._subscriptionId,
-      processedEvents.map(function(x) { return new Buffer(uuid.parse(x)); }),
+      processedEvents.map(function(x) { return new Buffer(uuidParse.parse(x)); }),
       reason,
       action);
 

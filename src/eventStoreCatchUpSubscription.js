@@ -209,26 +209,25 @@ EventStoreCatchUpSubscription.prototype._ensureProcessingPushQueue = function() 
 
 EventStoreCatchUpSubscription.prototype._processLiveQueue = function() {
   var ev = this._liveQueue.shift();
-  //TODO: possible blocking while, use when
-  while(ev) {
-    if (ev instanceof DropSubscriptionEvent) {
-      if (!this._dropData) this._dropData = {reason: SubscriptionDropReason.Unknown, error: new Error("Drop reason not specified.")};
-      this._dropSubscription(this._dropData.reason, this._dropData.error);
-      this._isProcessing = false;
-      return;
-    }
-
-    try {
-      this._tryProcess(ev);
-    }
-    catch(err) {
-      this._dropSubscription(SubscriptionDropReason.EventHandlerException, err);
-      return;
-    }
-    ev = this._liveQueue.shift();
+  if (!ev) {
+    this._isProcessing = false;
+    return;
   }
-
-  this._isProcessing = false;
+  if (ev instanceof DropSubscriptionEvent) {
+    if (!this._dropData) this._dropData = {reason: SubscriptionDropReason.Unknown, error: new Error("Drop reason not specified.")};
+    this._dropSubscription(this._dropData.reason, this._dropData.error);
+    this._isProcessing = false;
+    return;
+  }
+  try {
+    this._tryProcess(ev);
+  }
+  catch(err) {
+    this._dropSubscription(SubscriptionDropReason.EventHandlerException, err);
+    this._isProcessing = false;
+    return;
+  }
+  setImmediate(this._processLiveQueue.bind(this));
 };
 
 EventStoreCatchUpSubscription.prototype._dropSubscription = function(reason, error) {

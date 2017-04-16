@@ -244,21 +244,20 @@ SubscriptionOperation.prototype._executeAction = function(action) {
 };
 
 SubscriptionOperation.prototype._executeActions = function() {
-  //TODO: possible blocking loop for node.js
   var action = this._actionQueue.shift();
-  while (action)
-  {
-    try
-    {
-      action();
-    }
-    catch (err)
-    {
-      this._log.error(err, "Exception during executing user callback: %s.", err.message);
-    }
-    action = this._actionQueue.shift();
+  if (!action) {
+    this._actionExecuting = false;
+    return;
   }
-  this._actionExecuting = false;
+  try
+  {
+    action();
+  }
+  catch (err)
+  {
+    this._log.error(err, "Exception during executing user callback: %s.", err.message);
+  }
+  setImmediate(this._executeActions.bind(this));
 };
 
 SubscriptionOperation.prototype.toString = function() {

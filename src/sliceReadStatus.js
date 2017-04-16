@@ -3,5 +3,6 @@ const SliceReadStatus = {
   StreamNotFound: 'streamNotFound',
   StreamDeleted: 'streamDeleted'
 };
+Object.freeze(SliceReadStatus);
 
 module.exports = SliceReadStatus;

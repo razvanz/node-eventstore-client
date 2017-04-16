@@ -1,13 +1,9 @@
 var uuid = require('uuid');
 
+const uuidRegex = /^[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i;
 function isValidId(id) {
   if (typeof id !== 'string') return false;
-  var buf = uuid.parse(id);
-  var valid = false;
-  for(var i=0;i<buf.length;i++)
-    if (buf[i] !== 0)
-      valid = true;
-  return valid;
+  return uuidRegex.test(id);
 }
 
 /**
@@ -32,6 +28,7 @@ function EventData(eventId, type, isJson, data, metadata) {
   this.isJson = isJson || false;
   this.data = data || new Buffer(0);
   this.metadata = metadata || new Buffer(0);
+  Object.freeze(this);
 }
 
 module.exports = EventData;

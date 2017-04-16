@@ -7,11 +7,13 @@ function StreamDeletedError(streamOrTransactionId) {
   if (typeof streamOrTransactionId === 'string') {
     this.message = util.format("Event stream '%s' is deleted.", streamOrTransactionId);
     this.stream = streamOrTransactionId;
+    Object.freeze(this);
     return;
   }
   if (Long.isLong(streamOrTransactionId)) {
     this.message = util.format("Stream is deleted for transaction %s.", streamOrTransactionId);
     this.transactionId = streamOrTransactionId;
+    Object.freeze(this);
     return;
   }
   throw new TypeError("second argument must be a stream name or transaction Id.");

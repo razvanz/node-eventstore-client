@@ -2,7 +2,7 @@ var esClient = require('../src/client');      // When running in 'eventstore-nod
 // var esClient = require('eventstore-node'); // Otherwise
 var uuid = require('uuid');
 
-var esConnection = esClient.createConnection({}, {"hostname": "localhost", "port": 1113});
+var esConnection = esClient.createConnection({}, {"host": "localhost", "port": 1113});
 esConnection.connect();
 esConnection.once('connected', function (tcpEndPoint) {
     console.log('Connected to eventstore at ' + tcpEndPoint.host + ":" + tcpEndPoint.port);

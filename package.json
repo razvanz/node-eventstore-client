@@ -45,11 +45,12 @@
     "@types/node": "^6.0.47",
     "long": "^3.2",
     "protobufjs": "^5.0",
-    "uuid": "^2.0"
+    "uuid": "^3.0.1",
+    "uuid-parse": "^1.0.0"
   },
   "devDependencies": {
     "jsdoc": "^3.4.2",
-    "nodeunit": "^0.10.2",
-    "webpack": "^2.2.1"
+    "nodeunit": "^0.11.0",
+    "webpack": "^2.4.1"
   }
 }

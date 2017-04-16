@@ -3,5 +3,6 @@ const SystemConsumerStrategies = {
   RoundRobin: 'RoundRobin',
   Pinned: 'Pinned'
 };
+Object.freeze(SystemConsumerStrategies);
 
 module.exports = SystemConsumerStrategies;

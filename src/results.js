@@ -1,5 +1,5 @@
 var util = require('util');
-var uuid = require('uuid');
+var uuidParse = require('uuid-parse');
 var Long = require('long');
 var ensure = require('./common/utils/ensure');
 
@@ -14,17 +14,9 @@ var ensure = require('./common/utils/ensure');
 function Position(commitPosition, preparePosition) {
   ensure.notNull(commitPosition, "commitPosition");
   ensure.notNull(preparePosition, "preparePosition");
-  commitPosition = Long.fromValue(commitPosition);
-  preparePosition = Long.fromValue(preparePosition);
-
-  Object.defineProperties(this, {
-    commitPosition: {
-      enumerable: true, value: commitPosition
-    },
-    preparePosition: {
-      enumerable: true, value: preparePosition
-    }
-  });
+  this.commitPosition = Long.fromValue(commitPosition);
+  this.preparePosition = Long.fromValue(preparePosition);
+  Object.freeze(this);
 }
 
 Position.prototype.compareTo = function(other) {
@@ -46,6 +38,7 @@ const EventReadStatus = {
   NoStream: 'noStream',
   StreamDeleted: 'streamDeleted'
 };
+Object.freeze(EventReadStatus);
 
 /**
  * @param {object} ev
@@ -60,18 +53,16 @@ const EventReadStatus = {
  * @property {boolean} isJson
  */
 function RecordedEvent(ev) {
-  Object.defineProperties(this, {
-    eventStreamId: {enumerable: true, value: ev.event_stream_id},
-    eventId: {enumerable: true, value: uuid.unparse(ev.event_id.buffer, ev.event_id.offset)},
-    eventNumber: {enumerable: true, value: ev.event_number},
-    eventType: {enumerable: true, value: ev.event_type},
-    //Javascript doesn't have .Net precision for time, so we use created_epoch for created
-    created: {enumerable: true, value: new Date(ev.created_epoch ? ev.created_epoch.toNumber() : 0)},
-    createdEpoch: {enumerable: true, value: ev.created_epoch ? ev.created_epoch.toNumber() : 0},
-    data: {enumerable: true, value: ev.data ? ev.data.toBuffer() : new Buffer(0)},
-    metadata: {enumerable: true, value: ev.metadata ? ev.metadata.toBuffer() : new Buffer(0)},
-    isJson: {enumerable: true, value: ev.data_content_type === 1}
-  });
+  this.eventStreamId = ev.event_stream_id;
+  this.eventId = uuidParse.unparse(ev.event_id.buffer, ev.event_id.offset);
+  this.eventNumber = ev.event_number;
+  this.eventType = ev.event_type;
+  this.created = new Date(ev.created_epoch ? ev.created_epoch.toNumber() : 0);
+  this.createdEpoch = ev.created_epoch ? ev.created_epoch.toNumber() : 0;
+  this.data = ev.data ? ev.data.toBuffer() : new Buffer(0);
+  this.metadata = ev.metadata ? ev.metadata.toBuffer() : new Buffer(0);
+  this.isJson = ev.data_content_type === 1;
+  Object.freeze(this);
 }
 
 /**
@@ -86,44 +77,14 @@ function RecordedEvent(ev) {
  * @property {number} originalEventNumber
  */
 function ResolvedEvent(ev) {
-  Object.defineProperties(this, {
-    event: {
-      enumerable: true,
-      value: ev.event === null ? null : new RecordedEvent(ev.event)
-    },
-    link: {
-      enumerable: true,
-      value: ev.link === null ? null : new RecordedEvent(ev.link)
-    },
-    originalEvent: {
-      enumerable: true,
-      get: function() {
-        return this.link || this.event;
-      }
-    },
-    isResolved: {
-      enumerable: true,
-      get: function() {
-        return this.link !== null && this.event !== null;
-      }
-    },
-    originalPosition: {
-      enumerable: true,
-      value: (ev.commit_position && ev.prepare_position) ? new Position(ev.commit_position, ev.prepare_position) : null
-    },
-    originalStreamId: {
-      enumerable: true,
-      get: function() {
-        return this.originalEvent.eventStreamId;
-      }
-    },
-    originalEventNumber: {
-      enumerable: true,
-      get: function() {
-        return this.originalEvent.eventNumber;
-      }
-    }
-  });
+  this.event = ev.event === null ? null : new RecordedEvent(ev.event);
+  this.link = ev.link === null ? null : new RecordedEvent(ev.link);
+  this.originalEvent = this.link || this.event;
+  this.isResolved = this.link !== null && this.event !== null;
+  this.originalPosition = (ev.commit_position && ev.prepare_position) ? new Position(ev.commit_position, ev.prepare_position) : null;
+  this.originalStreamId = this.originalEvent && this.originalEvent.eventStreamId;
+  this.originalEventNumber = this.originalEvent && this.originalEvent.eventNumber;
+  Object.freeze(this);
 }
 
 /**
@@ -139,14 +100,11 @@ function ResolvedEvent(ev) {
  * @property {ResolvedEvent} event
  */
 function EventReadResult(status, stream, eventNumber, event) {
-  Object.defineProperties(this, {
-    status: {enumerable: true, value: status},
-    stream: {enumerable: true, value: stream},
-    eventNumber: {enumerable: true, value: eventNumber},
-    event: {
-      enumerable: true, value: status === EventReadStatus.Success ? new ResolvedEvent(event) : null
-    }
-  });
+  this.status = status;
+  this.stream = stream;
+  this.eventNumber = eventNumber;
+  this.event = status === EventReadStatus.Success ? new ResolvedEvent(event) : null;
+  Object.freeze(this);
 }
 
 /**
@@ -157,14 +115,9 @@ function EventReadResult(status, stream, eventNumber, event) {
  * @property {Position} logPosition
  */
 function WriteResult(nextExpectedVersion, logPosition) {
-  Object.defineProperties(this, {
-    nextExpectedVersion: {
-      enumerable: true, value: nextExpectedVersion
-    },
-    logPosition: {
-      enumerable: true, value: logPosition
-    }
-  });
+  this.nextExpectedVersion = nextExpectedVersion;
+  this.logPosition = logPosition;
+  Object.freeze(this);
 }
 
 /**
@@ -189,32 +142,15 @@ function WriteResult(nextExpectedVersion, logPosition) {
 function StreamEventsSlice(
     status, stream, fromEventNumber, readDirection, events, nextEventNumber, lastEventNumber, isEndOfStream
 ) {
-  Object.defineProperties(this, {
-    status: {
-      enumerable: true, value: status
-    },
-    stream: {
-      enumerable: true, value: stream
-    },
-    fromEventNumber: {
-      enumerable: true, value: fromEventNumber
-    },
-    readDirection: {
-      enumerable: true, value: readDirection
-    },
-    events: {
-      enumerable: true, value: events ? events.map(function(ev) { return new ResolvedEvent(ev); }) : []
-    },
-    nextEventNumber: {
-      enumerable: true, value: nextEventNumber
-    },
-    lastEventNumber: {
-      enumerable: true, value: lastEventNumber
-    },
-    isEndOfStream: {
-      enumerable: true, value: isEndOfStream
-    }
-  })
+  this.status = status;
+  this.stream = stream;
+  this.fromEventNumber = fromEventNumber;
+  this.readDirection = readDirection;
+  this.events = events ? events.map(function(ev) { return new ResolvedEvent(ev); }) : [];
+  this.nextEventNumber = nextEventNumber;
+  this.lastEventNumber = lastEventNumber;
+  this.isEndOfStream = isEndOfStream;
+  Object.freeze(this);
 }
 
 /**
@@ -229,23 +165,12 @@ function StreamEventsSlice(
  * @property {ResolvedEvent[]} events
  */
 function AllEventsSlice(readDirection, fromPosition, nextPosition, events) {
-  Object.defineProperties(this, {
-    readDirection: {
-      enumerable: true, value: readDirection
-    },
-    fromPosition: {
-      enumerable: true, value: fromPosition
-    },
-    nextPosition: {
-      enumerable: true, value: nextPosition
-    },
-    events: {
-      enumerable: true, value: events ? events.map(function(ev){ return new ResolvedEvent(ev); }) : []
-    },
-    isEndOfStream: {
-      enumerable: true, value: events === null || events.length === 0
-    }
-  });
+  this.readDirection = readDirection;
+  this.fromPosition = fromPosition;
+  this.nextPosition = nextPosition;
+  this.events = events ? events.map(function(ev){ return new ResolvedEvent(ev); }) : [];
+  this.isEndOfStream = events === null || events.length === 0;
+  Object.freeze(this);
 }
 
 /**
@@ -254,11 +179,8 @@ function AllEventsSlice(readDirection, fromPosition, nextPosition, events) {
  * @property {Position} logPosition
  */
 function DeleteResult(logPosition) {
-  Object.defineProperties(this, {
-    logPosition: {
-      enumerable: true, value: logPosition
-    }
-  });
+  this.logPosition = logPosition;
+  Object.freeze(this);
 }
 
 /**
@@ -274,12 +196,11 @@ function DeleteResult(logPosition) {
  */
 function RawStreamMetadataResult(stream, isStreamDeleted, metastreamVersion, streamMetadata) {
   ensure.notNullOrEmpty(stream);
-  Object.defineProperties(this, {
-    stream: {enumerable: true, value: stream},
-    isStreamDeleted: {enumerable: true, value: isStreamDeleted},
-    metastreamVersion: {enumerable: true, value: metastreamVersion},
-    streamMetadata: {enumerable: true, value: streamMetadata}
-  });
+  this.stream = stream;
+  this.isStreamDeleted = isStreamDeleted;
+  this.metastreamVersion = metastreamVersion;
+  this.streamMetadata = streamMetadata;
+  Object.freeze(this);
 }
 
 const PersistentSubscriptionCreateStatus = {
@@ -287,6 +208,7 @@ const PersistentSubscriptionCreateStatus = {
   NotFound: 'notFound',
   Failure: 'failure'
 };
+Object.freeze(PersistentSubscriptionCreateStatus);
 
 /**
  * @param {string} status
@@ -294,9 +216,8 @@ const PersistentSubscriptionCreateStatus = {
  * @property {string} status
  */
 function PersistentSubscriptionCreateResult(status) {
-  Object.defineProperties(this, {
-    status: {enumerable: true, value: status}
-  });
+  this.status = status;
+  Object.freeze(this);
 }
 
 const PersistentSubscriptionUpdateStatus = {
@@ -305,6 +226,7 @@ const PersistentSubscriptionUpdateStatus = {
   Failure: 'failure',
   AccessDenied: 'accessDenied'
 };
+Object.freeze(PersistentSubscriptionUpdateStatus);
 
 /**
  * @param {string} status
@@ -312,15 +234,15 @@ const PersistentSubscriptionUpdateStatus = {
  * @property {string} status
  */
 function PersistentSubscriptionUpdateResult(status) {
-  Object.defineProperties(this, {
-    status: {enumerable: true, value: status}
-  });
+  this.status = status;
+  Object.freeze(this);
 }
 
 const PersistentSubscriptionDeleteStatus = {
   Success: 'success',
   Failure: 'failure'
 };
+Object.freeze(PersistentSubscriptionDeleteStatus);
 
 /**
  * @param {string} status
@@ -328,9 +250,8 @@ const PersistentSubscriptionDeleteStatus = {
  * @property {string} status
  */
 function PersistentSubscriptionDeleteResult(status) {
-  Object.defineProperties(this, {
-    status: {enumerable: true, value: status}
-  });
+  this.status = status;
+  Object.freeze(this);
 }
 
 // Exports Constructors

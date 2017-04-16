@@ -6,10 +6,12 @@ const expectedVersion = {
   noStream: -1,
   emptyStream: -1
 };
+Object.freeze(expectedVersion);
 const positions = {
   start: new results.Position(0, 0),
   end: new results.Position(-1, -1)
 };
+Object.freeze(positions);
 
 /**
  * Create an EventData object from JavaScript event/metadata that will be serialized as json

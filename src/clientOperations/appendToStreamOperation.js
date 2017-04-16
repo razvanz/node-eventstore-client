@@ -1,5 +1,5 @@
 var util = require('util');
-var uuid = require('uuid');
+var uuidParse = require('uuid-parse');
 
 var TcpCommand = require('../systemData/tcpCommand');
 var InspectionDecision = require('../systemData/inspectionDecision');
@@ -26,7 +26,7 @@ util.inherits(AppendToStreamOperation, OperationBase);
 
 AppendToStreamOperation.prototype._createRequestDto = function() {
   var dtos = this._events.map(function(ev) {
-    var eventId = new Buffer(uuid.parse(ev.eventId));
+    var eventId = new Buffer(uuidParse.parse(ev.eventId));
     return new ClientMessage.NewEvent({
       event_id: eventId, event_type: ev.type,
       data_content_type: ev.isJson ? 1 : 0, metadata_content_type: 0,

@@ -1,4 +1,4 @@
-var uuid = require('uuid');
+var uuidParse = require('uuid-parse');
 
 var createBufferSegment = require('../common/bufferSegment');
 var TcpFlags = require('./tcpFlags');
@@ -25,7 +25,7 @@ TcpPackage.fromBufferSegment = function(data) {
   var command = data.buffer[data.offset + CommandOffset];
   var flags = data.buffer[data.offset + FlagsOffset];
 
-  var correlationId = uuid.unparse(data.buffer, data.offset + CorrelationOffset);
+  var correlationId = uuidParse.unparse(data.buffer, data.offset + CorrelationOffset);
 
   var headerSize = MandatorySize;
   var login = null, pass = null;
@@ -57,7 +57,7 @@ TcpPackage.prototype.asBuffer = function() {
     var res = new Buffer(MandatorySize + 2 + loginBytes.length + passwordBytes.length + (this.data ? this.data.count : 0));
     res[CommandOffset] = this.command;
     res[FlagsOffset] = this.flags;
-    uuid.parse(this.correlationId, res, CorrelationOffset);
+    uuidParse.parse(this.correlationId, res, CorrelationOffset);
 
     res[AuthOffset] = loginBytes.length;
     loginBytes.copy(res, AuthOffset + 1);
@@ -72,7 +72,7 @@ TcpPackage.prototype.asBuffer = function() {
     var res = new Buffer(MandatorySize + (this.data ? this.data.count : 0));
     res[CommandOffset] = this.command;
     res[FlagsOffset] = this.flags;
-    uuid.parse(this.correlationId, res, CorrelationOffset);
+    uuidParse.parse(this.correlationId, res, CorrelationOffset);
     if (this.data)
       this.data.copyTo(res, AuthOffset);
     return res;

@@ -9,11 +9,13 @@ function WrongExpectedVersionError(action, streamOrTransactionId, expectedVersio
     this.message = util.format("%s failed due to WrongExpectedVersion. Stream: %s Expected version: %d.", action, streamOrTransactionId, expectedVersion);
     this.stream = streamOrTransactionId;
     this.expectedVersion = expectedVersion;
+    Object.freeze(this);
     return;
   }
   if (Long.isLong(streamOrTransactionId)) {
     this.message = util.format("%s transaction failed due to WrongExpectedVersion. Transaction Id: %s.", action, streamOrTransactionId);
     this.transactionId = streamOrTransactionId;
+    Object.freeze(this);
     return;
   }
   throw new TypeError("second argument must be a stream name or a transaction Id.");

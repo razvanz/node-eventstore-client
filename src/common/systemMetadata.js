@@ -12,5 +12,6 @@ const SystemMetadata = {
   userStreamAcl: '$userStreamAcl',
   systemStreamAcl: '$systemStreamAcl'
 };
+Object.freeze(SystemMetadata);
 
 module.exports = SystemMetadata;

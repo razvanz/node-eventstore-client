@@ -10,11 +10,9 @@ var ensure = require('../common/utils/ensure');
 function UserCredentials(username, password) {
   ensure.notNullOrEmpty(username, 'username');
   ensure.notNullOrEmpty(password, 'password');
-
-  Object.defineProperties(this, {
-    username: {enumerable: true, value: username},
-    password: {enumerable: true, value: password}
-  });
+  this.username = username;
+  this.password = password;
+  Object.freeze(this);
 }
 
 module.exports = UserCredentials;

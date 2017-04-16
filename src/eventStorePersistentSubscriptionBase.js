@@ -111,42 +111,43 @@ EventStorePersistentSubscriptionBase.prototype._enqueue = function(resolvedEvent
 };
 
 EventStorePersistentSubscriptionBase.prototype._processQueue = function() {
-  //do
-  //{
-    var e = this._queue.shift();
-    while (e)
-    {
-      if (e instanceof DropSubscriptionEvent) // drop subscription artificial ResolvedEvent
-      {
-        if (this._dropData === null) throw new Error("Drop reason not specified.");
-        this._dropSubscription(this._dropData.reason, this._dropData.error);
-        return;
-      }
-      if (this._dropData !== null)
-      {
-        this._dropSubscription(this._dropData.reason, this._dropData.error);
-        return;
-      }
-      try
-      {
-        this._eventAppeared(this, e);
-        if(this._autoAck)
-          this._subscription.notifyEventsProcessed([e.originalEvent.eventId]);
-        if (this._verbose)
-          this._log.debug("Persistent Subscription to %s: processed event (%s, %d, %s @ %d).",
-              this._streamId, e.originalEvent.eventStreamId, e.originalEvent.eventNumber, e.originalEvent.eventType,
-              e.originalEventNumber);
-      }
-      catch (err)
-      {
-        //TODO GFY should we autonak here?
-        this._dropSubscription(SubscriptionDropReason.EventHandlerException, err);
-        return;
-      }
-      e = this._queue.shift();
-    }
+  var ev = this._queue.shift();
+  if (!ev) {
     this._isProcessing = false;
-  //} while (_queue.Count > 0 && Interlocked.CompareExchange(ref _isProcessing, 1, 0) === 0);
+    return;
+  }
+
+  if (ev instanceof DropSubscriptionEvent) // drop subscription artificial ResolvedEvent
+  {
+    if (this._dropData === null) throw new Error("Drop reason not specified.");
+    this._dropSubscription(this._dropData.reason, this._dropData.error);
+    this._isProcessing = false;
+    return;
+  }
+  if (this._dropData !== null)
+  {
+    this._dropSubscription(this._dropData.reason, this._dropData.error);
+    this._isProcessing = false;
+    return;
+  }
+  try
+  {
+    this._eventAppeared(this, ev);
+    if(this._autoAck)
+      this._subscription.notifyEventsProcessed([ev.originalEvent.eventId]);
+    if (this._verbose)
+      this._log.debug("Persistent Subscription to %s: processed event (%s, %d, %s @ %d).",
+          this._streamId, ev.originalEvent.eventStreamId, ev.originalEvent.eventNumber, ev.originalEvent.eventType,
+          ev.originalEventNumber);
+  }
+  catch (err)
+  {
+    //TODO GFY should we autonak here?
+    this._dropSubscription(SubscriptionDropReason.EventHandlerException, err);
+    this._isProcessing = false;
+    return;
+  }
+  setImmediate(this._processQueue.bind(this));
 };
 
 EventStorePersistentSubscriptionBase.prototype._dropSubscription = function(reason, error) {

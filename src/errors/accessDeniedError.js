@@ -8,11 +8,13 @@ function AccessDeniedError(action, streamOrTransactionId) {
   if (typeof streamOrTransactionId === 'string') {
     this.message = util.format("%s access denied for stream '%s'.", action, streamOrTransactionId);
     this.stream = streamOrTransactionId;
+    Object.freeze(this);
     return;
   }
   if (Long.isLong(streamOrTransactionId)) {
     this.message = util.format("%s access denied for transaction %s.", action, streamOrTransactionId);
     this.transactionId = streamOrTransactionId;
+    Object.freeze(this);
     return;
   }
   throw new TypeError("second argument must be a stream name or transaction Id.");
