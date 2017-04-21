@@ -1,3 +1,4 @@
+// const client = require('../src/client')
 const client = require("eventstore-node")
 const uuid = require("uuid")
 

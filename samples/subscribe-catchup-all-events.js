@@ -1,5 +1,7 @@
 // Subscribe to all events on the $all stream. Catch up from the beginning, then listen for any new events as they occur.
 // This could be used for subscribers which populate read models.
+
+// const client = require('../src/client')
 const client = require("eventstore-node")
 
 const eventAppeared => (stream, event) =>
