@@ -1,51 +1,47 @@
 // Subscribe to all events on the $all stream. Catch up from the beginning, then listen for any new events as they occur.
-// This can be used (e.g.) for subscribers which populate read models. 
+// This could be used for subscribers which populate read models.
+const client = require("eventstore-node")
 
-var esClient = require('../src/client');      // When  running in 'eventstore-node/samples' folder.
-// var esClient = require('eventstore-node'); // Otherwise
+const eventAppeared => (stream, event) =>
+  console.log(
+    event.originalEvent.eventStreamId,
+    event.originalEvent.eventId,
+    event.originalEvent.eventType
+  )
 
-const credentialsForAllEventsStream = new esClient.UserCredentials("admin", "changeit");
-
-var esConnection = esClient.createConnection({}, {"host": "localhost", "port": 1113});
-esConnection.connect();
-esConnection.once('connected', function (tcpEndPoint) {
-    console.log('Connected to eventstore at ' + tcpEndPoint.host + ":" + tcpEndPoint.port);
-    var subscription = esConnection.subscribeToAllFrom(null, true, eventAppeared, liveProcessingStarted, subscriptionDropped, credentialsForAllEventsStream);
-    console.log("subscription.isSubscribedToAll: " + subscription.isSubscribedToAll);    
-});
-
-function eventAppeared(subscription, event) {
-    // This is where to filter out events which the subscriber isn't interested in.
-    // For an example, see 'subscribe-all-events.js'.
-    console.log(event.originalEvent.eventStreamId);
+const liveProcessingStarted = () => {
+  console.log("Caught up with previously stored events. Listening for new events.")
+  console.log("(To generate a test event, try running 'node store-event.js' in a separate console.)")
 }
 
-function subscriptionDropped(subscription, reason, error) {
-    if (error) {
-        console.log(error);
-    }
-    console.log('Subscription dropped.');
-}
+const subscriptionDropped = (subscription, reason, error) =>
+  console.log(error ? error : "Subscription dropped.")
 
-function liveProcessingStarted() {
-    console.log("Caught up with previously stored events. Listening for new events.");
-    console.log("(To generate a test event, try running 'node store-event.js' in a separate console.)")
-}
+const credentials = new client.UserCredentials("admin", "changeit")
 
-function eventAppeared(stream, event) {
-    console.log(event.originalEvent.eventStreamId, event.originalEvent.eventId, event.originalEvent.eventType);
-    // Data:
-    // console.log(event.originalEvent.data.toString());
+const settings = {}
+const endpoint = { host: "localhost", port: 1113 }
+const connection = client.createConnection(settings, endpoint)
 
-    // Position in the event stream. Can be persisted and used to catch up with missed events when re-starting subscribers instead of re-reading
-    // all events from the beginning. 
-    // console.log(event.originalPosition);
-}
+connection.connect().catch(err => console.log(err))
 
-esConnection.on('error', function (err) {
-  console.log('Error occurred on connection:', err);
-});
+connection.once("connected", tcpEndPoint => {
+  const subscription = connection.subscribeToAllFrom(
+    null,
+    true,
+    eventAppeared,
+    liveProcessingStarted,
+    subscriptionDropped,
+    credentials
+  )
+  console.log(`Connected to eventstore at ${tcpEndPoint.host}:${tcpEndPoint.port}`)
+  console.log(`subscription.isSubscribedToAll: ${subscription.isSubscribedToAll}`)
+})
 
-esConnection.on('closed', function (reason) {
-  console.log('Connection closed, reason:', reason);
-});
+connection.on("error", err =>
+  console.log(`Error occurred on connection: ${err}`)
+)
+
+connection.on("closed", reason =>
+  console.log(`Connection closed, reason: ${reason}`)
+)
