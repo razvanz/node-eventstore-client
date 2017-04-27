@@ -1,39 +1,47 @@
-var client = require('../src/client');
-var uuid = require('uuid');
+// const client = require('../src/client')
+const client = require("eventstore-node")
+const uuid = require("uuid")
 
-var settings = {
+const settings = {
   verboseLogging: true,
-  log: new client.FileLogger('./simple-verbose.log')
-};
-var gossipSeeds = [
-    new client.GossipSeed({host: '192.168.33.10', port: 2113}),
-    new client.GossipSeed({host: '192.168.33.11', port: 2113}),
-    new client.GossipSeed({host: '192.168.33.12', port: 2113})
-  ];
-var conn = client.createConnection(settings, gossipSeeds);
-conn.connect()
-  .catch(function (err) {
-    console.log(err);
-    //process.exit(-1);
-  });
-conn.on('connected', function (endPoint) {
-  console.log('connected to endPoint', endPoint);
-  //Start some work
-  setInterval(function () {
-    conn.appendToStream('test-' + uuid.v4(), client.expectedVersion.noStream, [
-      client.createJsonEventData(uuid.v4(), {abc: 123}, null, 'MyEvent')
-    ]).then(function (writeResult) {
-      console.log(writeResult);
-    });
-  }, 1000);
-});
-conn.on('error', function (err) {
-  console.log('Error occurred on connection:', err);
-});
-conn.on('closed', function (reason) {
-  console.log('Connection closed, reason:', reason);
-  //process.exit(-1);
-});
-process.stdin.setRawMode(true);
-process.stdin.resume();
-process.stdin.on('data', process.exit.bind(process, 0));
+  log: new client.FileLogger("./simple-verbose.log")
+}
+const gossipSeeds = [
+  new client.GossipSeed({host: "192.168.33.10", port: 2113}),
+  new client.GossipSeed({host: "192.168.33.11", port: 2113}),
+  new client.GossipSeed({host: "192.168.33.12", port: 2113})
+]
+const connection = client.createConnection(settings, gossipSeeds)
+
+connection.connect().catch(err => console.log(err))
+
+connection.on("connected", endPoint => {
+  console.log(`connected to endPoint ${endPoint}`)
+
+  setInterval(() => {
+    connection.appendToStream(
+      `test-${uuid.v4()}`,
+      client.expectedVersion.noStream,
+      [
+        client.createJsonEventData(
+          uuid.v4(),
+          { abc: 123 },
+          null,
+          "MyEvent"
+        )
+      ]
+    ).then(writeResult => console.log(writeResult))
+  }, 1000)
+})
+
+connection.on("error", error =>
+  console.log(`Error occurred on connection: ${error}`)
+)
+
+connection.on("closed", reason =>
+  console.log(`Connection closed, reason: ${reason}`)
+)
+
+process.stdin.setRawMode(true)
+process.stdin.resume()
+process.stdin.on("data", process.exit.bind(process, 0))

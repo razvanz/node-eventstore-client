@@ -1,48 +1,51 @@
-// Subscribe to all new events on the $all stream. Filter out any which aren't about "user" aggregates.
+// Subscribe to all new events on the $all stream. Filter out any which aren"t about "user" aggregates.
 
-var esClient = require('../src/client');      // When  running in 'eventstore-node/samples' folder.
-// var esClient = require('eventstore-node'); // Otherwise
+// const client = require('../src/client')
+const client = require("eventstore-node")
 
-const credentialsForAllEventsStream = new esClient.UserCredentials("admin", "changeit");
-const resolveLinkTos = false;
+const resolveLinkTos = false
 
-var esConnection = esClient.createConnection({}, {"host": "localhost", "port": 1113});
-esConnection.connect();
-esConnection.once('connected', function (tcpEndPoint) {
-    console.log('Connected to eventstore at ' + tcpEndPoint.host + ":" + tcpEndPoint.port);
-    esConnection.subscribeToAll(resolveLinkTos, eventAppeared, subscriptionDropped, credentialsForAllEventsStream)
-        .then(function(subscription) {
-        console.log("subscription.isSubscribedToAll: " + subscription.isSubscribedToAll);
-        console.log("(To generate a test event, try running 'node store-event.js' in a separate console.)")
-        });
-});
+const belongsToAUserAggregate = event =>
+  event.originalEvent.eventStreamId.startsWith("user-")
 
-function belongsToAUserAggregate(event) {
-    return event.originalEvent.eventStreamId.startsWith("user-")
+const eventAppeared = (subscription, event) => {
+  if (belongsToAUserAggregate(event)) {
+    const aggregateId = event.originalEvent.eventStreamId
+    const eventId = event.originalEvent.eventId
+    const eventType = event.originalEvent.eventType
+    console.log(aggregateId, eventType, eventId)
+    console.log(event.originalEvent.data.toString())
+  }
 }
 
-function eventAppeared(subscription, event) {
-    // Ignore all events which aren't about users:
-    if(belongsToAUserAggregate(event)) {
-        var aggregateId = event.originalEvent.eventStreamId;
-        var eventId = event.originalEvent.eventId;
-        var eventType = event.originalEvent.eventType;
-        console.log(aggregateId, eventType, eventId);
-        console.log(event.originalEvent.data.toString() + "\n");
-    }
-}
+const subscriptionDropped = (subscription, reason, error) =>
+  console.log(error ? error : "Subscription dropped.")
 
-function subscriptionDropped(subscription, reason, error) {
-    if (error) {
-        console.log(error);
-    }
-    console.log('Subscription dropped.');
-}
+const credentials = new client.UserCredentials("admin", "changeit")
 
-esConnection.on('error', function (err) {
-  console.log('Error occurred on connection:', err);
-});
+const settings = {}
+const endpoint = { host: "localhost", port: 1113 }
+const connection = client.createConnection(settings, endpoint)
 
-esConnection.on('closed', function (reason) {
-  console.log('Connection closed, reason:', reason);
-});
+connection.connect().catch(err => console.log(err))
+
+connection.once("connected", tcpEndPoint => {
+  console.log(`Connected to eventstore at ${tcpEndPoint.host}:${tcpEndPoint.port}`)
+  connection.subscribeToAll(
+    resolveLinkTos,
+    eventAppeared,
+    subscriptionDropped,
+    credentials
+  ).then(subscription => {
+    console.log(`subscription.isSubscribedToAll: ${subscription.isSubscribedToAll}`),
+    console.log("(To generate a test event, try running 'node store-event.js' in a separate console.)")
+  })
+})
+
+connection.on("error", error =>
+  console.log(`Error occurred on connection: ${error}`)
+)
+
+connection.on("closed", reason =>
+  console.log(`Connection closed, reason: ${reason}`)
+)
