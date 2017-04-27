@@ -1,10 +1,10 @@
 // Subscribe to all events on the $all stream. Catch up from the beginning, then listen for any new events as they occur.
 // This could be used for subscribers which populate read models.
 
-// const client = require('../src/client')
-const client = require("eventstore-node")
+const client = require('../src/client')
+// const client = require("eventstore-node")
 
-const eventAppeared => (stream, event) =>
+const eventAppeared = (stream, event) =>
   console.log(
     event.originalEvent.eventStreamId,
     event.originalEvent.eventId,
@@ -22,7 +22,7 @@ const subscriptionDropped = (subscription, reason, error) =>
 const credentials = new client.UserCredentials("admin", "changeit")
 
 const settings = {}
-const endpoint = { host: "localhost", port: 1113 }
+const endpoint = "tcp://localhost:1113"
 const connection = client.createConnection(settings, endpoint)
 
 connection.connect().catch(err => console.log(err))

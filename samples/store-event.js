@@ -1,9 +1,9 @@
-// const client = require('../src/client')
-const client = require("eventstore-node")
+const client = require('../src/client')
+// const client = require("eventstore-node")
 const uuid = require("uuid")
 
 const settings = {}
-const endpoint = { host: "localhost", port: 1113 }
+const endpoint = "tcp://localhost:1113"
 const connection = client.createConnection(settings, endpoint)
 
 connection.connect().catch(err => console.log(err))
