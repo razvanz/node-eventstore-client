@@ -29,6 +29,11 @@ const connection = client.createConnection(settings, endpoint)
 
 connection.connect().catch(err => console.log(err))
 
+connection.on('heartbeatInfo', heartbeatInfo => {
+  console.log('Connected to endpoint', heartbeatInfo.remoteEndPoint)
+  console.log('Heartbeat latency', heartbeatInfo.responseReceivedAt - heartbeatInfo.requestSentAt)
+})
+
 connection.once("connected", tcpEndPoint => {
   console.log(`Connected to eventstore at ${tcpEndPoint.host}:${tcpEndPoint.port}`)
   connection.subscribeToAll(

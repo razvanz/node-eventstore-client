@@ -59,6 +59,9 @@ function EventStoreNodeConnection(settings, clusterSettings, endpointDiscoverer,
   this._handler.on('error', function(e) {
     self.emit('error', e);
   });
+  this._handler.on('heartbeatInfo', function(e) {
+    self.emit('heartbeatInfo', e);
+  });
 }
 util.inherits(EventStoreNodeConnection, EventEmitter);
 

@@ -460,7 +460,26 @@ EventStoreConnectionLogicHandler.prototype._handleTcpPackage = function(connecti
   this._packageNumber += 1;
 
   if (pkg.command === TcpCommand.HeartbeatResponseCommand)
+  {
+    if (pkg.correlationId === this._heartbeatInfo.correlationId)
+    {
+      var now = Date.now();
+      var heartbeatEvent = {
+        connectionId: this._connection.connectionId,
+        remoteEndPoint: this._connection.remoteEndPoint,
+        requestSentAt: this._heartbeatInfo.timeStamp,
+        requestPkgNumber: this._heartbeatInfo.lastPackageNumber,
+        responseReceivedAt: now,
+        responsePkgNumber: this._packageNumber
+      };
+      try {
+        this.emit('heartbeatInfo', heartbeatEvent);
+      } catch(e) {
+        this._logDebug("IGNORED: emit heartbeat event failed.\n%s", e.stack);
+      }
+    }
     return;
+  }
   if (pkg.command === TcpCommand.HeartbeatRequestCommand)
   {
     this._connection.enqueueSend(new TcpPackage(
@@ -640,12 +659,13 @@ EventStoreConnectionLogicHandler.prototype._manageHeartbeats = function() {
 
   if (this._heartbeatInfo.isIntervalStage)
   {
+    var correlationId = uuid.v4();
     // TcpMessage.Heartbeat analog
     this._connection.enqueueSend(new TcpPackage(
       TcpCommand.HeartbeatRequestCommand,
       TcpFlags.None,
-      uuid.v4()));
-    this._heartbeatInfo = {lastPackageNumber: this._heartbeatInfo.lastPackageNumber, isIntervalStage: false, timeStamp: Date.now()};
+      correlationId));
+    this._heartbeatInfo = {correlationId: correlationId, lastPackageNumber: this._heartbeatInfo.lastPackageNumber, isIntervalStage: false, timeStamp: Date.now()};
   }
   else
   {

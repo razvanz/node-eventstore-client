@@ -203,6 +203,15 @@ export interface TcpEndPoint {
     host: string;
 }
 
+export interface HeartbeatInfo {
+    connectionId: string;
+    remoteEndPoint: TcpEndPoint;
+    requestSentAt: number;
+    requestPkgNumber: number;
+    responseReceivedAt: number;
+    responsePkgNumber: number;
+}
+
 export interface EventData {
     readonly eventId: string;
     readonly type: string;
@@ -234,8 +243,8 @@ export interface EventStoreNodeConnection {
     setStreamMetadataRaw(stream: string, expectedMetastreamVersion: number, metadata: any, userCredentials?: UserCredentials): Promise<WriteResult>;
     getStreamMetadataRaw(stream: string, userCredentials?: UserCredentials): Promise<RawStreamMetadataResult>;
 
-    on(event: "connected" | "disconnected" | "reconnecting" | "closed" | "error", listener: (arg: Error | string | TcpEndPoint) => void): this;
-    once(event: "connected" | "disconnected" | "reconnecting" | "closed" | "error", listener: (arg: Error | string | TcpEndPoint) => void): this;
+    on(event: "connected" | "disconnected" | "reconnecting" | "closed" | "error" | "heartbeatInfo", listener: (arg: Error | string | TcpEndPoint | HeartbeatInfo) => void): this;
+    once(event: "connected" | "disconnected" | "reconnecting" | "closed" | "error" | "heartbeatInfo", listener: (arg: Error | string | TcpEndPoint | HeartbeatInfo) => void): this;
 }
 
 // Expose helper functions
