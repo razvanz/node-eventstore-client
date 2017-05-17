@@ -2,7 +2,7 @@
 // This could be used for subscribers which populate read models.
 
 const client = require('../src/client')
-// const client = require("eventstore-node")
+// const client = require("node-eventstore-client")
 
 const eventAppeared = (stream, event) =>
   console.log(

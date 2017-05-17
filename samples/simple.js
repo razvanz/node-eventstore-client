@@ -1,5 +1,5 @@
 const client = require('../src/client')
-// const client = require("eventstore-node")
+// const client = require("node-eventstore-client")
 const uuid = require("uuid")
 
 const settings = {

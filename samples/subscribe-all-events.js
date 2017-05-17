@@ -1,7 +1,7 @@
 // Subscribe to all new events on the $all stream. Filter out any which aren"t about "user" aggregates.
 
 const client = require('../src/client')
-// const client = require("eventstore-node")
+// const client = require("node-eventstore-client")
 
 const resolveLinkTos = false
 

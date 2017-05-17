@@ -1,4 +1,4 @@
-# eventstore-node
+# node-eventstore-client
 A port of the EventStore .Net ClientAPI to Node.js
 
 ## Status
@@ -19,7 +19,7 @@ A port of the EventStore .Net ClientAPI to Node.js
 
 ## Getting started
 
-Install using `npm install eventstore-node`
+Install using `npm install node-eventstore-client`
 
 ### Dependencies
 
@@ -30,11 +30,11 @@ Install using `npm install eventstore-node`
 
 #### Offline
 
-The offline documentation can be found in the module folder `./node_modules/eventstore-node/docs`.
+The offline documentation can be found in the module folder `./node_modules/node-eventstore-client/docs`.
 
 #### Online
 
-The online documentation can be found at [https://dev.nicdex.com/eventstore-node/docs/](https://dev.nicdex.com/eventstore-node/docs/)
+The online documentation can be found at [https://dev.nicdex.com/node-eventstore-client/docs/](https://dev.nicdex.com/node-eventstore-client/docs/)
 
 ### Install & run an Eventstore on localhost
 
@@ -45,7 +45,7 @@ See http://docs.geteventstore.com/introduction/3.9.0/ .
 Save to ```app.js:```
 
 ```javascript
-var esClient = require('eventstore-node');
+var esClient = require('node-eventstore-client');
 var uuid = require('uuid');
 
 var streamName = "testStream";
@@ -88,7 +88,7 @@ Run:
 
 ```json
 npm install uuid
-npm install eventstore-node
+npm install node-eventstore-client
 node app.js
 ```
 
@@ -125,6 +125,6 @@ Any async commands returns a [Promise](https://developer.mozilla.org/en/docs/Web
 
 ## License
 
-Ported code is released under the MIT license, see [LICENSE](https://github.com/nicdex/eventstore-node/blob/master/LICENSE). 
+Ported code is released under the MIT license, see [LICENSE](https://github.com/nicdex/node-eventstore-client/blob/master/LICENSE). 
  
 Original code is released under the EventStore license and can be found at https://github.com/eventstore/eventstore.
