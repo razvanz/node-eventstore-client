@@ -441,6 +441,7 @@ EventStoreNodeConnection.prototype.subscribeToStreamFrom = function(
     userCredentials, readBatchSize
 ) {
   if (typeof stream !== 'string' || stream === '') throw new TypeError("stream must be a non-empty string.");
+  if (lastCheckpoint !== null && typeof lastCheckpoint !== 'number') throw new TypeError("lastCheckpoint must be a number or null.");
   if (typeof eventAppeared !== 'function') throw new TypeError("eventAppeared must be a function.");
 
   var catchUpSubscription =

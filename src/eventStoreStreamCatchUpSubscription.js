@@ -14,8 +14,8 @@ function EventStoreStreamCatchUpSubscription(
 
   //Ensure.NotNullOrEmpty(streamId, "streamId");
 
-  this._lastProcessedEventNumber = fromEventNumberExclusive || -1;
-  this._nextReadEventNumber = fromEventNumberExclusive || 0;
+  this._lastProcessedEventNumber = fromEventNumberExclusive === null ? -1 : fromEventNumberExclusive;
+  this._nextReadEventNumber = fromEventNumberExclusive === null ? 0 : fromEventNumberExclusive + 1;
 }
 util.inherits(EventStoreStreamCatchUpSubscription, EventStoreCatchUpSubscription);
 
