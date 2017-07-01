@@ -35,11 +35,12 @@ EventStorePersistentSubscriptionBase.prototype.start = function() {
   this._stopped = false;
 
   var self = this;
-  this._startSubscription(this._subscriptionId, this._streamId, this._bufferSize, this._userCredentials,
+  return this._startSubscription(this._subscriptionId, this._streamId, this._bufferSize, this._userCredentials,
                           this._onEventAppeared.bind(this), this._onSubscriptionDropped.bind(this), this._settings)
       .then(function(subscription) {
         console.log('Subscription started.');
         self._subscription = subscription;
+        return self;
       });
 };
 
@@ -78,6 +79,7 @@ EventStorePersistentSubscriptionBase.prototype.fail = function(events, action, r
   this._subscription.notifyEventsFailed(ids, action, reason);
 };
 
+//TODO: this should return a promise
 EventStorePersistentSubscriptionBase.prototype.stop = function() {
   if (this._verbose) this._log.debug("Persistent Subscription to %s: requesting stop...", this._streamId);
   this._enqueueSubscriptionDropNotification(SubscriptionDropReason.UserInitiated, null);

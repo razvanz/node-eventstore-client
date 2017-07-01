@@ -22,7 +22,7 @@ module.exports = {
   },
   //TODO: Update Persistent Subscription
   'Test ConnectTo Persistent Subscription': function(test) {
-    test.expect(2);
+    test.expect(3);
     var _doneCount = 0;
     function done(err) {
       test.ok(!err, err ? err.stack : '');
@@ -36,12 +36,16 @@ module.exports = {
     function subscriptionDropped(connection, reason, error) {
       done(error);
     }
-    var subscription = this.conn.connectToPersistentSubscription(testStreamName, 'consumer-1', eventAppeared, subscriptionDropped);
-    this.conn.appendToStream(testStreamName, client.expectedVersion.any, [createRandomEvent()])
-        .then(function () {
-          done();
-        })
-        .catch(done);
+    var self = this;
+    this.conn.connectToPersistentSubscription(testStreamName, 'consumer-1', eventAppeared, subscriptionDropped)
+      .then(function(subscription) {
+        test.ok(subscription, "Subscription is null.");
+        return self.conn.appendToStream(testStreamName, client.expectedVersion.any, [createRandomEvent()]);
+      })
+      .then(function () {
+        done();
+      })
+      .catch(done);
   },
   'Test Delete Persistent Subscription': function(test) {
     this.conn.deletePersistentSubscription(testStreamName, 'consumer-1', adminCredentials)

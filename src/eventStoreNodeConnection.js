@@ -519,7 +519,7 @@ EventStoreNodeConnection.prototype.subscribeToAllFrom = function(
  * @param {UserCredentials} [userCredentials]
  * @param {number} [bufferSize]
  * @param {boolean} [autoAck]
- * @return {EventStorePersistentSubscription}
+ * @return {Promise<EventStorePersistentSubscription>}
  */
 EventStoreNodeConnection.prototype.connectToPersistentSubscription = function(
     stream, groupName, eventAppeared, subscriptionDropped, userCredentials, bufferSize, autoAck
@@ -536,9 +536,7 @@ EventStoreNodeConnection.prototype.connectToPersistentSubscription = function(
   var subscription = new EventStorePersistentSubscription(
       groupName, stream, eventAppeared, subscriptionDropped, userCredentials, this._settings.log,
       this._settings.verboseLogging, this._settings, this._handler, bufferSize, autoAck);
-  subscription.start();
-
-  return subscription;
+  return subscription.start();
 };
 
 /**
@@ -571,7 +569,7 @@ EventStoreNodeConnection.prototype.createPersistentSubscription = function(strea
  * @public
  * @param {string} stream
  * @param {string} groupName
- * @param {string} settings
+ * @param {PersistentSubscriptionSettings} settings
  * @param {UserCredentials} [userCredentials]
  * @returns {Promise.<PersistentSubscriptionUpdateResult>}
  */
