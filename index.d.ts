@@ -174,7 +174,20 @@ export interface EventStoreSubscription {
 }
 
 export interface EventStoreCatchUpSubscription {
-    start(): void;
+    stop(): void;
+}
+
+export enum PersistentSubscriptionNakEventAction {
+    Unknown = 0,
+    Park = 1,
+    Retry = 2,
+    Skip = 3,
+    Stop = 4
+}
+
+export interface EventStorePersistentSubscription {
+    acknowledge(events: ResolvedEvent | ResolvedEvent[]): void;
+    fail(events: ResolvedEvent | ResolvedEvent[], action: PersistentSubscriptionNakEventAction, reason: string): void;
     stop(): void;
 }
 
@@ -183,6 +196,18 @@ export interface RawStreamMetadataResult {
     readonly isStreamDeleted: boolean;
     readonly metastreamVersion: number;
     readonly streamMetadata: any;
+}
+
+export interface PersistentSubscriptionCreateResult {
+    readonly status: string;
+}
+
+export interface PersistentSubscriptionUpdateResult {
+    readonly status: string;
+}
+
+export interface PersistentSubscriptionDeleteResult {
+    readonly status: string;
 }
 
 // Callbacks
@@ -239,6 +264,11 @@ export interface EventStoreNodeConnection {
     subscribeToStreamFrom(stream: string, lastCheckpoint: number | null, resolveLinkTos: boolean, eventAppeared: EventAppearedCallback<EventStoreCatchUpSubscription>, liveProcessingStarted?: LiveProcessingStartedCallback, subscriptionDropped?: SubscriptionDroppedCallback<EventStoreCatchUpSubscription>, userCredentials?: UserCredentials, readBatchSize?: number): EventStoreCatchUpSubscription;
     subscribeToAll(resolveLinkTos: boolean, eventAppeared: EventAppearedCallback<EventStoreSubscription>, subscriptionDropped?: SubscriptionDroppedCallback<EventStoreSubscription>, userCredentials?: UserCredentials): Promise<EventStoreSubscription>;
     subscribeToAllFrom(lastCheckpoint: Position | null, resolveLinkTos: boolean, eventAppeared: EventAppearedCallback<EventStoreCatchUpSubscription>, liveProcessingStarted?: LiveProcessingStartedCallback, subscriptionDropped?: SubscriptionDroppedCallback<EventStoreCatchUpSubscription>, userCredentials?: UserCredentials, readBatchSize?: number): EventStoreCatchUpSubscription;
+    // persistent subscriptions
+    createPersistentSubscription(stream: string, groupName: string, settings: PersistentSubscriptionSettings, userCredentials?: PersistentSubscriptionSettings): Promise<PersistentSubscriptionCreateResult>;
+    updatePersistentSubscription(stream: string, groupName: string, settings: PersistentSubscriptionSettings, userCredentials?: PersistentSubscriptionSettings): Promise<PersistentSubscriptionUpdateResult>;
+    deletePersistentSubscription(stream: string, groupName: string, userCredentials?: PersistentSubscriptionSettings): Promise<PersistentSubscriptionDeleteResult>
+    connectToPersistentSubscription(stream: string, groupName: string, eventAppeared: EventAppearedCallback<EventStorePersistentSubscription>, subscriptionDropped?: SubscriptionDroppedCallback<EventStorePersistentSubscription>, userCredentials?: UserCredentials, bufferSize?: number, autoAck?: boolean): Promise<EventStorePersistentSubscription>;
     // metadata actions
     setStreamMetadataRaw(stream: string, expectedMetastreamVersion: number, metadata: any, userCredentials?: UserCredentials): Promise<WriteResult>;
     getStreamMetadataRaw(stream: string, userCredentials?: UserCredentials): Promise<RawStreamMetadataResult>;
