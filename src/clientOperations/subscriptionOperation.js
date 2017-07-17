@@ -232,7 +232,7 @@ SubscriptionOperation.prototype._onEventAppeared = function(e) {
         e.originalStreamId, e.originalEventNumber, e.originalEvent.eventType, e.originalPosition);
 
   var self = this;
-  this._executeAction(function() { self._eventAppeared(self._subscription, e); });
+  this._executeAction(function() { return self._eventAppeared(self._subscription, e); });
 };
 
 SubscriptionOperation.prototype._executeAction = function(action) {
@@ -249,15 +249,25 @@ SubscriptionOperation.prototype._executeActions = function() {
     this._actionExecuting = false;
     return;
   }
+  var promise;
   try
   {
-    action();
+    promise = action();
   }
   catch (err)
   {
     this._log.error(err, "Exception during executing user callback: %s.", err.message);
   }
-  setImmediate(this._executeActions.bind(this));
+  if (promise && promise.then) {
+    var self = this;
+    promise
+      .catch(function (err) {
+        self._log.error(err, "Exception during executing user callback: %s.", err.message);
+      })
+      .then(this._executeActions.bind(this));
+  } else {
+    setImmediate(this._executeActions.bind(this));
+  }
 };
 
 SubscriptionOperation.prototype.toString = function() {

@@ -24,14 +24,10 @@ EventStoreAllCatchUpSubscription.prototype._readEventsTill = function(
   var self = this;
 
   function processEvents(events, index) {
-    index = index || 0;
     if (index >= events.length) return Promise.resolve();
     if (events[index].originalPosition === null) throw new Error("Subscription event came up with no OriginalPosition.");
 
-    return new Promise(function(resolve, reject) {
-          self._tryProcess(events[index]);
-          resolve();
-        })
+    return self._tryProcess(events[index])
         .then(function() {
           return processEvents(events, index + 1);
         });
@@ -40,13 +36,12 @@ EventStoreAllCatchUpSubscription.prototype._readEventsTill = function(
   function readNext() {
     return connection.readAllEventsForward(self._nextReadPosition, self.readBatchSize, resolveLinkTos, userCredentials)
         .then(function(slice) {
-          return processEvents(slice.events)
+          return processEvents(slice.events, 0)
               .then(function() {
                 self._nextReadPosition = slice.nextPosition;
-                var done = lastCommitPosition === null
+                return (lastCommitPosition === null)
                     ? slice.isEndOfStream
                     : slice.nextPosition.compareTo(new results.Position(lastCommitPosition, lastCommitPosition)) >= 0;
-                return Promise.resolve(done);
               });
         })
         .then(function(done) {
@@ -67,9 +62,10 @@ EventStoreAllCatchUpSubscription.prototype._readEventsTill = function(
 
 EventStoreAllCatchUpSubscription.prototype._tryProcess = function(e) {
   var processed = false;
+  var promise;
   if (e.originalPosition.compareTo(this._lastProcessedPosition) > 0)
   {
-    this._eventAppeared(this, e);
+    promise = this._eventAppeared(this, e);
     this._lastProcessedPosition = e.originalPosition;
     processed = true;
   }
@@ -77,6 +73,7 @@ EventStoreAllCatchUpSubscription.prototype._tryProcess = function(e) {
     this._log.debug("Catch-up Subscription to %s: %s event (%s, %d, %s @ %s).",
         this.streamId || '<all>', processed ? "processed" : "skipping",
         e.originalEvent.eventStreamId, e.originalEvent.eventNumber, e.originalEvent.eventType, e.originalPosition);
+  return (promise && promise.then) ? promise : Promise.resolve();
 };
 
 module.exports = EventStoreAllCatchUpSubscription;

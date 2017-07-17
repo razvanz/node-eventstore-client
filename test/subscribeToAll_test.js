@@ -2,6 +2,20 @@ const uuid = require('uuid');
 const client = require('../src/client');
 const allCredentials = new client.UserCredentials("admin", "changeit");
 
+function delay(ms) {
+  return new Promise(function (resolve, reject) {
+    setTimeout(resolve, ms);
+  })
+}
+
+function delayOnlyFirst(count, action) {
+  if (count === 0) return action();
+  return delay(200)
+    .then(function () {
+      action();
+    })
+}
+
 module.exports = {
   'Test Subscribe To All Happy Path': function(test) {
     const resolveLinkTos = false;
@@ -30,8 +44,10 @@ module.exports = {
 
     var receivedEvents = [];
     function eventAppeared(subscription, event) {
-      receivedEvents.push(event);
-      if (receivedEvents.length === numberOfPublishedEvents) subscription.close();
+      delayOnlyFirst(receivedEvents.length, function() {
+        receivedEvents.push(event);
+        if (receivedEvents.length === numberOfPublishedEvents) subscription.close();
+      });
     }
     function subscriptionDropped(subscription, reason, error) {
       if (error) return done(error);

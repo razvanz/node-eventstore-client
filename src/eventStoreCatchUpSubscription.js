@@ -219,15 +219,25 @@ EventStoreCatchUpSubscription.prototype._processLiveQueue = function() {
     this._isProcessing = false;
     return;
   }
+  var promise;
   try {
-    this._tryProcess(ev);
+    promise = this._tryProcess(ev);
   }
   catch(err) {
     this._dropSubscription(SubscriptionDropReason.EventHandlerException, err);
     this._isProcessing = false;
     return;
   }
-  setImmediate(this._processLiveQueue.bind(this));
+  if (promise && promise.then) {
+    var self = this;
+    promise
+      .then(this._processLiveQueue.bind(this), function(err) {
+        self._dropSubscription(SubscriptionDropReason.EventHandlerException, err);
+        self._isProcessing = false;
+      });
+  } else {
+    setImmediate(this._processLiveQueue.bind(this));
+  }
 };
 
 EventStoreCatchUpSubscription.prototype._dropSubscription = function(reason, error) {

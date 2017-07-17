@@ -9,6 +9,20 @@ function createRandomEvent() {
 
 var testStreamName = 'test-' + uuid.v4();
 
+function delay(ms) {
+  return new Promise(function (resolve, reject) {
+    setTimeout(resolve, ms);
+  })
+}
+
+function delayOnlyFirst(count, action) {
+  if (count === 0) return action();
+  return delay(200)
+    .then(function () {
+      action();
+    })
+}
+
 module.exports = {
   'Test Create Persistent Subscription': function(test) {
     var settings = client.PersistentSubscriptionSettings.create();
@@ -22,7 +36,8 @@ module.exports = {
   },
   //TODO: Update Persistent Subscription
   'Test ConnectTo Persistent Subscription': function(test) {
-    test.expect(3);
+    test.expect(4);
+    var receivedEvents = [];
     var _doneCount = 0;
     function done(err) {
       test.ok(!err, err ? err.stack : '');
@@ -31,16 +46,21 @@ module.exports = {
       test.done();
     }
     function eventAppeared(s, e) {
-      s.stop();
+      return delayOnlyFirst(receivedEvents.length, function () {
+        receivedEvents.push(e);
+        if (receivedEvents.length === 2) s.stop();
+      });
     }
     function subscriptionDropped(connection, reason, error) {
-      done(error);
+      if (error) return done(error);
+      test.ok(receivedEvents[1].originalEventNumber > receivedEvents[0].originalEventNumber, "Received events are out of order.");
+      done();
     }
     var self = this;
     this.conn.connectToPersistentSubscription(testStreamName, 'consumer-1', eventAppeared, subscriptionDropped)
       .then(function(subscription) {
         test.ok(subscription, "Subscription is null.");
-        return self.conn.appendToStream(testStreamName, client.expectedVersion.any, [createRandomEvent()]);
+        return self.conn.appendToStream(testStreamName, client.expectedVersion.any, [createRandomEvent(), createRandomEvent()]);
       })
       .then(function () {
         done();

@@ -19,19 +19,21 @@ function EventStoreStreamCatchUpSubscription(
 }
 util.inherits(EventStoreStreamCatchUpSubscription, EventStoreCatchUpSubscription);
 
+function delay(ms, result) {
+  return new Promise(function (resolve, reject) {
+    setTimeout(resolve, ms, result);
+  })
+}
+
 EventStoreStreamCatchUpSubscription.prototype._readEventsTill = function(
     connection, resolveLinkTos, userCredentials, lastCommitPosition, lastEventNumber
 ) {
   var self = this;
 
   function processEvents(events, index) {
-    index = index || 0;
     if (index >= events.length) return Promise.resolve();
 
-    return new Promise(function(resolve, reject) {
-          self._tryProcess(events[index]);
-          resolve();
-        })
+    return self._tryProcess(events[index])
         .then(function() {
           return processEvents(events, index + 1);
         });
@@ -42,12 +44,12 @@ EventStoreStreamCatchUpSubscription.prototype._readEventsTill = function(
         .then(function(slice) {
           switch(slice.status) {
             case SliceReadStatus.Success:
-              return processEvents(slice.events)
+              return processEvents(slice.events, 0)
                   .then(function() {
                     self._nextReadEventNumber = slice.nextEventNumber;
                     var done = Promise.resolve(lastEventNumber === null ? slice.isEndOfStream : slice.nextEventNumber > lastEventNumber);
                     if (!done && slice.isEndOfStream)
-                        return done.delay(10);
+                        return delay(100, false);
                     return done;
                   });
               break;
@@ -77,8 +79,9 @@ EventStoreStreamCatchUpSubscription.prototype._readEventsTill = function(
 
 EventStoreStreamCatchUpSubscription.prototype._tryProcess = function(e) {
   var processed = false;
+  var promise;
   if (e.originalEventNumber > this._lastProcessedEventNumber) {
-    this._eventAppeared(this, e);
+    promise = this._eventAppeared(this, e);
     this._lastProcessedEventNumber = e.originalEventNumber;
     processed = true;
   }
@@ -86,6 +89,7 @@ EventStoreStreamCatchUpSubscription.prototype._tryProcess = function(e) {
     this._log.debug("Catch-up Subscription to %s: %s event (%s, %d, %s @ %d).",
         this.isSubscribedToAll ? '<all>' : this.streamId, processed ? "processed" : "skipping",
         e.originalEvent.eventStreamId, e.originalEvent.eventNumber, e.originalEvent.eventType, e.originalEventNumber)
+  return (promise && promise.then) ? promise : Promise.resolve();
 };
 
 

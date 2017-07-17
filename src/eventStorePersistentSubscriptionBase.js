@@ -112,6 +112,14 @@ EventStorePersistentSubscriptionBase.prototype._enqueue = function(resolvedEvent
   }
 };
 
+function runAsync(fn) {
+  try {
+    return Promise.resolve(fn());
+  } catch(e) {
+    return Promise.reject(e);
+  }
+}
+
 EventStorePersistentSubscriptionBase.prototype._processQueue = function() {
   var ev = this._queue.shift();
   if (!ev) {
@@ -132,24 +140,28 @@ EventStorePersistentSubscriptionBase.prototype._processQueue = function() {
     this._isProcessing = false;
     return;
   }
-  try
-  {
-    this._eventAppeared(this, ev);
-    if(this._autoAck)
-      this._subscription.notifyEventsProcessed([ev.originalEvent.eventId]);
-    if (this._verbose)
-      this._log.debug("Persistent Subscription to %s: processed event (%s, %d, %s @ %d).",
-          this._streamId, ev.originalEvent.eventStreamId, ev.originalEvent.eventNumber, ev.originalEvent.eventType,
+  var self = this;
+  runAsync(function() {
+    return self._eventAppeared(self, ev);
+  })
+    .then(function() {
+      if(self._autoAck)
+        self._subscription.notifyEventsProcessed([ev.originalEvent.eventId]);
+      if (self._verbose)
+        self._log.debug("Persistent Subscription to %s: processed event (%s, %d, %s @ %d).",
+          self._streamId, ev.originalEvent.eventStreamId, ev.originalEvent.eventNumber, ev.originalEvent.eventType,
           ev.originalEventNumber);
-  }
-  catch (err)
-  {
-    //TODO GFY should we autonak here?
-    this._dropSubscription(SubscriptionDropReason.EventHandlerException, err);
-    this._isProcessing = false;
-    return;
-  }
-  setImmediate(this._processQueue.bind(this));
+      return false;
+    }, function(err) {
+      //TODO GFY should we autonak here?
+      self._dropSubscription(SubscriptionDropReason.EventHandlerException, err);
+      self._isProcessing = false;
+      return true;
+    })
+    .then(function (faulted) {
+      if (faulted) return;
+      self._processQueue();
+    });
 };
 
 EventStorePersistentSubscriptionBase.prototype._dropSubscription = function(reason, error) {
@@ -162,8 +174,13 @@ EventStorePersistentSubscriptionBase.prototype._dropSubscription = function(reas
 
     if (this._subscription !== null)
       this._subscription.unsubscribe();
-    if (this._subscriptionDropped !== null)
-      this._subscriptionDropped(this, reason, error);
+    if (this._subscriptionDropped !== null) {
+      try {
+        this._subscriptionDropped(this, reason, error);
+      } catch (e) {
+        this._log.error(e, "Persistent Subscription to %s: subscriptionDropped callback failed.", this._streamId);
+      }
+    }
     this._stopped = true;
   }
 };

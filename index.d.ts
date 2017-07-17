@@ -212,7 +212,7 @@ export interface PersistentSubscriptionDeleteResult {
 
 // Callbacks
 export interface EventAppearedCallback<TSubscription> {
-    (subscription: TSubscription, event: ResolvedEvent): void;
+    (subscription: TSubscription, event: ResolvedEvent): void | Promise<void>;
 }
 
 export interface LiveProcessingStartedCallback {
