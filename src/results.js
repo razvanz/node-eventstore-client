@@ -1,5 +1,4 @@
-var util = require('util');
-var uuidParse = require('uuid-parse');
+var guidParse = require('./common/guid-parse');
 var Long = require('long');
 var ensure = require('./common/utils/ensure');
 
@@ -54,7 +53,7 @@ Object.freeze(EventReadStatus);
  */
 function RecordedEvent(ev) {
   this.eventStreamId = ev.eventStreamId;
-  this.eventId = uuidParse.unparse(ev.eventId);
+  this.eventId = guidParse.unparse(ev.eventId);
   this.eventNumber = ev.eventNumber;
   this.eventType = ev.eventType;
   this.created = new Date(ev.createdEpoch ? ev.createdEpoch.toNumber() : 0);

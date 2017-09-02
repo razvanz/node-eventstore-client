@@ -17,8 +17,9 @@ connection.once("connected", tcpEndPoint => {
     password: Math.random().toString()
   }
 
+  const eventId = uuid.v4();
   const event = client.createJsonEventData(
-    uuid.v4(),
+    eventId,
     userCreatedEvent,
     null,
     "UserCreated"
@@ -28,7 +29,7 @@ connection.once("connected", tcpEndPoint => {
   const streamName = `user-${userId}`
 
   console.log(`Connected to eventstore at ${tcpEndPoint.host}:${tcpEndPoint.port}`)
-  console.log(`Storing event. Look for it at http://localhost:2113/web/index.html#/streams/user-${userId}`)
+  console.log(`Storing event ${eventId}. Look for it at http://localhost:2113/web/index.html#/streams/user-${userId}`)
 
   connection.appendToStream(streamName, client.expectedVersion.any, event)
     .then(result => {
