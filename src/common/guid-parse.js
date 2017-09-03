@@ -16,16 +16,20 @@ function parse(s, buf, offset) {
   if (buf) buf.fill(0, i, i + 16);
   buf = buf || new Buffer(16);
   s.toLowerCase().replace(/[0-9a-f]{2}/g, function(oct) {
-    if (ii < 4) {
-      buf[i + (3 - ii++)] = _hexToByte[oct]
-    } else if (ii < 6) {
-      buf[i + 4 + (5 - ii++)] = _hexToByte[oct]
-    } else if (ii < 8) {
-      buf[i + 6 + (7 - ii++)] = _hexToByte[oct]
-    } else if (ii < 16) { // Don't overflow!
+    if (ii < 16) { // Don't overflow!
       buf[i + ii++] = _hexToByte[oct];
     }
   });
+
+  var buf2 = new Buffer(buf.slice(i, i + 16));
+  buf[i + 0] = buf2[3];
+  buf[i + 1] = buf2[2];
+  buf[i + 2] = buf2[1];
+  buf[i + 3] = buf2[0];
+  buf[i + 4] = buf2[5];
+  buf[i + 5] = buf2[4];
+  buf[i + 6] = buf2[7];
+  buf[i + 7] = buf2[6];
 
   return buf;
 }
@@ -33,15 +37,10 @@ function parse(s, buf, offset) {
 // **`unparse()` - Convert UUID byte array (ala parse()) into a string**
 function unparse(buf, offset) {
   var i = offset || 0;
-  const bth = _byteToHex;
-  return  bth[buf[i+3]] + bth[buf[i+2]] +
-    bth[buf[i+1]] + bth[buf[i+0]] + '-' +
-    bth[buf[i+5]] + bth[buf[i+4]] + '-' +
-    bth[buf[i+7]] + bth[buf[i+6]] + '-' +
-    bth[buf[i+8]] + bth[buf[i+9]] + '-' +
-    bth[buf[i+10]] + bth[buf[i+11]] +
-    bth[buf[i+12]] + bth[buf[i+13]] +
-    bth[buf[i+14]] + bth[buf[i+15]];
+  return '03020100-0504-0706-0809-101112131415'.replace(/\d{2}/g, function (num) {
+    var j = parseInt(num, 10);
+    return _byteToHex[buf[i+j]];
+  })
 }
 
 exports.parse = parse;

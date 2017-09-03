@@ -92,7 +92,7 @@ ConnectToPersistentSubscriptionOperation.prototype.notifyEventsProcessed = funct
   var dto = new ClientMessage.PersistentSubscriptionAckEvents({
     subscriptionId: this._subscriptionId,
     processedEventIds: processedEvents.map(function (x) {
-      return new Buffer(guidParse.parse(x));
+      return guidParse.parse(x);
     })
   });
 
@@ -110,7 +110,7 @@ ConnectToPersistentSubscriptionOperation.prototype.notifyEventsFailed = function
   ensure.notNull(reason, "reason");
   var dto = new ClientMessage.PersistentSubscriptionNakEvents({
     subscriptionId: this._subscriptionId,
-    processedEventIds: processedEvents.map(function(x) { return new Buffer(guidParse.parse(x)); }),
+    processedEventIds: processedEvents.map(function(x) { return guidParse.parse(x); }),
     message: reason,
     action: action
   });

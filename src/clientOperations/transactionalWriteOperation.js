@@ -22,7 +22,7 @@ util.inherits(TransactionalWriteOperation, OperationBase);
 
 TransactionalWriteOperation.prototype._createRequestDto = function() {
   var dtos = this._events.map(function(ev) {
-    var eventId = new Buffer(guidParse.parse(ev.eventId));
+    var eventId = guidParse.parse(ev.eventId);
     return {
       eventId: eventId, eventType: ev.type,
       dataContentType: ev.isJson ? 1 : 0, metadataContentType: 0,
