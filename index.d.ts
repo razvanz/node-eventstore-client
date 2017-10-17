@@ -41,7 +41,7 @@ export class WrongExpectedVersionError {
     readonly action: string;
     readonly message: string;
     readonly stream?: string;
-    readonly expectedVersion?: number;
+    readonly expectedVersion?: Long;
     readonly transactionId?: Long;
 }
 
@@ -101,7 +101,7 @@ export class FileLogger implements Logger {
 //
 
 export interface WriteResult {
-    readonly nextExpectedVersion: number;
+    readonly nextExpectedVersion: Long;
     readonly logPosition: Position;
 }
 
@@ -194,7 +194,7 @@ export interface EventStorePersistentSubscription {
 export interface RawStreamMetadataResult {
     readonly stream: string;
     readonly isStreamDeleted: boolean;
-    readonly metastreamVersion: number;
+    readonly metastreamVersion: Long;
     readonly streamMetadata: any;
 }
 
@@ -249,9 +249,9 @@ export interface EventStoreNodeConnection {
     connect(): Promise<void>;
     close(): void;
     // write actions
-    deleteStream(stream: string, expectedVersion: number, hardDelete?: boolean, userCredentials?: UserCredentials): Promise<DeleteResult>;
-    appendToStream(stream: string, expectedVersion: number, eventOrEvents: EventData | EventData[], userCredentials?: UserCredentials): Promise<WriteResult>;
-    startTransaction(stream: string, expectedVersion: number, userCredentials?: UserCredentials): Promise<EventStoreTransaction>;
+    deleteStream(stream: string, expectedVersion: Long|number, hardDelete?: boolean, userCredentials?: UserCredentials): Promise<DeleteResult>;
+    appendToStream(stream: string, expectedVersion: Long|number, eventOrEvents: EventData | EventData[], userCredentials?: UserCredentials): Promise<WriteResult>;
+    startTransaction(stream: string, expectedVersion: Long|number, userCredentials?: UserCredentials): Promise<EventStoreTransaction>;
     continueTransaction(transactionId: number, userCredentials?: UserCredentials): EventStoreTransaction;
     // read actions
     readEvent(stream: string, eventNumber: number, resolveLinkTos?: boolean, userCredentials?: UserCredentials): Promise<EventReadResult>;
@@ -270,7 +270,7 @@ export interface EventStoreNodeConnection {
     deletePersistentSubscription(stream: string, groupName: string, userCredentials?: PersistentSubscriptionSettings): Promise<PersistentSubscriptionDeleteResult>
     connectToPersistentSubscription(stream: string, groupName: string, eventAppeared: EventAppearedCallback<EventStorePersistentSubscription>, subscriptionDropped?: SubscriptionDroppedCallback<EventStorePersistentSubscription>, userCredentials?: UserCredentials, bufferSize?: number, autoAck?: boolean): Promise<EventStorePersistentSubscription>;
     // metadata actions
-    setStreamMetadataRaw(stream: string, expectedMetastreamVersion: number, metadata: any, userCredentials?: UserCredentials): Promise<WriteResult>;
+    setStreamMetadataRaw(stream: string, expectedMetastreamVersion: Long|number, metadata: any, userCredentials?: UserCredentials): Promise<WriteResult>;
     getStreamMetadataRaw(stream: string, userCredentials?: UserCredentials): Promise<RawStreamMetadataResult>;
 
     on(event: "connected" | "disconnected" | "reconnecting" | "closed" | "error" | "heartbeatInfo", listener: (arg: Error | string | TcpEndPoint | HeartbeatInfo) => void): this;

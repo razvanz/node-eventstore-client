@@ -100,15 +100,16 @@ EventStoreNodeConnection.prototype.close = function() {
  * Delete a stream (async)
  * @public
  * @param {string} stream
- * @param {number} expectedVersion
+ * @param {Long|number} expectedVersion
  * @param {boolean} [hardDelete]
  * @param {UserCredentials} [userCredentials]
  * @returns {Promise.<DeleteResult>}
  */
 EventStoreNodeConnection.prototype.deleteStream = function(stream, expectedVersion, hardDelete, userCredentials) {
   ensure.notNullOrEmpty(stream, "stream");
-  ensure.isInteger(expectedVersion, "expectedVersion");
-  hardDelete = !!hardDelete;
+  ensure.isLongOrInteger(expectedVersion, "expectedVersion");
+  expectedVersion = Long.fromValue(expectedVersion);
+  hardDelete = Boolean(hardDelete);
   userCredentials = userCredentials || null;
 
   var self = this;
@@ -128,14 +129,15 @@ EventStoreNodeConnection.prototype.deleteStream = function(stream, expectedVersi
  * Append events to a stream (async)
  * @public
  * @param {string} stream The name of the stream to which to append.
- * @param {number} expectedVersion The version at which we currently expect the stream to be in order that an optimistic concurrency check can be performed.
+ * @param {Long|number} expectedVersion The version at which we currently expect the stream to be in order that an optimistic concurrency check can be performed.
  * @param {EventData[]|EventData} events The event(s) to append.
  * @param {UserCredentials} [userCredentials] User credentials
  * @returns {Promise.<WriteResult>}
  */
 EventStoreNodeConnection.prototype.appendToStream = function(stream, expectedVersion, events, userCredentials) {
   ensure.notNullOrEmpty(stream, "stream");
-  ensure.isInteger(expectedVersion, "expectedVersion");
+  ensure.isLongOrInteger(expectedVersion, "expectedVersion");
+  expectedVersion = Long.fromValue(expectedVersion);
   if (!Array.isArray(events))
     events = [events];
   ensure.isArrayOf(EventData, events, "events");
@@ -157,13 +159,14 @@ EventStoreNodeConnection.prototype.appendToStream = function(stream, expectedVer
  * Start a transaction (async)
  * @public
  * @param {string} stream
- * @param {number} expectedVersion
+ * @param {Long|number} expectedVersion
  * @param {UserCredentials} [userCredentials]
  * @returns {Promise.<EventStoreTransaction>}
  */
 EventStoreNodeConnection.prototype.startTransaction = function(stream, expectedVersion, userCredentials) {
   ensure.notNullOrEmpty(stream, "stream");
-  ensure.isInteger(expectedVersion, "expectedVersion");
+  ensure.isLongOrInteger(expectedVersion, "expectedVersion");
+  expectedVersion = Long.fromValue(expectedVersion);
   userCredentials = userCredentials || null;
 
   var self = this;
@@ -234,21 +237,20 @@ EventStoreNodeConnection.prototype.commitTransaction = function(transaction, use
  * Read a single event (async)
  * @public
  * @param {string} stream
- * @param {number} eventNumber
+ * @param {Long|number} eventNumber
  * @param {boolean} [resolveLinkTos]
  * @param {UserCredentials} [userCredentials]
  * @returns {Promise.<EventReadResult>}
  */
 EventStoreNodeConnection.prototype.readEvent = function(stream, eventNumber, resolveLinkTos, userCredentials) {
   ensure.notNullOrEmpty(stream, "stream");
-  ensure.isInteger(eventNumber, "eventNumber");
-  if (eventNumber < -1) throw new Error("eventNumber out of range.");
+  ensure.isLongOrInteger(eventNumber, "eventNumber");
+  eventNumber = Long.fromValue(eventNumber);
   resolveLinkTos = !!resolveLinkTos;
   userCredentials = userCredentials || null;
 
   if (typeof stream !== 'string' || stream === '') throw new TypeError("stream must be an non-empty string.");
-  if (typeof eventNumber !== 'number' || eventNumber % 1 !== 0) throw new TypeError("eventNumber must be an integer.");
-  if (eventNumber < -1) throw new Error("eventNumber out of range.");
+  if (eventNumber.compare(-1) < 0) throw new Error("eventNumber out of range.");
   if (resolveLinkTos && typeof resolveLinkTos !== 'boolean') throw new TypeError("resolveLinkTos must be a boolean.");
 
   var self = this;
@@ -623,7 +625,7 @@ EventStoreNodeConnection.prototype.setStreamMetadata = function() {
  * Set stream metadata with raw object (async)
  * @public
  * @param {string} stream
- * @param {number} expectedMetastreamVersion
+ * @param {Long|number} expectedMetastreamVersion
  * @param {object} metadata
  * @param {UserCredentials} [userCredentials]
  * @returns {Promise.<WriteResult>}
@@ -634,6 +636,8 @@ EventStoreNodeConnection.prototype.setStreamMetadataRaw = function(
   ensure.notNullOrEmpty(stream, "stream");
   if (systemStreams.isMetastream(stream))
     throw new Error(util.format("Setting metadata for metastream '%s' is not supported.", stream));
+  ensure.isLongOrInteger(expectedMetastreamVersion, "expectedMetastreamVersion");
+  expectedMetastreamVersion = Long.fromValue(expectedMetastreamVersion);
   var self = this;
   return new Promise(function(resolve, reject) {
     function cb(err, result) {
@@ -676,7 +680,7 @@ EventStoreNodeConnection.prototype.getStreamMetadataRaw = function(stream, userC
             var evnt = res.event.originalEvent;
             var version = evnt ? evnt.eventNumber : -1;
             var data = evnt ? JSON.parse(evnt.data.toString()) : null;
-            return new results.RawStreamMetadataResult(stream, false, version, data);
+            return new results.RawStreamMetadataResult(stream, false, Long.fromValue(version), data);
           case results.EventReadStatus.NotFound:
           case results.EventReadStatus.NoStream:
             return new results.RawStreamMetadataResult(stream, false, -1, null);

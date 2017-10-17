@@ -9,6 +9,7 @@ var SubscriptionsManager = require('./subscriptionsManager');
 var VolatileSubscriptionOperation = require('../clientOperations/volatileSubscriptionOperation');
 var ConnectToPersistentSubscriptionOperation = require('../clientOperations/connectToPersistentSubscriptionOperation');
 var messages = require('./messages');
+var ClientMessage = require('../messages/clientMessage');
 
 var TcpPackage = require('../systemData/tcpPackage');
 var TcpCommand = require('../systemData/tcpCommand');
@@ -28,12 +29,14 @@ const ConnectingPhase = {
   EndPointDiscovery: 'endpointDiscovery',
   ConnectionEstablishing: 'connectionEstablishing',
   Authentication: 'authentication',
+  Identification: 'identification',
   Connected: 'connected'
 };
 
 const TimerPeriod = 200;
 const TimerTickMessage = new messages.TimerTickMessage();
 const EmptyGuid = '00000000-0000-0000-0000-000000000000';
+const ClientVersion = 1;
 
 /**
  * @private
@@ -391,8 +394,18 @@ EventStoreConnectionLogicHandler.prototype._tcpConnectionEstablished = function(
   }
   else
   {
-    this._goToConnectedState();
+    this._goToIdentifiedState();
   }
+};
+
+EventStoreConnectionLogicHandler.prototype._goToIdentifiedState = function() {
+  this._connectingPhase = ConnectingPhase.Identification;
+  this._identityInfo = {
+    correlationId: uuid.v4(),
+    timeStamp: Date.now()
+  };
+  var dto = new ClientMessage.IdentifyClient({version: ClientVersion, connectionName: this._esConnection.connectionName});
+  this._connection.enqueueSend(new TcpPackage(TcpCommand.IdentifyClient, this._identityInfo.correlationId, null, null, dto.serialize()))
 };
 
 EventStoreConnectionLogicHandler.prototype._goToConnectedState = function() {
@@ -498,6 +511,16 @@ EventStoreConnectionLogicHandler.prototype._handleTcpPackage = function(connecti
       if (pkg.command === TcpCommand.NotAuthenticated)
         this.emit('authenticationFailed', "Not authenticated");
 
+      this._goToIdentifiedState();
+      return;
+    }
+  }
+
+  if (pkg.command === TcpCommand.ClientIdentified)
+  {
+    if (this._state === ConnectionState.Connecting
+      && this._identityInfo.correlationId === pkg.correlationId)
+    {
       this._goToConnectedState();
       return;
     }
@@ -617,7 +640,11 @@ EventStoreConnectionLogicHandler.prototype._timerTick = function() {
       else if (this._connectingPhase === ConnectingPhase.Authentication && (Date.now() - this._authInfo.timeStamp) >= this._settings.operationTimeout)
       {
         this.emit('authenticationFailed', "Authentication timed out.");
-        this._goToConnectedState();
+        if (this._clientVersion === 1) {
+          this._goToIdentifiedState();
+        } else {
+          this._goToConnectedState();
+        }
       }
       else if (this._connectingPhase === ConnectingPhase.Authentication || this._connectingPhase === ConnectingPhase.Connected)
         this._manageHeartbeats();
