@@ -111,7 +111,7 @@ module.exports = {
         })
         .then(function(result) {
           test.ok(result.logPosition, "Missing result.logPosition");
-          test.areEqual("result.nextExpectedVersion", result.nextExpectedVersion, self.events.length-1);
+          test.areEqual("result.nextExpectedVersion", result.nextExpectedVersion, Long.fromNumber(self.events.length-1));
           test.done();
         })
         .catch(test.done);

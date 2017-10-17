@@ -841,6 +841,7 @@
             if (!(reader instanceof $Reader))
               reader = $Reader.create(reader);
             var end = length === undefined ? reader.len : reader.pos + length, message = new $root.EventStore.Client.Messages.ResolvedIndexedEvent();
+            message.event = null;
             while (reader.pos < end) {
               var tag = reader.uint32();
               switch (tag >>> 3) {

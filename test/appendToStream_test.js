@@ -1,5 +1,6 @@
 var uuid = require('uuid');
 var client = require('../src/client');
+var Long = require('long');
 
 module.exports = {
   'Append One Event To Stream Happy Path': function(test) {
@@ -7,7 +8,7 @@ module.exports = {
     var event = client.createJsonEventData(uuid.v4(), {a: Math.random(), b: uuid.v4()}, null, 'testEvent');
     this.conn.appendToStream(this.testStreamName, client.expectedVersion.any, event)
         .then(function(result) {
-          test.areEqual("nextExpectedVersion", result.nextExpectedVersion, 0);
+          test.areEqual("nextExpectedVersion", result.nextExpectedVersion, Long.fromNumber(0));
           test.ok(result.logPosition, "No log position in result.");
           test.done();
         })
@@ -27,7 +28,7 @@ module.exports = {
     }
     this.conn.appendToStream(this.testStreamName, client.expectedVersion.any, events)
         .then(function(result) {
-          test.areEqual("result.nextExpectedVersion", result.nextExpectedVersion, expectedVersion);
+          test.areEqual("result.nextExpectedVersion", result.nextExpectedVersion, Long.fromNumber(expectedVersion));
           test.ok(result.logPosition, "No log position in result.");
           test.done();
         })
@@ -47,7 +48,7 @@ module.exports = {
     }
     this.conn.appendToStream(this.testStreamName, client.expectedVersion.any, events)
         .then(function(result) {
-          test.areEqual("result.nextExpectedVersion", result.nextExpectedVersion, expectedVersion);
+          test.areEqual("result.nextExpectedVersion", result.nextExpectedVersion, Long.fromNumber(expectedVersion));
           test.ok(result.logPosition, "No log position in result.");
           test.done();
         })
@@ -62,7 +63,7 @@ module.exports = {
     
     this.conn.appendToStream(this.testStreamName, client.expectedVersion.any, event)
         .then(function(result) {
-          test.areEqual("result.nextExpectedVersion", result.nextExpectedVersion, 0);
+          test.areEqual("result.nextExpectedVersion", result.nextExpectedVersion, Long.fromNumber(0));
           test.ok(result.logPosition, "No log position in result.");
           test.done();
         })

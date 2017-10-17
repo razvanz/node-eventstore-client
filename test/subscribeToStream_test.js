@@ -1,5 +1,6 @@
 const uuid = require('uuid');
 const client = require('../src/client');
+const Long = require('long');
 
 function delay(ms) {
   return new Promise(function (resolve, reject) {
@@ -58,7 +59,7 @@ module.exports = {
         .then(function(subscription) {
           test.areEqual("subscription.streamId", subscription.streamId, self.testStreamName);
           test.areEqual("subscription.isSubscribedToAll", subscription.isSubscribedToAll, false);
-          test.areEqual("subscription.lastEventNumber", subscription.lastEventNumber, client.expectedVersion.emptyStream);
+          test.areEqual("subscription.lastEventNumber", subscription.lastEventNumber, Long.fromNumber(client.expectedVersion.emptyStream));
 
           return self.conn.appendToStream(self.testStreamName, client.expectedVersion.emptyStream, publishedEvents);
         })

@@ -1,5 +1,6 @@
 var util = require('util');
 var uuid = require('uuid');
+var Long = require('long');
 var EventEmitter = require('events').EventEmitter;
 var ensure = require('./common/utils/ensure');
 
@@ -269,7 +270,7 @@ EventStoreNodeConnection.prototype.readEvent = function(stream, eventNumber, res
  * Reading a specific stream forwards (async)
  * @public
  * @param {string} stream
- * @param {number} start
+ * @param {Long|number} start
  * @param {number} count
  * @param {boolean} [resolveLinkTos]
  * @param {UserCredentials} [userCredentials]
@@ -279,7 +280,8 @@ EventStoreNodeConnection.prototype.readStreamEventsForward = function(
     stream, start, count, resolveLinkTos, userCredentials
 ) {
   ensure.notNullOrEmpty(stream, "stream");
-  ensure.isInteger(start, "start");
+  ensure.isLongOrInteger(start, "start");
+  start = Long.fromValue(start);
   ensure.nonNegative(start, "start");
   ensure.isInteger(count, "count");
   ensure.positive(count, "count");
@@ -303,7 +305,7 @@ EventStoreNodeConnection.prototype.readStreamEventsForward = function(
  * Reading a specific stream backwards (async)
  * @public
  * @param {string} stream
- * @param {number} start
+ * @param {Long|number} start
  * @param {number} count
  * @param {boolean} [resolveLinkTos]
  * @param {UserCredentials} [userCredentials]
@@ -313,7 +315,8 @@ EventStoreNodeConnection.prototype.readStreamEventsBackward = function(
     stream, start, count, resolveLinkTos, userCredentials
 ) {
   ensure.notNullOrEmpty(stream, "stream");
-  ensure.isInteger(start, "start");
+  ensure.isLongOrInteger(start, "start");
+  start = Long.fromValue(start);
   ensure.isInteger(count, "count");
   ensure.positive(count, "count");
   if (count > MaxReadSize) throw new Error(util.format("Count should be less than %d. For larger reads you should page.", MaxReadSize));

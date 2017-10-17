@@ -12,10 +12,11 @@ module.exports.notNull = function(value, name) {
     throw new TypeError(name + " should not be null.");
 };
 
-module.exports.isInteger = function isInteger(value, name) {
+function isInteger(value, name) {
   if (typeof value !== 'number' || value % 1 !== 0)
     throw new TypeError(name + " should be an integer.");
-};
+}
+module.exports.isInteger = isInteger;
 
 module.exports.isLongOrInteger = function(value, name) {
   if (typeof value === 'number') {

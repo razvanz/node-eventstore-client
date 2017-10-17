@@ -1,6 +1,7 @@
 var util = require('util');
 var uuid = require('uuid');
 var client = require('../src/client');
+var Long = require('long');
 
 const streamSize = 100;
 
@@ -22,15 +23,15 @@ module.exports = {
         .then(function(slice) {
           test.areEqual('slice.status', slice.status, client.eventReadStatus.Success);
           test.areEqual('slice.stream', slice.stream, self.testStreamName);
-          test.areEqual('slice.fromEventNumber', slice.fromEventNumber, streamSize-1);
+          test.areEqual('slice.fromEventNumber', slice.fromEventNumber, Long.fromNumber(streamSize-1));
           test.areEqual('slice.readDirection', slice.readDirection, 'backward');
-          test.areEqual('slice.nextEventNumber', slice.nextEventNumber, -1);
-          test.areEqual('slice.lastEventNumber', slice.lastEventNumber, streamSize-1);
+          test.areEqual('slice.nextEventNumber', slice.nextEventNumber, Long.fromNumber(-1));
+          test.areEqual('slice.lastEventNumber', slice.lastEventNumber, Long.fromNumber(streamSize-1));
           test.areEqual('slice.isEndOfStream', slice.isEndOfStream, true);
           for(var i = 0; i < streamSize; i++) {
             var reverseIndex = streamSize - i - 1;
             test.eventEqualEventData('slice.events[' + i + ']', slice.events[i], self.eventsData[reverseIndex]);
-            test.areEqual('slice.events[' + i + '].originalEventNumber', slice.events[i].originalEventNumber, reverseIndex);
+            test.areEqual('slice.events[' + i + '].originalEventNumber', slice.events[i].originalEventNumber, Long.fromNumber(reverseIndex));
           }
           test.done();
         })
@@ -45,7 +46,7 @@ module.exports = {
         .then(function(slice) {
           test.areEqual('slice.status', slice.status, client.sliceReadStatus.StreamNotFound);
           test.areEqual('slice.stream', slice.stream, anotherStream);
-          test.areEqual('slice.fromEventNumber', slice.fromEventNumber, streamSize-1);
+          test.areEqual('slice.fromEventNumber', slice.fromEventNumber, Long.fromNumber(streamSize-1));
           test.areEqual('slice.events.length', slice.events.length, 0);
           test.done();
         })
@@ -63,7 +64,7 @@ module.exports = {
         .then(function(slice) {
           test.areEqual('slice.status', slice.status, client.eventReadStatus.StreamDeleted);
           test.areEqual('slice.stream', slice.stream, self.testStreamName);
-          test.areEqual('slice.fromEventNumber', slice.fromEventNumber, streamSize-1);
+          test.areEqual('slice.fromEventNumber', slice.fromEventNumber, Long.fromNumber(streamSize-1));
           test.areEqual('slice.events.length', slice.events.length, 0);
           test.done();
         })
@@ -78,7 +79,7 @@ module.exports = {
         .then(function(slice) {
           test.areEqual('slice.status', slice.status, client.eventReadStatus.Success);
           test.areEqual('slice.stream', slice.stream, self.testStreamName);
-          test.areEqual('slice.fromEventNumber', slice.fromEventNumber, streamSize*2);
+          test.areEqual('slice.fromEventNumber', slice.fromEventNumber, Long.fromNumber(streamSize*2));
           test.areEqual('slice.events.length', slice.events.length, 0);
           test.done();
         })

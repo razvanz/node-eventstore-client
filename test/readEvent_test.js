@@ -1,7 +1,7 @@
 var util = require('util');
 var uuid = require('uuid');
 var client = require('../src/client');
-
+var Long = require('long');
 
 module.exports = {
   setUp: function(cb) {
@@ -25,7 +25,7 @@ module.exports = {
       .then(function(result) {
         test.areEqual('status', result.status, client.eventReadStatus.Success);
         test.areEqual('stream', result.stream, self.testStreamName);
-        test.areEqual('eventNumber', result.eventNumber, 0);
+        test.areEqual('eventNumber', result.eventNumber, Long.fromNumber(0));
         test.ok(result.event !== null, "event is null.");
         test.ok(result.event.originalEvent !== null, "event.originalEvent is null.");
         var event = JSON.parse(result.event.originalEvent.data.toString());
@@ -45,7 +45,7 @@ module.exports = {
       .then(function(result) {
         test.areEqual('status', result.status, client.eventReadStatus.NoStream);
         test.areEqual('stream', result.stream, anotherStream);
-        test.areEqual('eventNumber', result.eventNumber, 0);
+        test.areEqual('eventNumber', result.eventNumber, Long.fromNumber(0));
         test.areEqual('event', result.event, null);
         test.done();
       })
@@ -63,7 +63,7 @@ module.exports = {
       .then(function(result) {
         test.areEqual('status', result.status, client.eventReadStatus.StreamDeleted);
         test.areEqual('stream', result.stream, self.testStreamName);
-        test.areEqual('eventNumber', result.eventNumber, 0);
+        test.areEqual('eventNumber', result.eventNumber, Long.fromNumber(0));
         test.areEqual('event', result.event, null);
         test.done();
       })
@@ -78,7 +78,7 @@ module.exports = {
       .then(function(result) {
         test.areEqual('status', result.status, client.eventReadStatus.NotFound);
         test.areEqual('stream', result.stream, self.testStreamName);
-        test.areEqual('eventNumber', result.eventNumber, 1);
+        test.areEqual('eventNumber', result.eventNumber, Long.fromNumber(1));
         test.areEqual('event', result.event, null);
         test.done();
       })
@@ -124,7 +124,7 @@ module.exports = {
           .then(function(result) {
             test.areEqual('status', result.status, client.eventReadStatus.Success);
             test.areEqual('stream', result.stream, self.testStreamName);
-            test.areEqual('eventNumber', result.eventNumber, 1);
+            test.areEqual('eventNumber', result.eventNumber, Long.fromNumber(1));
             test.ok(result.event !== null, "event is null.");
             test.ok(result.event.originalEvent !== null, "event.originalEvent is null.");
             var event = JSON.parse(result.event.originalEvent.data.toString());

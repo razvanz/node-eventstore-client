@@ -407,7 +407,7 @@ EventStoreConnectionLogicHandler.prototype._goToIdentifiedState = function() {
   };
   var dto = new ClientMessage.IdentifyClient({version: ClientVersion, connectionName: this._esConnection.connectionName});
   var buf = dto.constructor.encode(dto).finish();
-  this._connection.enqueueSend(new TcpPackage(TcpCommand.IdentifyClient, this._identityInfo.correlationId, null, null, createBufferSegment(buf)))
+  this._connection.enqueueSend(new TcpPackage(TcpCommand.IdentifyClient, TcpFlags.None, this._identityInfo.correlationId, null, null, createBufferSegment(buf)))
 };
 
 EventStoreConnectionLogicHandler.prototype._goToConnectedState = function() {

@@ -1,4 +1,6 @@
 var SystemConsumerStrategies = require('./systemConsumerStrategies');
+var ensure = require('./common/utils/ensure');
+var Long = require('long');
 
 function PersistentSubscriptionSettings(
   resolveLinkTos, startFrom, extraStatistics, messageTimeout,
@@ -6,6 +8,9 @@ function PersistentSubscriptionSettings(
   checkPointAfter, minCheckPointCount, maxCheckPointCount,
   maxSubscriberCount, namedConsumerStrategy
 ) {
+  ensure.isLongOrInteger(startFrom);
+  startFrom = Long.fromValue(startFrom);
+
   this.resolveLinkTos = resolveLinkTos;
   this.startFrom = startFrom;
   this.extraStatistics = extraStatistics;

@@ -16,7 +16,7 @@ export class UserCredentials {
 }
 
 export class PersistentSubscriptionSettings {
-    constructor(resolveLinkTos: boolean, startFrom: number, extraStatistics: boolean, messageTimeout: number,
+    constructor(resolveLinkTos: boolean, startFrom: Long|number, extraStatistics: boolean, messageTimeout: number,
                 maxRetryCount: number, liveBufferSize: number, readBatchSize: number, historyBufferSize: number,
                 checkPointAfter: number, minCheckPointCount: number, maxCheckPointCount: number,
                 maxSubscriberCount: number, namedConsumerStrategy: string)
@@ -108,7 +108,7 @@ export interface WriteResult {
 export interface RecordedEvent {
     readonly eventStreamId: string;
     readonly eventId: string;
-    readonly eventNumber: number;
+    readonly eventNumber: Long;
     readonly eventType: string;
     readonly createdEpoch: number;
     readonly data?: Buffer;
@@ -123,17 +123,17 @@ export interface ResolvedEvent {
     readonly isResolved: boolean;
     readonly originalPosition?: Position;
     readonly originalStreamId: string;
-    readonly originalEventNumber: number;
+    readonly originalEventNumber: Long;
 }
 
 export interface StreamEventsSlice {
     readonly status: string;        // TODO: enum
     readonly stream: string;
-    readonly fromEventNumber: number;
+    readonly fromEventNumber: Long;
     readonly readDirection: string; // TODO: enum
     readonly events: ResolvedEvent[];
-    readonly nextEventNumber: number;
-    readonly lastEventNumber: number;
+    readonly nextEventNumber: Long;
+    readonly lastEventNumber: Long;
     readonly isEndOfStream: boolean;
 }
 
@@ -159,7 +159,7 @@ export interface EventStoreTransaction {
 export interface EventReadResult {
     readonly status: string;
     readonly stream: string;
-    readonly eventNumber: number;
+    readonly eventNumber: Long;
     readonly event: ResolvedEvent | null;
 }
 
@@ -167,7 +167,7 @@ export interface EventStoreSubscription {
     readonly isSubscribedToAll: boolean;
     readonly streamId: string;
     readonly lastCommitPosition: Position;
-    readonly lastEventNumber: number;
+    readonly lastEventNumber: Long;
 
     close(): void;
     unsubscribe(): void;
@@ -254,9 +254,9 @@ export interface EventStoreNodeConnection {
     startTransaction(stream: string, expectedVersion: Long|number, userCredentials?: UserCredentials): Promise<EventStoreTransaction>;
     continueTransaction(transactionId: number, userCredentials?: UserCredentials): EventStoreTransaction;
     // read actions
-    readEvent(stream: string, eventNumber: number, resolveLinkTos?: boolean, userCredentials?: UserCredentials): Promise<EventReadResult>;
-    readStreamEventsForward(stream: string, start: number, count: number, resolveLinkTos?: boolean, userCredentials?: UserCredentials): Promise<StreamEventsSlice>;
-    readStreamEventsBackward(stream: string, start: number, count: number, resolveLinkTos?: boolean, userCredentials?: UserCredentials): Promise<StreamEventsSlice>;
+    readEvent(stream: string, eventNumber: Long|number, resolveLinkTos?: boolean, userCredentials?: UserCredentials): Promise<EventReadResult>;
+    readStreamEventsForward(stream: string, start: Long|number, count: number, resolveLinkTos?: boolean, userCredentials?: UserCredentials): Promise<StreamEventsSlice>;
+    readStreamEventsBackward(stream: string, start: Long|number, count: number, resolveLinkTos?: boolean, userCredentials?: UserCredentials): Promise<StreamEventsSlice>;
     readAllEventsForward(position: Position, maxCount: number, resolveLinkTos?: boolean, userCredentials?: UserCredentials): Promise<AllEventsSlice>;
     readAllEventsBackward(position: Position, maxCount: number, resolveLinkTos?: boolean, userCredentials?: UserCredentials): Promise<AllEventsSlice>;
     // subscription actions
