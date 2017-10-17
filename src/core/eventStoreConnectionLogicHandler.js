@@ -10,6 +10,7 @@ var VolatileSubscriptionOperation = require('../clientOperations/volatileSubscri
 var ConnectToPersistentSubscriptionOperation = require('../clientOperations/connectToPersistentSubscriptionOperation');
 var messages = require('./messages');
 var ClientMessage = require('../messages/clientMessage');
+var createBufferSegment = require('../common/bufferSegment');
 
 var TcpPackage = require('../systemData/tcpPackage');
 var TcpCommand = require('../systemData/tcpCommand');
@@ -405,7 +406,8 @@ EventStoreConnectionLogicHandler.prototype._goToIdentifiedState = function() {
     timeStamp: Date.now()
   };
   var dto = new ClientMessage.IdentifyClient({version: ClientVersion, connectionName: this._esConnection.connectionName});
-  this._connection.enqueueSend(new TcpPackage(TcpCommand.IdentifyClient, this._identityInfo.correlationId, null, null, dto.serialize()))
+  var buf = dto.constructor.encode(dto).finish();
+  this._connection.enqueueSend(new TcpPackage(TcpCommand.IdentifyClient, this._identityInfo.correlationId, null, null, createBufferSegment(buf)))
 };
 
 EventStoreConnectionLogicHandler.prototype._goToConnectedState = function() {
