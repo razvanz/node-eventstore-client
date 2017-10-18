@@ -1,9 +1,13 @@
 {
   "name": "node-eventstore-client",
-  "version": "0.1.8",
+  "version": "0.1.9",
   "description": "A port of the EventStore .Net ClientAPI to Node.js",
   "main": "index.js",
   "types": "index.d.ts",
+  "engines": {
+    "node": ">=4.0"
+  },
+  "engineStrict": true,
   "scripts": {
     "clean": "rm lib/dist.js",
     "build": "webpack",

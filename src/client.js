@@ -51,10 +51,12 @@ module.exports.PersistentSubscriptionSettings = require('./persistentSubscriptio
 module.exports.SystemConsumerStrategies = require('./systemConsumerStrategies');
 module.exports.GossipSeed = require('./gossipSeed');
 module.exports.EventStoreConnection = require('./eventStoreConnection');
+module.exports.ProjectionsManager = require('./projections/projectionsManager');
 // Expose errors
 module.exports.WrongExpectedVersionError = require('./errors/wrongExpectedVersionError');
 module.exports.StreamDeletedError = require('./errors/streamDeletedError');
 module.exports.AccessDeniedError = require('./errors/accessDeniedError');
+module.exports.ProjectionCommandFailedError = require('./errors/projectionCommandFailedError');
 // Expose enums/constants
 module.exports.expectedVersion = expectedVersion;
 module.exports.positions = positions;

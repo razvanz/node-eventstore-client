@@ -23,7 +23,7 @@ Install using `npm install node-eventstore-client`
 
 ### Dependencies
 
-- Node.js >= 0.12
+- Node.js >= 4.0
 - Modules: [long](https://www.npmjs.org/package/long), [protobufjs](https://www.npmjs.org/package/protobufjs), [uuid](https://www.npmjs.org/package/uuid) (installed via `npm install`)
 
 ### API Documentation
@@ -112,7 +112,7 @@ To generate a test event, open a separate console and run:
 
 To run the tests it is recommended that you use an in-memory instance of the eventstore so you don't pollute your dev instance.
 
-    EventStore.ClusterNode.exe --memdb
+    EventStore.ClusterNode.exe --run-projections=all --memdb
 
 To execute the tests suites simply run
 

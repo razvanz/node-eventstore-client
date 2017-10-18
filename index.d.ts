@@ -26,7 +26,7 @@ export class PersistentSubscriptionSettings {
 export namespace SystemConsumerStrategies {
     const DispatchToSingle: string;
     const RoundRobin: string;
-    const Pinned: string
+    const Pinned: string;
 }
 
 export class GossipSeed {
@@ -314,3 +314,55 @@ export interface ConnectionSettings {
 export function createConnection(settings: ConnectionSettings, endPointOrGossipSeed: string | TcpEndPoint | GossipSeed[], connectionName?: string): EventStoreNodeConnection;
 export function createJsonEventData(eventId: string, event: any, metadata?: any, type?: string): EventData;
 export function createEventData(eventId: string, type: string, isJson: boolean, data: Buffer, metadata?: Buffer): EventData;
+
+// Projections
+export interface ProjectionDetails {
+    coreProcessingTime: number,
+    version: number,
+    epoch: number,
+    effectiveName: string,
+    writesInProgress: number,
+    readsInProgress: number,
+    partitionsCached: number,
+    status: string,
+    stateReason: string,
+    name: string,
+    mode: string,
+    position: string,
+    progress: number,
+    lastCheckpoint: string,
+    eventsProcessedAfterRestart: number,
+    statusUrl: string,
+    stateUrl: string,
+    resultUrl: string,
+    queryUrl: string,
+    enableCommandUrl: string,
+    disableCommandUrl: string,
+    checkpointStatus: string,
+    bufferedEvents: number,
+    writePendingEventsBeforeCheckpoint: number,
+    writePendingEventsAfterCheckpoint: number
+}
+
+export class ProjectionsManager {
+    constructor(log: Logger, httpEndPoint: string, operationTimeout: number);
+    enable(name: string, userCredentials: UserCredentials): Promise<void>;
+    disable(name: string, userCredentials: UserCredentials): Promise<void>;
+    abort(name: string, userCredentials: UserCredentials): Promise<void>;
+    createOneTime(query: string, userCredentials: UserCredentials): Promise<void>;
+    createTransient(name: string, query: string, userCredentials: UserCredentials): Promise<void>;
+    createContinuous(name: string, query: string, trackEmittedStreams: boolean, userCredentials: UserCredentials): Promise<void>;
+    listAll(userCredentials: UserCredentials): Promise<ProjectionDetails[]>;
+    listOneTime(userCredentials: UserCredentials): Promise<ProjectionDetails[]>;
+    listContinuous(userCredentials: UserCredentials): Promise<ProjectionDetails[]>;
+    getStatus(name: string, userCredentials: UserCredentials): Promise<string>;
+    getState(name: string, userCredentials: UserCredentials): Promise<string>;
+    getPartitionState(name: string, partitionId: string, userCredentials: UserCredentials): Promise<string>;
+    getResult(name: string, userCredentials: UserCredentials): Promise<string>;
+    getPartitionResult(name: string, partitionId: string, userCredentials: UserCredentials): Promise<string>;
+    getStatistics(name: string, userCredentials: UserCredentials): Promise<string>;
+    getQuery(name: string, userCredentials: UserCredentials): Promise<string>;
+    getState(name: string, userCredentials: UserCredentials): Promise<string>;
+    updateQuery(name: string, query: string, userCredentials: UserCredentials): Promise<void>;
+    deleteQuery(name: string, deleteEmittedStreams: boolean, userCredentials: UserCredentials): Promise<void>;
+}
