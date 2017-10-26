@@ -84,7 +84,7 @@ export interface Logger {
     error(fmt: string, ...args: any[]): void;
 }
 
-export class NoOpLogger implements Logger {
+export class NoopLogger implements Logger {
     constructor()
     debug(fmt: string, ...args: any[]): void;
     info(fmt: string, ...args: any[]): void;
