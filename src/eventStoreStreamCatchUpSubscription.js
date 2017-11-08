@@ -1,4 +1,5 @@
 var util = require('util');
+var Long = require('long');
 
 var EventStoreCatchUpSubscription = require('./eventStoreCatchUpSubscription');
 var SliceReadStatus = require('./sliceReadStatus');
@@ -14,8 +15,8 @@ function EventStoreStreamCatchUpSubscription(
 
   //Ensure.NotNullOrEmpty(streamId, "streamId");
 
-  this._lastProcessedEventNumber = fromEventNumberExclusive === null ? -1 : fromEventNumberExclusive;
-  this._nextReadEventNumber = fromEventNumberExclusive === null ? 0 : fromEventNumberExclusive + 1;
+  this._lastProcessedEventNumber = fromEventNumberExclusive === null ? Long.fromNumber(-1) : fromEventNumberExclusive;
+  this._nextReadEventNumber = fromEventNumberExclusive === null ? Long.fromNumber(0) : fromEventNumberExclusive.add(1);
 }
 util.inherits(EventStoreStreamCatchUpSubscription, EventStoreCatchUpSubscription);
 
@@ -47,14 +48,14 @@ EventStoreStreamCatchUpSubscription.prototype._readEventsTill = function(
               return processEvents(slice.events, 0)
                   .then(function() {
                     self._nextReadEventNumber = slice.nextEventNumber;
-                    var done = Promise.resolve(lastEventNumber === null ? slice.isEndOfStream : slice.nextEventNumber > lastEventNumber);
+                    var done = Promise.resolve(lastEventNumber === null ? slice.isEndOfStream : slice.nextEventNumber.compare(lastEventNumber) > 0);
                     if (!done && slice.isEndOfStream)
                         return delay(100, false);
                     return done;
                   });
               break;
             case SliceReadStatus.StreamNotFound:
-              if (lastEventNumber && lastEventNumber !== -1)
+              if (lastEventNumber && lastEventNumber.compare(-1) !== 0)
                 throw new Error(util.format("Impossible: stream %s disappeared in the middle of catching up subscription.", self.streamId));
               return true;
             case SliceReadStatus.StreamDeleted:
@@ -80,7 +81,7 @@ EventStoreStreamCatchUpSubscription.prototype._readEventsTill = function(
 EventStoreStreamCatchUpSubscription.prototype._tryProcess = function(e) {
   var processed = false;
   var promise;
-  if (e.originalEventNumber > this._lastProcessedEventNumber) {
+  if (e.originalEventNumber.compare(this._lastProcessedEventNumber) > 0) {
     promise = this._eventAppeared(this, e);
     this._lastProcessedEventNumber = e.originalEventNumber;
     processed = true;
@@ -88,7 +89,7 @@ EventStoreStreamCatchUpSubscription.prototype._tryProcess = function(e) {
   if (this._verbose)
     this._log.debug("Catch-up Subscription to %s: %s event (%s, %d, %s @ %d).",
         this.isSubscribedToAll ? '<all>' : this.streamId, processed ? "processed" : "skipping",
-        e.originalEvent.eventStreamId, e.originalEvent.eventNumber, e.originalEvent.eventType, e.originalEventNumber)
+        e.originalEvent.eventStreamId, e.originalEvent.eventNumber, e.originalEvent.eventType, e.originalEventNumber);
   return (promise && promise.then) ? promise : Promise.resolve();
 };
 

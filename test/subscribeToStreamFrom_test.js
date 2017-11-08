@@ -1,6 +1,6 @@
-var util = require('util');
 var uuid = require('uuid');
 var client = require('../src/client');
+var Long = require('long');
 
 function createRandomEvent() {
   return client.createJsonEventData(uuid.v4(), {a: uuid.v4(), b: Math.random()}, {createdAt: Date.now()}, 'testEvent');
@@ -123,7 +123,7 @@ module.exports = {
     var events = [createRandomEvent(), createRandomEvent()];
     this.conn.appendToStream(self.testStreamName, client.expectedVersion.noStream, events)
       .then(function() {
-        var subscription = self.conn.subscribeToStreamFrom(self.testStreamName, 0, false, eventAppeared, liveProcessingStarted, subscriptionDropped);
+        var subscription = self.conn.subscribeToStreamFrom(self.testStreamName, Long.fromNumber(0), false, eventAppeared, liveProcessingStarted, subscriptionDropped);
 
         test.areEqual("subscription.streamId", subscription.streamId, self.testStreamName);
         test.areEqual("subscription.isSubscribedToAll", subscription.isSubscribedToAll, false);

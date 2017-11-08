@@ -1,7 +1,9 @@
-var util = require('util');
 var uuid = require('uuid');
 var client = require('../src/client');
 var Long = require('long');
+
+var NOSTREAM_VERSION = Long.fromNumber(client.expectedVersion.noStream);
+var ANY_VERSION = Long.fromNumber(client.expectedVersion.any);
 
 module.exports = {
   setUp: function(cb) {
@@ -12,7 +14,7 @@ module.exports = {
     this.expectedEventType = 'anEvent';
     this.expectedEventId = uuid.v4();
     var event = client.createJsonEventData(this.expectedEventId, this.expectedEvent, null, this.expectedEventType);
-    this.conn.appendToStream(this.testStreamName, client.expectedVersion.noStream, event)
+    this.conn.appendToStream(this.testStreamName, NOSTREAM_VERSION, event)
       .then(function() {
         cb();
       })
@@ -21,7 +23,7 @@ module.exports = {
   'Read Event Happy Path': function(test) {
     test.expect(8);
     var self = this;
-    this.conn.readEvent(this.testStreamName, 0)
+    this.conn.readEvent(this.testStreamName, Long.fromNumber(0))
       .then(function(result) {
         test.areEqual('status', result.status, client.eventReadStatus.Success);
         test.areEqual('stream', result.stream, self.testStreamName);
@@ -41,7 +43,7 @@ module.exports = {
   'Read Event From Non-Existing Stream': function(test) {
     test.expect(4);
     var anotherStream = 'test' + uuid.v4();
-    this.conn.readEvent(anotherStream, 0)
+    this.conn.readEvent(anotherStream, Long.fromNumber(0))
       .then(function(result) {
         test.areEqual('status', result.status, client.eventReadStatus.NoStream);
         test.areEqual('stream', result.stream, anotherStream);
@@ -58,7 +60,7 @@ module.exports = {
     var self = this;
     this.conn.deleteStream(this.testStreamName, 0, true)
       .then(function() {
-        return self.conn.readEvent(self.testStreamName, 0)
+        return self.conn.readEvent(self.testStreamName, Long.fromNumber(0))
       })
       .then(function(result) {
         test.areEqual('status', result.status, client.eventReadStatus.StreamDeleted);
@@ -74,7 +76,7 @@ module.exports = {
   'Read Event With Inexisting Version': function(test) {
     test.expect(4);
     var self = this;
-    return self.conn.readEvent(self.testStreamName, 1)
+    return self.conn.readEvent(self.testStreamName, Long.fromNumber(1))
       .then(function(result) {
         test.areEqual('status', result.status, client.eventReadStatus.NotFound);
         test.areEqual('stream', result.stream, self.testStreamName);
@@ -94,9 +96,9 @@ module.exports = {
         $r: '$admins'
       }
     };
-    this.conn.setStreamMetadataRaw(self.testStreamName, client.expectedVersion.noStream, metadata)
+    this.conn.setStreamMetadataRaw(self.testStreamName, NOSTREAM_VERSION, metadata)
       .then(function() {
-        return self.conn.readEvent(self.testStreamName, 0);
+        return self.conn.readEvent(self.testStreamName, Long.fromNumber(0));
       })
       .then(function(result) {
         test.fail("readEvent succeeded but should have failed.");
@@ -118,9 +120,9 @@ module.exports = {
       a: largeData.toString()
     }, null, 'largePayloadEvent');
 
-    this.conn.appendToStream(this.testStreamName, client.expectedVersion.any, largeEvent)
+    this.conn.appendToStream(this.testStreamName, ANY_VERSION, largeEvent)
       .then(function(result) {
-        self.conn.readEvent(self.testStreamName, 1)
+        self.conn.readEvent(self.testStreamName, Long.fromNumber(1))
           .then(function(result) {
             test.areEqual('status', result.status, client.eventReadStatus.Success);
             test.areEqual('stream', result.stream, self.testStreamName);

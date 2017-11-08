@@ -98,8 +98,7 @@ export class FileLogger implements Logger {
     error(fmt: string, ...args: any[]): void;
 }
 
-//
-
+// Expose results
 export interface WriteResult {
     readonly nextExpectedVersion: Long;
     readonly logPosition: Position;
@@ -261,9 +260,9 @@ export interface EventStoreNodeConnection {
     readAllEventsBackward(position: Position, maxCount: number, resolveLinkTos?: boolean, userCredentials?: UserCredentials): Promise<AllEventsSlice>;
     // subscription actions
     subscribeToStream(stream: string, resolveLinkTos: boolean, eventAppeared: EventAppearedCallback<EventStoreSubscription>, subscriptionDropped?: SubscriptionDroppedCallback<EventStoreSubscription>, userCredentials?: UserCredentials): Promise<EventStoreSubscription>;
-    subscribeToStreamFrom(stream: string, lastCheckpoint: number | null, resolveLinkTos: boolean, eventAppeared: EventAppearedCallback<EventStoreCatchUpSubscription>, liveProcessingStarted?: LiveProcessingStartedCallback, subscriptionDropped?: SubscriptionDroppedCallback<EventStoreCatchUpSubscription>, userCredentials?: UserCredentials, readBatchSize?: number): EventStoreCatchUpSubscription;
+    subscribeToStreamFrom(stream: string, lastCheckpoint: Long|number|null, resolveLinkTos: boolean, eventAppeared: EventAppearedCallback<EventStoreCatchUpSubscription>, liveProcessingStarted?: LiveProcessingStartedCallback, subscriptionDropped?: SubscriptionDroppedCallback<EventStoreCatchUpSubscription>, userCredentials?: UserCredentials, readBatchSize?: number): EventStoreCatchUpSubscription;
     subscribeToAll(resolveLinkTos: boolean, eventAppeared: EventAppearedCallback<EventStoreSubscription>, subscriptionDropped?: SubscriptionDroppedCallback<EventStoreSubscription>, userCredentials?: UserCredentials): Promise<EventStoreSubscription>;
-    subscribeToAllFrom(lastCheckpoint: Position | null, resolveLinkTos: boolean, eventAppeared: EventAppearedCallback<EventStoreCatchUpSubscription>, liveProcessingStarted?: LiveProcessingStartedCallback, subscriptionDropped?: SubscriptionDroppedCallback<EventStoreCatchUpSubscription>, userCredentials?: UserCredentials, readBatchSize?: number): EventStoreCatchUpSubscription;
+    subscribeToAllFrom(lastCheckpoint: Position|null, resolveLinkTos: boolean, eventAppeared: EventAppearedCallback<EventStoreCatchUpSubscription>, liveProcessingStarted?: LiveProcessingStartedCallback, subscriptionDropped?: SubscriptionDroppedCallback<EventStoreCatchUpSubscription>, userCredentials?: UserCredentials, readBatchSize?: number): EventStoreCatchUpSubscription;
     // persistent subscriptions
     createPersistentSubscription(stream: string, groupName: string, settings: PersistentSubscriptionSettings, userCredentials?: PersistentSubscriptionSettings): Promise<PersistentSubscriptionCreateResult>;
     updatePersistentSubscription(stream: string, groupName: string, settings: PersistentSubscriptionSettings, userCredentials?: PersistentSubscriptionSettings): Promise<PersistentSubscriptionUpdateResult>;

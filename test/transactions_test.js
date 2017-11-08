@@ -2,13 +2,17 @@ var uuid = require('uuid');
 var Long = require('long');
 var client = require('../src/client');
 
+var ANY_VERSION = Long.fromNumber(client.expectedVersion.any);
+var NOSTREAM_VERSION = Long.fromNumber(client.expectedVersion.noStream);
+var EMPTY_VERSION = Long.fromNumber(client.expectedVersion.emptyStream);
+
 module.exports = {
   setUp: function(cb) {
     cb();
   },
   'Start A Transaction Happy Path': function(test) {
     test.expect(1);
-    this.conn.startTransaction(this.testStreamName, client.expectedVersion.noStream)
+    this.conn.startTransaction(this.testStreamName, NOSTREAM_VERSION)
         .then(function(trx) {
           test.ok(Long.isLong(trx.transactionId), "trx.transactionId should be a Long.");
           test.done();
@@ -32,7 +36,7 @@ module.exports = {
     var self = this;
     this.conn.deleteStream(this.testStreamName, client.expectedVersion.emptyStream)
         .then(function() {
-          return self.conn.startTransaction(self.testStreamName, client.expectedVersion.any);
+          return self.conn.startTransaction(self.testStreamName, ANY_VERSION);
         })
         .then(function(trx) {
           test.fail("Start Transaction with deleted stream succeeded.");
@@ -50,9 +54,9 @@ module.exports = {
     test.expect(1);
     var self = this;
     var metadata = {$acl: {$w: "$admins"}};
-    this.conn.setStreamMetadataRaw(this.testStreamName, -1, metadata)
+    this.conn.setStreamMetadataRaw(this.testStreamName, EMPTY_VERSION, metadata)
         .then(function() {
-          return self.conn.startTransaction(self.testStreamName, client.expectedVersion.any);
+          return self.conn.startTransaction(self.testStreamName, ANY_VERSION);
         })
         .then(function(trx) {
           test.fail("Start Transaction with no access succeeded.");
@@ -67,7 +71,7 @@ module.exports = {
   },
   'Continue A Transaction Happy Path': function(test) {
     var self = this;
-    this.conn.startTransaction(this.testStreamName, client.expectedVersion.emptyStream)
+    this.conn.startTransaction(this.testStreamName, EMPTY_VERSION)
         .then(function(trx) {
           return trx.write(client.createJsonEventData(uuid.v4(), {a: Math.random()}, null, 'anEvent'))
               .then(function () {
@@ -88,7 +92,7 @@ module.exports = {
   'Write/Commit Transaction Happy Path': function(test) {
     test.expect(2);
     var self = this;
-    this.conn.startTransaction(this.testStreamName, client.expectedVersion.emptyStream)
+    this.conn.startTransaction(this.testStreamName, EMPTY_VERSION)
         .then(function(trx) {
           self.events = [];
           for(var i = 0; i < 15; i++) {
@@ -139,9 +143,9 @@ module.exports = {
   'Write/Commit Transaction With Deleted Stream': function(test) {
     test.expect(1);
     var self = this;
-    this.conn.deleteStream(this.testStreamName, client.expectedVersion.emptyStream, true)
+    this.conn.deleteStream(this.testStreamName, EMPTY_VERSION, true)
         .then(function() {
-          return self.conn.startTransaction(self.testStreamName, client.expectedVersion.any);
+          return self.conn.startTransaction(self.testStreamName, ANY_VERSION);
         })
         .then(function(trx) {
           return trx.write(client.createJsonEventData(uuid.v4(), {a: Math.random(), b: uuid.v4()}, null, 'anEvent'))
@@ -163,10 +167,10 @@ module.exports = {
   'Write/Commit Transaction With No Write Access': function(test) {
     test.expect(1);
     var self = this;
-    this.conn.startTransaction(this.testStreamName, client.expectedVersion.any)
+    this.conn.startTransaction(this.testStreamName, ANY_VERSION)
         .then(function(trx) {
           var metadata = {$acl: {$w: "$admins"}};
-          return self.conn.setStreamMetadataRaw(self.testStreamName, -1, metadata)
+          return self.conn.setStreamMetadataRaw(self.testStreamName, EMPTY_VERSION, metadata)
               .then(function () {
                 return trx.write(client.createJsonEventData(uuid.v4(), {a: Math.random(), b: uuid.v4()}, null, 'anEvent'))
                     .then(function () {
