@@ -1,5 +1,6 @@
 var uuid = require('uuid');
 var client = require('../src/client');
+var Long = require('long');
 
 module.exports = {
   setUp: function(cb) {
@@ -16,7 +17,7 @@ module.exports = {
   'Test Delete Stream Soft Happy Path': function(test) {
     test.expect(4);
     var self = this;
-    this.conn.deleteStream(this.testStreamName, 1, false)
+    this.conn.deleteStream(this.testStreamName, Long.fromNumber(1), false)
         .then(function(result) {
           test.ok(result.logPosition, "No log position in result.");
           return self.conn.getStreamMetadataRaw(self.testStreamName);
@@ -34,7 +35,7 @@ module.exports = {
   'Test Delete Stream Hard Happy Path': function(test) {
     test.expect(4);
     var self = this;
-    this.conn.deleteStream(this.testStreamName, 1, true)
+    this.conn.deleteStream(this.testStreamName, Long.fromNumber(1), true)
         .then(function(result) {
           test.ok(result.logPosition, "No log position in result.");
           return self.conn.getStreamMetadataRaw(self.testStreamName);
@@ -51,7 +52,7 @@ module.exports = {
   },
   'Test Delete Stream With Wrong Expected Version': function(test) {
     test.expect(1);
-    this.conn.deleteStream(this.testStreamName, 10)
+    this.conn.deleteStream(this.testStreamName, Long.fromNumber(10))
         .then(function(result) {
           test.fail("Delete succeeded but should have failed.");
           test.done();
@@ -68,7 +69,7 @@ module.exports = {
     var self = this;
     this.conn.setStreamMetadataRaw(this.testStreamName, client.expectedVersion.any, {$acl: {$d: "$admins"}})
         .then(function() {
-          return self.conn.deleteStream(self.testStreamName, 10);
+          return self.conn.deleteStream(self.testStreamName, Long.fromNumber(10));
         })
         .then(function(result) {
           test.fail("Delete succeeded but should have failed.");
@@ -86,7 +87,7 @@ module.exports = {
     var self = this;
     this.conn.deleteStream(this.testStreamName, 1, true)
         .then(function() {
-          return self.conn.deleteStream(self.testStreamName, 1, true);
+          return self.conn.deleteStream(self.testStreamName, Long.fromNumber(1), true);
         })
         .then(function(result) {
           test.fail("Delete succeeded but should have failed.");

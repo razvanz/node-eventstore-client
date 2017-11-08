@@ -1,6 +1,6 @@
-var util = require('util');
 var uuid = require('uuid');
 var client = require('../src/client');
+var Long = require('long');
 
 function createRandomEvent() {
   return client.createJsonEventData(uuid.v4(), {a: uuid.v4(), b: Math.random()}, {createdAt: Date.now()}, 'testEvent');
@@ -22,7 +22,7 @@ function delayOnlyFirst(count, action) {
 
 module.exports = {
   'Test Subscribe to Stream From Beginning (null)': function(test) {
-    test.expect(36);
+    test.expect(32);
     var self = this;
     var liveProcessing = false;
     var catchUpEvents = [];
@@ -57,15 +57,11 @@ module.exports = {
     }
     function subscriptionDropped(connection, reason, error) {
       test.ok(liveEvents.length === 2, "Expecting 2 live event, got " + liveEvents.length);
-      test.testLiveEvent('liveEvents[0]', liveEvents[0]);
-      test.testLiveEvent('liveEvents[1]', liveEvents[1]);
-      test.ok(liveEvents[0].originalEventNumber, 2);
-      test.ok(liveEvents[1].originalEventNumber, 3);
+      test.testLiveEvent('liveEvents[0]', liveEvents[0], 2);
+      test.testLiveEvent('liveEvents[1]', liveEvents[1], 3);
       test.ok(catchUpEvents.length === 2, "Expecting 2 catchUp event, got " + catchUpEvents.length);
-      test.testReadEvent('catchUpEvents[0]', catchUpEvents[0]);
-      test.testReadEvent('catchUpEvents[1]', catchUpEvents[1]);
-      test.ok(liveEvents[0].originalEventNumber, 0);
-      test.ok(liveEvents[1].originalEventNumber, 1);
+      test.testReadEvent('catchUpEvents[0]', catchUpEvents[0], 0);
+      test.testReadEvent('catchUpEvents[1]', catchUpEvents[1], 1);
       done(error);
     }
 
@@ -82,7 +78,7 @@ module.exports = {
       .catch(test.done);
   },
   'Test Subscribe to Stream From 0': function(test) {
-    test.expect(29);
+    test.expect(26);
     var self = this;
     var liveProcessing = false;
     var catchUpEvents = [];
@@ -117,20 +113,17 @@ module.exports = {
     }
     function subscriptionDropped(connection, reason, error) {
       test.ok(liveEvents.length === 2, "Expecting 2 live event, got " + liveEvents.length);
-      test.testLiveEvent('liveEvents[0]', liveEvents[0]);
-      test.testLiveEvent('liveEvents[1]', liveEvents[1]);
-      test.ok(liveEvents[0].originalEventNumber, 2);
-      test.ok(liveEvents[1].originalEventNumber, 3);
+      test.testLiveEvent('liveEvents[0]', liveEvents[0], 2);
+      test.testLiveEvent('liveEvents[1]', liveEvents[1], 3);
       test.ok(catchUpEvents.length === 1, "Expecting 1 catchUp event, got " + catchUpEvents.length);
-      test.testReadEvent('catchUpEvents[0]', catchUpEvents[0]);
-      test.ok(liveEvents[0].originalEventNumber, 1);
+      test.testReadEvent('catchUpEvents[0]', catchUpEvents[0], 1);
       done(error);
     }
 
     var events = [createRandomEvent(), createRandomEvent()];
     this.conn.appendToStream(self.testStreamName, client.expectedVersion.noStream, events)
       .then(function() {
-        var subscription = self.conn.subscribeToStreamFrom(self.testStreamName, 0, false, eventAppeared, liveProcessingStarted, subscriptionDropped);
+        var subscription = self.conn.subscribeToStreamFrom(self.testStreamName, Long.fromNumber(0), false, eventAppeared, liveProcessingStarted, subscriptionDropped);
 
         test.areEqual("subscription.streamId", subscription.streamId, self.testStreamName);
         test.areEqual("subscription.isSubscribedToAll", subscription.isSubscribedToAll, false);

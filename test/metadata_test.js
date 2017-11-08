@@ -1,10 +1,11 @@
-var util = require('util');
-var uuid = require('uuid');
 var client = require('../src/client');
+const Long = require('long');
+
+const EMPTY_VERSION = Long.fromNumber(client.expectedVersion.emptyStream);
 
 module.exports = {
   'Test Set Stream Metadata Raw': function(test) {
-    this.conn.setStreamMetadataRaw(this.testStreamName, client.expectedVersion.emptyStream, {$maxCount: 100})
+    this.conn.setStreamMetadataRaw(this.testStreamName, EMPTY_VERSION, {$maxCount: 100})
       .then(function(result) {
         test.done();
       })

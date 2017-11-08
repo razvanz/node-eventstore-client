@@ -1,5 +1,6 @@
 var util = require('util');
 var uuid = require('uuid');
+var Long = require('long');
 var EventEmitter = require('events').EventEmitter;
 var ensure = require('./common/utils/ensure');
 
@@ -100,15 +101,16 @@ EventStoreNodeConnection.prototype.close = function() {
  * Delete a stream (async)
  * @public
  * @param {string} stream
- * @param {number} expectedVersion
+ * @param {Long|number} expectedVersion
  * @param {boolean} [hardDelete]
  * @param {UserCredentials} [userCredentials]
  * @returns {Promise.<DeleteResult>}
  */
 EventStoreNodeConnection.prototype.deleteStream = function(stream, expectedVersion, hardDelete, userCredentials) {
   ensure.notNullOrEmpty(stream, "stream");
-  ensure.isInteger(expectedVersion, "expectedVersion");
-  hardDelete = !!hardDelete;
+  ensure.isLongOrInteger(expectedVersion, "expectedVersion");
+  expectedVersion = Long.fromValue(expectedVersion);
+  hardDelete = Boolean(hardDelete);
   userCredentials = userCredentials || null;
 
   var self = this;
@@ -128,14 +130,15 @@ EventStoreNodeConnection.prototype.deleteStream = function(stream, expectedVersi
  * Append events to a stream (async)
  * @public
  * @param {string} stream The name of the stream to which to append.
- * @param {number} expectedVersion The version at which we currently expect the stream to be in order that an optimistic concurrency check can be performed.
+ * @param {Long|number} expectedVersion The version at which we currently expect the stream to be in order that an optimistic concurrency check can be performed.
  * @param {EventData[]|EventData} events The event(s) to append.
  * @param {UserCredentials} [userCredentials] User credentials
  * @returns {Promise.<WriteResult>}
  */
 EventStoreNodeConnection.prototype.appendToStream = function(stream, expectedVersion, events, userCredentials) {
   ensure.notNullOrEmpty(stream, "stream");
-  ensure.isInteger(expectedVersion, "expectedVersion");
+  ensure.isLongOrInteger(expectedVersion, "expectedVersion");
+  expectedVersion = Long.fromValue(expectedVersion);
   if (!Array.isArray(events))
     events = [events];
   ensure.isArrayOf(EventData, events, "events");
@@ -157,13 +160,14 @@ EventStoreNodeConnection.prototype.appendToStream = function(stream, expectedVer
  * Start a transaction (async)
  * @public
  * @param {string} stream
- * @param {number} expectedVersion
+ * @param {Long|number} expectedVersion
  * @param {UserCredentials} [userCredentials]
  * @returns {Promise.<EventStoreTransaction>}
  */
 EventStoreNodeConnection.prototype.startTransaction = function(stream, expectedVersion, userCredentials) {
   ensure.notNullOrEmpty(stream, "stream");
-  ensure.isInteger(expectedVersion, "expectedVersion");
+  ensure.isLongOrInteger(expectedVersion, "expectedVersion");
+  expectedVersion = Long.fromValue(expectedVersion);
   userCredentials = userCredentials || null;
 
   var self = this;
@@ -234,21 +238,20 @@ EventStoreNodeConnection.prototype.commitTransaction = function(transaction, use
  * Read a single event (async)
  * @public
  * @param {string} stream
- * @param {number} eventNumber
+ * @param {Long|number} eventNumber
  * @param {boolean} [resolveLinkTos]
  * @param {UserCredentials} [userCredentials]
  * @returns {Promise.<EventReadResult>}
  */
 EventStoreNodeConnection.prototype.readEvent = function(stream, eventNumber, resolveLinkTos, userCredentials) {
   ensure.notNullOrEmpty(stream, "stream");
-  ensure.isInteger(eventNumber, "eventNumber");
-  if (eventNumber < -1) throw new Error("eventNumber out of range.");
-  resolveLinkTos = !!resolveLinkTos;
+  ensure.isLongOrInteger(eventNumber, "eventNumber");
+  eventNumber = Long.fromValue(eventNumber);
+  resolveLinkTos = Boolean(resolveLinkTos);
   userCredentials = userCredentials || null;
 
   if (typeof stream !== 'string' || stream === '') throw new TypeError("stream must be an non-empty string.");
-  if (typeof eventNumber !== 'number' || eventNumber % 1 !== 0) throw new TypeError("eventNumber must be an integer.");
-  if (eventNumber < -1) throw new Error("eventNumber out of range.");
+  if (eventNumber.compare(-1) < 0) throw new Error("eventNumber out of range.");
   if (resolveLinkTos && typeof resolveLinkTos !== 'boolean') throw new TypeError("resolveLinkTos must be a boolean.");
 
   var self = this;
@@ -267,7 +270,7 @@ EventStoreNodeConnection.prototype.readEvent = function(stream, eventNumber, res
  * Reading a specific stream forwards (async)
  * @public
  * @param {string} stream
- * @param {number} start
+ * @param {Long|number} start
  * @param {number} count
  * @param {boolean} [resolveLinkTos]
  * @param {UserCredentials} [userCredentials]
@@ -277,12 +280,13 @@ EventStoreNodeConnection.prototype.readStreamEventsForward = function(
     stream, start, count, resolveLinkTos, userCredentials
 ) {
   ensure.notNullOrEmpty(stream, "stream");
-  ensure.isInteger(start, "start");
+  ensure.isLongOrInteger(start, "start");
+  start = Long.fromValue(start);
   ensure.nonNegative(start, "start");
   ensure.isInteger(count, "count");
   ensure.positive(count, "count");
   if (count > MaxReadSize) throw new Error(util.format("Count should be less than %d. For larger reads you should page.", MaxReadSize));
-  resolveLinkTos = !!resolveLinkTos;
+  resolveLinkTos = Boolean(resolveLinkTos);
   userCredentials = userCredentials || null;
 
   var self = this;
@@ -301,7 +305,7 @@ EventStoreNodeConnection.prototype.readStreamEventsForward = function(
  * Reading a specific stream backwards (async)
  * @public
  * @param {string} stream
- * @param {number} start
+ * @param {Long|number} start
  * @param {number} count
  * @param {boolean} [resolveLinkTos]
  * @param {UserCredentials} [userCredentials]
@@ -311,11 +315,12 @@ EventStoreNodeConnection.prototype.readStreamEventsBackward = function(
     stream, start, count, resolveLinkTos, userCredentials
 ) {
   ensure.notNullOrEmpty(stream, "stream");
-  ensure.isInteger(start, "start");
+  ensure.isLongOrInteger(start, "start");
+  start = Long.fromValue(start);
   ensure.isInteger(count, "count");
   ensure.positive(count, "count");
   if (count > MaxReadSize) throw new Error(util.format("Count should be less than %d. For larger reads you should page.", MaxReadSize));
-  resolveLinkTos = !!resolveLinkTos;
+  resolveLinkTos = Boolean(resolveLinkTos);
   userCredentials = userCredentials || null;
 
   var self = this;
@@ -346,7 +351,7 @@ EventStoreNodeConnection.prototype.readAllEventsForward = function(
   ensure.isInteger(maxCount, "maxCount");
   ensure.positive(maxCount, "maxCount");
   if (maxCount > MaxReadSize) throw new Error(util.format("Count should be less than %d. For larger reads you should page.", MaxReadSize));
-  resolveLinkTos = !!resolveLinkTos;
+  resolveLinkTos = Boolean(resolveLinkTos);
   userCredentials = userCredentials || null;
 
   var self = this;
@@ -377,7 +382,7 @@ EventStoreNodeConnection.prototype.readAllEventsBackward = function(
   ensure.isInteger(maxCount, "maxCount");
   ensure.positive(maxCount, "maxCount");
   if (maxCount > MaxReadSize) throw new Error(util.format("Count should be less than %d. For larger reads you should page.", MaxReadSize));
-  resolveLinkTos = !!resolveLinkTos;
+  resolveLinkTos = Boolean(resolveLinkTos);
   userCredentials = userCredentials || null;
 
   var self = this;
@@ -427,7 +432,7 @@ EventStoreNodeConnection.prototype.subscribeToStream = function(
  * Subscribe to a stream from position
  * @public
  * @param {!string} stream
- * @param {?number} lastCheckpoint
+ * @param {?number|Position} lastCheckpoint
  * @param {!boolean} resolveLinkTos
  * @param {!function} eventAppeared
  * @param {function} [liveProcessingStarted]
@@ -441,7 +446,10 @@ EventStoreNodeConnection.prototype.subscribeToStreamFrom = function(
     userCredentials, readBatchSize
 ) {
   if (typeof stream !== 'string' || stream === '') throw new TypeError("stream must be a non-empty string.");
-  if (lastCheckpoint !== null && typeof lastCheckpoint !== 'number') throw new TypeError("lastCheckpoint must be a number or null.");
+  if (lastCheckpoint !== null) {
+    ensure.isLongOrInteger(lastCheckpoint);
+    lastCheckpoint = Long.fromValue(lastCheckpoint);
+  }
   if (typeof eventAppeared !== 'function') throw new TypeError("eventAppeared must be a function.");
 
   var catchUpSubscription =
@@ -531,7 +539,7 @@ EventStoreNodeConnection.prototype.connectToPersistentSubscription = function(
   subscriptionDropped = subscriptionDropped || null;
   userCredentials = userCredentials || null;
   bufferSize = bufferSize === undefined ? 10 : bufferSize;
-  autoAck = autoAck === undefined ? true : !!autoAck;
+  autoAck = autoAck === undefined ? true : Boolean(autoAck);
 
   var subscription = new EventStorePersistentSubscription(
       groupName, stream, eventAppeared, subscriptionDropped, userCredentials, this._settings.log,
@@ -623,7 +631,7 @@ EventStoreNodeConnection.prototype.setStreamMetadata = function() {
  * Set stream metadata with raw object (async)
  * @public
  * @param {string} stream
- * @param {number} expectedMetastreamVersion
+ * @param {Long|number} expectedMetastreamVersion
  * @param {object} metadata
  * @param {UserCredentials} [userCredentials]
  * @returns {Promise.<WriteResult>}
@@ -634,6 +642,8 @@ EventStoreNodeConnection.prototype.setStreamMetadataRaw = function(
   ensure.notNullOrEmpty(stream, "stream");
   if (systemStreams.isMetastream(stream))
     throw new Error(util.format("Setting metadata for metastream '%s' is not supported.", stream));
+  ensure.isLongOrInteger(expectedMetastreamVersion, "expectedMetastreamVersion");
+  expectedMetastreamVersion = Long.fromValue(expectedMetastreamVersion);
   var self = this;
   return new Promise(function(resolve, reject) {
     function cb(err, result) {
@@ -676,12 +686,12 @@ EventStoreNodeConnection.prototype.getStreamMetadataRaw = function(stream, userC
             var evnt = res.event.originalEvent;
             var version = evnt ? evnt.eventNumber : -1;
             var data = evnt ? JSON.parse(evnt.data.toString()) : null;
-            return new results.RawStreamMetadataResult(stream, false, version, data);
+            return new results.RawStreamMetadataResult(stream, false, Long.fromValue(version), data);
           case results.EventReadStatus.NotFound:
           case results.EventReadStatus.NoStream:
-            return new results.RawStreamMetadataResult(stream, false, -1, null);
+            return new results.RawStreamMetadataResult(stream, false, Long.fromValue(-1), null);
           case results.EventReadStatus.StreamDeleted:
-            return new results.RawStreamMetadataResult(stream, true, 0x7fffffff, null);
+            return new results.RawStreamMetadataResult(stream, true, Long.fromValue(0x7fffffff), null);
           default:
             throw new Error(util.format("Unexpected ReadEventResult: %s.", res.status));
         }

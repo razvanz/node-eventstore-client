@@ -1,3 +1,5 @@
+var Long = require('long');
+
 module.exports.notNullOrEmpty = function(value, name) {
   if (value === null)
     throw new TypeError(name + " should not be null.");
@@ -10,9 +12,18 @@ module.exports.notNull = function(value, name) {
     throw new TypeError(name + " should not be null.");
 };
 
-module.exports.isInteger = function(value, name) {
+function isInteger(value, name) {
   if (typeof value !== 'number' || value % 1 !== 0)
     throw new TypeError(name + " should be an integer.");
+}
+module.exports.isInteger = isInteger;
+
+module.exports.isLongOrInteger = function(value, name) {
+  if (typeof value === 'number') {
+    return isInteger(value, name);
+  } else if (!Long.isLong(value)) {
+    throw new TypeError(name + " should be a Long|number.");
+  }
 };
 
 module.exports.isArrayOf = function(expectedType, value, name) {

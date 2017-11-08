@@ -44,7 +44,7 @@ Object.freeze(EventReadStatus);
  * @constructor
  * @property {string} eventStreamId
  * @property {string} eventId
- * @property {number} eventNumber
+ * @property {Long} eventNumber
  * @property {string} eventType
  * @property {number} createdEpoch
  * @property {?Buffer} data
@@ -73,7 +73,7 @@ function RecordedEvent(ev) {
  * @property {boolean} isResolved
  * @property {?Position} originalPosition
  * @property {string} originalStreamId
- * @property {number} originalEventNumber
+ * @property {Long} originalEventNumber
  */
 function ResolvedEvent(ev) {
   this.event = ev.event === null ? null : new RecordedEvent(ev.event);
@@ -90,12 +90,12 @@ function ResolvedEvent(ev) {
  *
  * @param {string} status
  * @param {string} stream
- * @param {number} eventNumber
+ * @param {Long} eventNumber
  * @param {object} event
  * @constructor
  * @property {string} status
  * @property {string} stream
- * @property {number} eventNumber
+ * @property {Long} eventNumber
  * @property {ResolvedEvent} event
  */
 function EventReadResult(status, stream, eventNumber, event) {
@@ -110,7 +110,7 @@ function EventReadResult(status, stream, eventNumber, event) {
  * @param {number} nextExpectedVersion
  * @param {Position} logPosition
  * @constructor
- * @property {number} nextExpectedVersion
+ * @property {Long} nextExpectedVersion
  * @property {Position} logPosition
  */
 function WriteResult(nextExpectedVersion, logPosition) {
@@ -122,20 +122,20 @@ function WriteResult(nextExpectedVersion, logPosition) {
 /**
  * @param {string} status
  * @param {string} stream
- * @param {number} fromEventNumber
+ * @param {Long} fromEventNumber
  * @param {string} readDirection
  * @param {object[]} events
- * @param {number} nextEventNumber
- * @param {number} lastEventNumber
+ * @param {Long} nextEventNumber
+ * @param {Long} lastEventNumber
  * @param {boolean} isEndOfStream
  * @constructor
  * @property {string} status
  * @property {string} stream
- * @property {number} fromEventNumber
+ * @property {Long} fromEventNumber
  * @property {string} readDirection
  * @property {ResolvedEvent[]} events
- * @property {number} nextEventNumber
- * @property {number} lastEventNumber
+ * @property {Long} nextEventNumber
+ * @property {Long} lastEventNumber
  * @property {boolean} isEndOfStream
  */
 function StreamEventsSlice(
@@ -185,12 +185,12 @@ function DeleteResult(logPosition) {
 /**
  * @param {string} stream
  * @param {boolean} isStreamDeleted
- * @param {number} metastreamVersion
+ * @param {Long} metastreamVersion
  * @param {object} streamMetadata
  * @constructor
  * @property {string} stream
  * @property {boolean} isStreamDeleted
- * @property {number} metastreamVersion
+ * @property {Long} metastreamVersion
  * @property {object} streamMetadata
  */
 function RawStreamMetadataResult(stream, isStreamDeleted, metastreamVersion, streamMetadata) {
