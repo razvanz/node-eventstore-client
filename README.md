@@ -26,6 +26,13 @@ Install using `npm install node-eventstore-client`
 - Node.js >= 4.0
 - Modules: [long](https://www.npmjs.org/package/long), [protobufjs](https://www.npmjs.org/package/protobufjs), [uuid](https://www.npmjs.org/package/uuid) (installed via `npm install`)
 
+### Install & run an Eventstore on localhost
+
+See https://eventstore.org/docs/introduction/4.0.2/
+
+*Note: If you are using a version of EventStore prior to 3.9.4, you need to use version 0.1.x of this package `npm install node-eventstore-client@^0.1`.*  
+
+
 ### API Documentation
 
 #### Offline
@@ -35,11 +42,7 @@ The offline documentation can be found in the module folder `./node_modules/node
 #### Online
 
 The online documentation can be found at [https://dev.nicdex.com/node-eventstore-client/docs/](https://dev.nicdex.com/node-eventstore-client/docs/)
-
-### Install & run an Eventstore on localhost
-
-See http://docs.geteventstore.com/introduction/3.9.0/ . 
-   
+  
 ### Example: Storing an event
 
 Save to ```app.js:```
