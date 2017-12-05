@@ -1,17 +1,15 @@
 {
-  "name": "node-eventstore-client",
-  "version": "0.2.17",
+  "name": "@billyfree/eventstore-client",
+  "version": "0.2.3",
   "description": "A port of the EventStore .Net ClientAPI to Node.js",
-  "main": "index.js",
-  "types": "index.d.ts",
+  "main": "lib/index.js",
+  "types": "lib/index.d.ts",
   "engines": {
     "node": ">=5.10"
   },
   "engineStrict": true,
   "scripts": {
-    "clean": "rm -f lib/dist.js",
-    "prebuild": "npm run clean",
-    "build": "webpack -o ./lib/dist.js",
+    "build": "echo 'Builded!'",
     "pretest": "npm run build",
     "test": "nodeunit",
     "test-debug": "TESTS_VERBOSE_LOGGING=1 nodeunit",
@@ -33,18 +31,11 @@
   "files": [
     "lib",
     "docs",
-    "src",
-    "index.js",
-    "index.d.ts"
+    "src"
   ],
-  "directories": {
-    "lib": "lib",
-    "doc": "docs",
-    "example": "samples"
-  },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/nicdex/node-eventstore-client.git"
+    "url": "git+https://github.com/billyfree/node-eventstore-client.git"
   },
   "keywords": [
     "eventstore",
@@ -54,9 +45,9 @@
   "author": "Nicolas Dextraze",
   "license": "MIT",
   "bugs": {
-    "url": "https://github.com/nicdex/node-eventstore-client/issues"
+    "url": "https://github.com/billyfree/node-eventstore-client/issues"
   },
-  "homepage": "https://github.com/nicdex/node-eventstore-client#readme",
+  "homepage": "https://github.com/billyfree/node-eventstore-client#readme",
   "dependencies": {
     "@types/long": "^3.0.32",
     "@types/node": ">=5.10",
@@ -66,10 +57,13 @@
     "uuid": "^3.0.1"
   },
   "devDependencies": {
-    "jest": "^26.4.2",
-    "jsdoc": "^3.6.3",
-    "nodeunit": "^0.11.3",
-    "webpack": "^4.41.2",
-    "webpack-cli": "^3.3.10"
+    "eslint": "^4.12.1",
+    "eslint-config-standard": "^10.2.1",
+    "eslint-plugin-import": "^2.8.0",
+    "eslint-plugin-node": "^5.2.1",
+    "eslint-plugin-promise": "^3.6.0",
+    "eslint-plugin-standard": "^3.0.1",
+    "jsdoc": "^3.5.5",
+    "nodeunit": "^0.11.1"
   }
 }
