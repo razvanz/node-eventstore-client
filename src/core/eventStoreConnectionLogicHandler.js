@@ -47,6 +47,7 @@ const ClientVersion = 1;
  * @property {Number} totalOperationCount
  */
 function EventStoreConnectionLogicHandler(esConnection, settings) {
+  EventEmitter.call(this);
   this._esConnection = esConnection;
   this._settings = settings;
   this._queue = new SimpleQueuedHandler();
