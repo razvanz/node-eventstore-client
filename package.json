@@ -52,7 +52,7 @@
     "uuid": "^3.0.1"
   },
   "devDependencies": {
-    "jsdoc": "^3.5.3",
+    "jsdoc": "^3.5.5",
     "nodeunit": "^0.11.1",
     "webpack": "^3.3.0"
   }
