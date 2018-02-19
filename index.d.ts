@@ -1,13 +1,14 @@
 /// <reference types="node" />
 /// <reference types="Long" />
 
+// Expose classes
 export class Position {
     constructor(commitPosition: number|Long, preparePosition: number|Long);
     readonly commitPosition: Long;
     readonly preparePosition: Long;
+    static readonly start: number;
+    static readonly end: number;
 }
-
-// Expose classes
 
 export class UserCredentials {
     constructor(username: string, password: string);
@@ -35,6 +36,57 @@ export class GossipSeed {
     readonly hostHeader: string;
 }
 
+export interface ProjectionDetails {
+    readonly coreProcessingTime: number,
+    readonly version: number,
+    readonly epoch: number,
+    readonly effectiveName: string,
+    readonly writesInProgress: number,
+    readonly readsInProgress: number,
+    readonly partitionsCached: number,
+    readonly status: string,
+    readonly stateReason: string,
+    readonly name: string,
+    readonly mode: string,
+    readonly position: string,
+    readonly progress: number,
+    readonly lastCheckpoint: string,
+    readonly eventsProcessedAfterRestart: number,
+    readonly statusUrl: string,
+    readonly stateUrl: string,
+    readonly resultUrl: string,
+    readonly queryUrl: string,
+    readonly enableCommandUrl: string,
+    readonly disableCommandUrl: string,
+    readonly checkpointStatus: string,
+    readonly bufferedEvents: number,
+    readonly writePendingEventsBeforeCheckpoint: number,
+    readonly writePendingEventsAfterCheckpoint: number
+}
+
+export class ProjectionsManager {
+    constructor(log: Logger, httpEndPoint: string, operationTimeout: number);
+    enable(name: string, userCredentials: UserCredentials): Promise<void>;
+    disable(name: string, userCredentials: UserCredentials): Promise<void>;
+    abort(name: string, userCredentials: UserCredentials): Promise<void>;
+    createOneTime(query: string, userCredentials: UserCredentials): Promise<void>;
+    createTransient(name: string, query: string, userCredentials: UserCredentials): Promise<void>;
+    createContinuous(name: string, query: string, trackEmittedStreams: boolean, userCredentials: UserCredentials): Promise<void>;
+    listAll(userCredentials: UserCredentials): Promise<ProjectionDetails[]>;
+    listOneTime(userCredentials: UserCredentials): Promise<ProjectionDetails[]>;
+    listContinuous(userCredentials: UserCredentials): Promise<ProjectionDetails[]>;
+    getStatus(name: string, userCredentials: UserCredentials): Promise<string>;
+    getState(name: string, userCredentials: UserCredentials): Promise<string>;
+    getPartitionState(name: string, partitionId: string, userCredentials: UserCredentials): Promise<string>;
+    getResult(name: string, userCredentials: UserCredentials): Promise<string>;
+    getPartitionResult(name: string, partitionId: string, userCredentials: UserCredentials): Promise<string>;
+    getStatistics(name: string, userCredentials: UserCredentials): Promise<string>;
+    getQuery(name: string, userCredentials: UserCredentials): Promise<string>;
+    getState(name: string, userCredentials: UserCredentials): Promise<string>;
+    updateQuery(name: string, query: string, userCredentials: UserCredentials): Promise<void>;
+    deleteQuery(name: string, deleteEmittedStreams: boolean, userCredentials: UserCredentials): Promise<void>;
+}
+
 // Expose errors
 export class WrongExpectedVersionError {
     readonly name: string;
@@ -59,8 +111,12 @@ export class AccessDeniedError {
     readonly transactionId?: Long;
 }
 
-// Expose enums/constants
+export class ProjectionCommandFailedError {
+    readonly httpStatusCode: number;
+    readonly message: string;
+}
 
+// Expose enums/constants
 export namespace expectedVersion {
     const any: number;
     const noStream: number;
@@ -72,12 +128,17 @@ export namespace positions {
     const end: Position;
 }
 
+export namespace streamPosition {
+    const start: number;
+    const end: number;
+}
+
+//TODO
 // systemMetadata
 // eventReadStatus
 // sliceReadStatus
 
 // Expose loggers
-
 export interface Logger {
     debug(fmt: string, ...args: any[]): void;
     info(fmt: string, ...args: any[]): void;
@@ -228,12 +289,12 @@ export interface TcpEndPoint {
 }
 
 export interface HeartbeatInfo {
-    connectionId: string;
-    remoteEndPoint: TcpEndPoint;
-    requestSentAt: number;
-    requestPkgNumber: number;
-    responseReceivedAt: number;
-    responsePkgNumber: number;
+    readonly connectionId: string;
+    readonly remoteEndPoint: TcpEndPoint;
+    readonly requestSentAt: number;
+    readonly requestPkgNumber: number;
+    readonly responseReceivedAt: number;
+    readonly responsePkgNumber: number;
 }
 
 export interface EventData {
@@ -277,7 +338,6 @@ export interface EventStoreNodeConnection {
 }
 
 // Expose helper functions
-
 export interface ConnectionSettings {
     log?: Logger,
     verboseLogging?: boolean,
@@ -310,58 +370,7 @@ export interface ConnectionSettings {
     gossipTimeout?: number
 }
 
+// Expose Helper functions
 export function createConnection(settings: ConnectionSettings, endPointOrGossipSeed: string | TcpEndPoint | GossipSeed[], connectionName?: string): EventStoreNodeConnection;
 export function createJsonEventData(eventId: string, event: any, metadata?: any, type?: string): EventData;
 export function createEventData(eventId: string, type: string, isJson: boolean, data: Buffer, metadata?: Buffer): EventData;
-
-// Projections
-export interface ProjectionDetails {
-    coreProcessingTime: number,
-    version: number,
-    epoch: number,
-    effectiveName: string,
-    writesInProgress: number,
-    readsInProgress: number,
-    partitionsCached: number,
-    status: string,
-    stateReason: string,
-    name: string,
-    mode: string,
-    position: string,
-    progress: number,
-    lastCheckpoint: string,
-    eventsProcessedAfterRestart: number,
-    statusUrl: string,
-    stateUrl: string,
-    resultUrl: string,
-    queryUrl: string,
-    enableCommandUrl: string,
-    disableCommandUrl: string,
-    checkpointStatus: string,
-    bufferedEvents: number,
-    writePendingEventsBeforeCheckpoint: number,
-    writePendingEventsAfterCheckpoint: number
-}
-
-export class ProjectionsManager {
-    constructor(log: Logger, httpEndPoint: string, operationTimeout: number);
-    enable(name: string, userCredentials: UserCredentials): Promise<void>;
-    disable(name: string, userCredentials: UserCredentials): Promise<void>;
-    abort(name: string, userCredentials: UserCredentials): Promise<void>;
-    createOneTime(query: string, userCredentials: UserCredentials): Promise<void>;
-    createTransient(name: string, query: string, userCredentials: UserCredentials): Promise<void>;
-    createContinuous(name: string, query: string, trackEmittedStreams: boolean, userCredentials: UserCredentials): Promise<void>;
-    listAll(userCredentials: UserCredentials): Promise<ProjectionDetails[]>;
-    listOneTime(userCredentials: UserCredentials): Promise<ProjectionDetails[]>;
-    listContinuous(userCredentials: UserCredentials): Promise<ProjectionDetails[]>;
-    getStatus(name: string, userCredentials: UserCredentials): Promise<string>;
-    getState(name: string, userCredentials: UserCredentials): Promise<string>;
-    getPartitionState(name: string, partitionId: string, userCredentials: UserCredentials): Promise<string>;
-    getResult(name: string, userCredentials: UserCredentials): Promise<string>;
-    getPartitionResult(name: string, partitionId: string, userCredentials: UserCredentials): Promise<string>;
-    getStatistics(name: string, userCredentials: UserCredentials): Promise<string>;
-    getQuery(name: string, userCredentials: UserCredentials): Promise<string>;
-    getState(name: string, userCredentials: UserCredentials): Promise<string>;
-    updateQuery(name: string, query: string, userCredentials: UserCredentials): Promise<void>;
-    deleteQuery(name: string, deleteEmittedStreams: boolean, userCredentials: UserCredentials): Promise<void>;
-}

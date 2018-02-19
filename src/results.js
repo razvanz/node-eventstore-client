@@ -30,6 +30,8 @@ Position.prototype.toString = function() {
   return [this.commitPosition.toString(), this.preparePosition.toString()].join("/");
 };
 
+Position.start = new Position(0,0);
+Position.end = new Position(-1,-1);
 
 const EventReadStatus = {
   Success: 'success',

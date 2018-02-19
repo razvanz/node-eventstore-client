@@ -4,14 +4,22 @@ var results = require('./results');
 const expectedVersion = {
   any: -2,
   noStream: -1,
-  emptyStream: -1
+  emptyStream: -1,
+  streamExists: -4
 };
 Object.freeze(expectedVersion);
+
 const positions = {
   start: new results.Position(0, 0),
   end: new results.Position(-1, -1)
 };
 Object.freeze(positions);
+
+const streamPosition = {
+  start: 0,
+  end: -1
+};
+Object.freeze(streamPosition);
 
 /**
  * Create an EventData object from JavaScript event/metadata that will be serialized as json
@@ -60,6 +68,7 @@ module.exports.ProjectionCommandFailedError = require('./errors/projectionComman
 // Expose enums/constants
 module.exports.expectedVersion = expectedVersion;
 module.exports.positions = positions;
+module.exports.streamPosition = streamPosition;
 module.exports.systemMetadata = require('./common/systemMetadata');
 module.exports.eventReadStatus = results.EventReadStatus;
 module.exports.sliceReadStatus = require('./sliceReadStatus');
