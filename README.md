@@ -5,7 +5,6 @@ A port of the EventStore .Net ClientAPI to Node.js
 
 ### Missing features:
 
-- Ssl connection
 - Set system settings
 
 ### Areas to improve
@@ -26,9 +25,9 @@ Install using `npm install node-eventstore-client`
 - Node.js >= 4.0
 - Modules: [long](https://www.npmjs.org/package/long), [protobufjs](https://www.npmjs.org/package/protobufjs), [uuid](https://www.npmjs.org/package/uuid) (installed via `npm install`)
 
-### Install & run an Eventstore on localhost
+### Install and run an Eventstore on localhost
 
-See https://eventstore.org/docs/introduction/4.0.2/
+See https://eventstore.org/docs/introduction/4.1.0/
 
 *Note: If you are using a version of EventStore prior to 3.9.4, you need to use version 0.1.x of this package `npm install node-eventstore-client@^0.1`.*  
 
@@ -115,7 +114,15 @@ To generate a test event, open a separate console and run:
 
 To run the tests it is recommended that you use an in-memory instance of the eventstore so you don't pollute your dev instance.
 
-    EventStore.ClusterNode.exe --run-projections=all --memdb
+    EventStore.ClusterNode.exe --run-projections=all --memdb –certificate-file=yourcert.pfx
+    or
+    ./run-node.sh --run-projections=all --memdb –certificate-file=yourcert.p12
+    
+For SSL setup see:
+
+https://eventstore.org/docs/server/setting_up_ssl/  
+or  
+https://eventstore.org/docs/server/setting_up_ssl_linux/
 
 To execute the tests suites simply run
 

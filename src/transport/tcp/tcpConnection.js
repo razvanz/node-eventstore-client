@@ -1,4 +1,5 @@
 var net = require('net');
+var tls = require('tls');
 var createBufferSegment = require('../../common/bufferSegment');
 
 const MaxSendPacketSize = 64 * 1024;
@@ -136,11 +137,16 @@ TcpConnection.prototype._closeInternal = function(err, reason) {
 };
 
 TcpConnection.createConnectingConnection = function(
-    log, connectionId, remoteEndPoint, connectionTimeout,
-    onConnectionEstablished, onConnectionFailed, onConnectionClosed
+    log, connectionId, remoteEndPoint, ssl, targetHost, validateServer,
+    connectionTimeout, onConnectionEstablished, onConnectionFailed, onConnectionClosed
 ) {
   var connection = new TcpConnection(log, connectionId, remoteEndPoint, onConnectionClosed);
-  var socket = net.connect(remoteEndPoint.port, remoteEndPoint.host);
+  var provider = ssl ? tls : net;
+  var options = {
+    servername: targetHost,
+    rejectUnauthorized: validateServer
+  };
+  var socket = provider.connect(remoteEndPoint.port, remoteEndPoint.host, options);
   function onError(err) {
     if (onConnectionFailed)
       onConnectionFailed(connection, err);

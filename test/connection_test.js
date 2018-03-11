@@ -72,7 +72,24 @@ module.exports = {
       if (err) return test.done(err);
       test.done();
     }
-  }*/
+  }*/,
+  'Connect to secure tcp endpoint': function(test) {
+    var conn = client.createConnection({
+      useSslConnection: true,
+      targetHost: 'localhost',
+      validateServer: false
+    }, 'tcp://localhost:1115');
+    conn.on('error', function (err) {
+      test.done(err);
+    });
+    conn.connect()
+      .catch(function (err) {
+        test.done(err);
+      });
+    conn.on('connected', function () {
+      test.done();
+    });
+  }
 };
 
 testBase.init(module.exports, false);

@@ -38,15 +38,14 @@ function TcpPackageConnection(
   this._framer = new LengthPrefixMessageFramer();
   this._framer.registerMessageArrivedCallback(this._incomingMessageArrived.bind(this));
 
-  //TODO ssl
   var self = this;
   this._connection = TcpConnection.createConnectingConnection(
       log,
       connectionId,
       remoteEndPoint,
-      //ssl,
-      //targetHost,
-      //validateServer,
+      ssl,
+      targetHost,
+      validateServer,
       timeout,
       function(tcpConnection) {
         log.debug("TcpPackageConnection: connected to [%j, L%j, %s].", tcpConnection.remoteEndPoint, tcpConnection.localEndPoint, connectionId);
