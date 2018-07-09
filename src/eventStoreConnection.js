@@ -121,6 +121,27 @@ function createFromGossipSeeds(connectionSettings, gossipSeeds, connectionName) 
  * @public
  * @alias createConnection
  * @param {object} settings
+ * @param {boolean} [settings.verboseLogging=false]
+ * @param {number} [settings.maxQueueSize=5000]
+ * @param {number} [settings.maxConcurrentItems=5000]
+ * @param {number} [settings.maxRetries=10]
+ * @param {number} [settings.maxReconnections=10]
+ * @param {boolean} [settings.requireMaster=true]
+ * @param {number} [settings.reconnectionDelay=100]
+ * @param {number} [settings.operationTimeout=7000]
+ * @param {number} [settings.operationTimeoutCheckPeriod=1000]
+ * @param {object} [settings.defaultUserCredentials=null] - The default user credentials to use for requests
+ * @param {boolean} [settings.useSslConnection=false] - Whether to use SSL or not
+ * @param {object} [settings.targetHost=null]
+ * @param {boolean} [settings.validateServer=false]
+ * @param {boolean} [settings.failOnNoServerResponse=false]
+ * @param {number} [settings.heartbeatInterval=750]
+ * @param {number} [settings.heartbeatTimeout=1500]
+ * @param {number} [settings.clientConnectionTimeout=1000]
+ * @param {string} [settings.clusterDns='']
+ * @param {number} [settings.maxDiscoverAttempts=10]
+ * @param {number} [settings.externalGossipPort=0]
+ * @param {number} [settings.gossipTimeout=1000]
  * @param {string|object|array} endPointOrGossipSeeds
  * @param {string} [connectionName]
  * @returns {EventStoreNodeConnection}
