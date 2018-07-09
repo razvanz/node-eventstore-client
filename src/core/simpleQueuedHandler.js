@@ -1,8 +1,6 @@
 function typeName(t) {
-  if (typeof t === 'function')
-    return t.name;
-  if (typeof t === 'object')
-    return t.constructor.name;
+  if (typeof t === 'function') return t.name;
+  if (typeof t === 'object') return t.constructor.name;
   throw new TypeError('type must be a function or object, not ' + typeof t);
 }
 
@@ -36,8 +34,7 @@ SimpleQueuedHandler.prototype._processQueue = function() {
   while(message) {
     var typeId = typeName(message);
     var handler = this._handlers[typeId];
-    if (!handler)
-        throw new Error("No handler registered for message " + typeId);
+    if (!handler) throw new Error("No handler registered for message " + typeId);
     setImmediate(handler, message);
     message = this._messages.shift();
   }

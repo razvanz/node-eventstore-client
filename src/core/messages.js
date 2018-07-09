@@ -1,5 +1,4 @@
 var util = require('util');
-var ensure = require('../common/utils/ensure');
 
 function Message() {
 }

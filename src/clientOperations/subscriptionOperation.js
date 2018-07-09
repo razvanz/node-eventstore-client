@@ -1,5 +1,4 @@
 var util = require('util');
-var uuid = require('uuid');
 
 var TcpCommand = require('../systemData/tcpCommand');
 var TcpFlags = require('../systemData/tcpFlags');
@@ -46,8 +45,7 @@ SubscriptionOperation.prototype._enqueueSend = function(pkg) {
 SubscriptionOperation.prototype.subscribe = function(correlationId, connection) {
   if (connection === null) throw new TypeError("connection is null.");
 
-  if (this._subscription !== null || this._unsubscribed)
-    return false;
+  if (this._subscription !== null || this._unsubscribed) return false;
 
   this._correlationId = correlationId;
   connection.enqueueSend(this._createSubscriptionPackage());
@@ -76,9 +74,7 @@ SubscriptionOperation.prototype.inspectPackage = function(pkg) {
   try
   {
     var result = this._inspectPackage(pkg);
-    if (result !== null) {
-      return result;
-    }
+    if (result !== null) return result;
 
     switch (pkg.command)
     {
@@ -128,8 +124,9 @@ SubscriptionOperation.prototype.inspectPackage = function(pkg) {
 
       case TcpCommand.NotHandled:
       {
-        if (this._subscription !== null)
+        if (this._subscription !== null) {
           throw new Error("NotHandled command appeared while we already subscribed.");
+        }
 
         var message = ClientMessage.NotHandled.decode(pkg.data.toBuffer());
         switch (message.reason)
@@ -172,8 +169,7 @@ SubscriptionOperation.prototype.connectionClosed = function() {
 };
 
 SubscriptionOperation.prototype.timeOutSubscription = function() {
-  if (this._subscription !== null)
-    return false;
+  if (this._subscription !== null) return false;
   this.dropSubscription(SubscriptionDropReason.SubscribingError, null);
   return true;
 };
@@ -182,9 +178,10 @@ SubscriptionOperation.prototype.dropSubscription = function(reason, err, connect
   if (!this._unsubscribed)
   {
     this._unsubscribed = true;
-    if (this._verboseLogging)
+    if (this._verboseLogging) {
       this._log.debug("Subscription %s to %s: closing subscription, reason: %s, exception: %s...",
-          this._correlationId, this._streamId || "<all>", reason, err);
+        this._correlationId, this._streamId || "<all>", reason, err);
+    }
 
     if (reason !== SubscriptionDropReason.UserInitiated && this._subscription === null)
     {
@@ -193,24 +190,31 @@ SubscriptionOperation.prototype.dropSubscription = function(reason, err, connect
       return;
     }
 
-    if (reason === SubscriptionDropReason.UserInitiated && this._subscription !== null && connection !== null)
+    if (reason === SubscriptionDropReason.UserInitiated && this._subscription !== null && connection !== null) {
       connection.enqueueSend(this._createUnsubscriptionPackage());
+    }
 
     var self = this;
-    if (this._subscription !== null)
-      this._executeAction(function() { self._subscriptionDropped(self._subscription, reason, err); });
+    if (this._subscription !== null) {
+      this._executeAction(function () {
+        self._subscriptionDropped(self._subscription, reason, err);
+      });
+    }
   }
 };
 
 SubscriptionOperation.prototype._confirmSubscription = function(lastCommitPosition, lastEventNumber) {
-  if (lastCommitPosition < -1)
+  if (lastCommitPosition < -1) {
     throw new Error(util.format("Invalid lastCommitPosition %s on subscription confirmation.", lastCommitPosition));
-  if (this._subscription !== null)
+  }
+  if (this._subscription !== null) {
     throw new Error("Double confirmation of subscription.");
+  }
 
-  if (this._verboseLogging)
+  if (this._verboseLogging) {
     this._log.debug("Subscription %s to %s: subscribed at CommitPosition: %d, EventNumber: %d.",
-        this._correlationId, this._streamId || "<all>", lastCommitPosition, lastEventNumber);
+      this._correlationId, this._streamId || "<all>", lastCommitPosition, lastEventNumber);
+  }
 
   this._subscription = this._createSubscriptionObject(lastCommitPosition, lastEventNumber);
   this._cb(null, this._subscription);
@@ -221,15 +225,15 @@ SubscriptionOperation.prototype._createSubscriptionObject = function(lastCommitP
 };
 
 SubscriptionOperation.prototype._onEventAppeared = function(e) {
-  if (this._unsubscribed)
-    return;
+  if (this._unsubscribed) return;
 
   if (this._subscription === null) throw new Error("Subscription not confirmed, but event appeared!");
 
-  if (this._verboseLogging)
+  if (this._verboseLogging) {
     this._log.debug("Subscription %s to %s: event appeared (%s, %d, %s @ %s).",
-        this._correlationId, this._streamId || "<all>",
-        e.originalStreamId, e.originalEventNumber, e.originalEvent.eventType, e.originalPosition);
+      this._correlationId, this._streamId || "<all>",
+      e.originalStreamId, e.originalEventNumber, e.originalEvent.eventType, e.originalPosition);
+  }
 
   var self = this;
   this._executeAction(function() { return self._eventAppeared(self._subscription, e); });

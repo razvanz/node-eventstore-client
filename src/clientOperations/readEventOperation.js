@@ -59,7 +59,6 @@ ReadEventOperation.prototype._transformResponse = function(response) {
   return new results.EventReadResult(convert(response.result), this._stream, this._eventNumber, response.event);
 };
 
-
 function convert(result)
 {
   switch (result)

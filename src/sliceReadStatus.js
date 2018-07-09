@@ -1,8 +1,7 @@
-const SliceReadStatus = {
+const SliceReadStatus = Object.freeze({
   Success: 'success',
   StreamNotFound: 'streamNotFound',
   StreamDeleted: 'streamDeleted'
-};
-Object.freeze(SliceReadStatus);
+});
 
 module.exports = SliceReadStatus;

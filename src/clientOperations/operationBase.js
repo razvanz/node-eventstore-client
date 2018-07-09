@@ -42,10 +42,11 @@ OperationBase.prototype._succeed = function() {
   if (!this._completed) {
     this._completed = true;
 
-    if (this._response)
+    if (this._response) {
       this._cb(null, this._transformResponse(this._response));
-    else
+    } else {
       this._cb(new Error("No result."))
+    }
   }
 };
 
@@ -130,8 +131,7 @@ OperationBase.prototype._inspectNotHandled = function(pkg)
 
 OperationBase.prototype._inspectUnexpectedCommand = function(pkg, expectedCommand)
 {
-  if (pkg.command === expectedCommand)
-    throw new Error("Command shouldn't be " + TcpCommand.getName(pkg.command));
+  if (pkg.command === expectedCommand) throw new Error("Command shouldn't be " + TcpCommand.getName(pkg.command));
 
   this.log.error("Unexpected TcpCommand received.\n"
       + "Expected: %s, Actual: %s, Flags: %s, CorrelationId: %s\n"

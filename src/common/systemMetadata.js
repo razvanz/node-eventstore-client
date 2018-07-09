@@ -1,4 +1,4 @@
-const SystemMetadata = {
+const SystemMetadata = Object.freeze({
   maxAge: '$maxAge',
   maxCount: '$maxCount',
   truncateBefore: '$tb',
@@ -11,7 +11,6 @@ const SystemMetadata = {
   aclMetaWrite: '$mw',
   userStreamAcl: '$userStreamAcl',
   systemStreamAcl: '$systemStreamAcl'
-};
-Object.freeze(SystemMetadata);
+});
 
 module.exports = SystemMetadata;

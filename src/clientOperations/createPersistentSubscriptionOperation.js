@@ -1,5 +1,4 @@
 var util = require('util');
-var uuid = require('uuid');
 
 var ensure = require('../common/utils/ensure');
 var OperationBase = require('../clientOperations/operationBase');

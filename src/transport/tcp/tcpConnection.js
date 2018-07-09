@@ -62,14 +62,11 @@ TcpConnection.prototype._trySend = function() {
   while(sendPiece = this._sendQueue.shift()) {
     buffers.push(sendPiece);
     bytes += sendPiece.length;
-    if (bytes > MaxSendPacketSize)
-        break;
+    if (bytes > MaxSendPacketSize) break;
   }
 
   var joinedBuffers = Buffer.concat(buffers, bytes);
-  if (!this._socket.write(joinedBuffers)) {
-    return;
-  }
+  if (!this._socket.write(joinedBuffers)) return;
 
   setImmediate(this._trySend.bind(this));
 };
@@ -97,8 +94,7 @@ TcpConnection.prototype.receive = function(cb) {
 };
 
 TcpConnection.prototype._tryDequeueReceivedData = function() {
-  if (this._receiveCallback === null || this._receiveQueue.length === 0)
-      return;
+  if (this._receiveCallback === null || this._receiveQueue.length === 0) return;
 
   var res = [];
   while(this._receiveQueue.length > 0) {
@@ -112,8 +108,9 @@ TcpConnection.prototype._tryDequeueReceivedData = function() {
   callback(this, res);
 
   var bytes = 0;
-  for(var i=0;i<res.length;i++)
+  for(var i=0;i<res.length;i++) {
     bytes += res[i].count;
+  }
 
   //this._pendingReceivedBytes -= bytes;
 };
@@ -132,8 +129,7 @@ TcpConnection.prototype._closeInternal = function(err, reason) {
     this._socket = null;
   }
 
-  if (this._onConnectionClosed !== null)
-      this._onConnectionClosed(this, err);
+  if (this._onConnectionClosed !== null) this._onConnectionClosed(this, err);
 };
 
 TcpConnection.createConnectingConnection = function(
@@ -155,8 +151,7 @@ TcpConnection.createConnectingConnection = function(
   socket.on('connect', function() {
     socket.removeListener('error', onError);
     connection._initSocket(socket);
-    if (onConnectionEstablished)
-      onConnectionEstablished(connection);
+    if (onConnectionEstablished) onConnectionEstablished(connection);
   });
   return connection;
 };

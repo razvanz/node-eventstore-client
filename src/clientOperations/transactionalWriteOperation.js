@@ -65,4 +65,3 @@ TransactionalWriteOperation.prototype.toString = function() {
 };
 
 module.exports = TransactionalWriteOperation;
-

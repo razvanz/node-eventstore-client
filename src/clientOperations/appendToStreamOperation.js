@@ -44,8 +44,7 @@ AppendToStreamOperation.prototype._inspectResponse = function(response) {
   switch (response.result)
   {
     case ClientMessage.OperationResult.Success:
-      if (this._wasCommitTimeout)
-        this.log.debug("IDEMPOTENT WRITE SUCCEEDED FOR %s.", this);
+      if (this._wasCommitTimeout) this.log.debug("IDEMPOTENT WRITE SUCCEEDED FOR %s.", this);
       this._succeed();
       return new InspectionResult(InspectionDecision.EndOperation, "Success");
     case ClientMessage.OperationResult.PrepareTimeout:

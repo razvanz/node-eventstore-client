@@ -34,18 +34,19 @@ ClusterDnsEndPointDiscoverer.prototype.discover = function(failedTcpEndPoint) {
   function discover(resolve, reject) {
     self._discoverEndPoint(failedTcpEndPoint)
       .then(function (endPoints) {
-        if (!endPoints)
+        if (!endPoints) {
           self._log.info(util.format("Discovering attempt %d/%d failed: no candidate found.", attempt, self._maxDiscoverAttempts));
+        }
         return endPoints;
       })
       .catch(function (exc) {
         self._log.info(util.format("Discovering attempt %d/%d failed with error: %s.\n%s", attempt, self._maxDiscoverAttempts, exc, exc.stack));
       })
       .then(function (endPoints) {
-        if (endPoints)
-          return resolve(endPoints);
-        if (attempt++ === self._maxDiscoverAttempts)
+        if (endPoints) return resolve(endPoints);
+        if (attempt++ === self._maxDiscoverAttempts) {
           return reject(new Error('Failed to discover candidate in ' + self._maxDiscoverAttempts + ' attempts.'));
+        }
         setTimeout(discover, 500, resolve, reject);
       });
   }
@@ -74,8 +75,7 @@ ClusterDnsEndPointDiscoverer.prototype._discoverEndPoint = function (failedTcpEn
           if (endPoints) return endPoints;
           return self._tryGetGossipFrom(gossipCandidates[j++])
             .then(function (gossip) {
-              if (!gossip || !gossip.members || gossip.members.length === 0)
-                return;
+              if (!gossip || !gossip.members || gossip.members.length === 0) return;
               var bestNode = self._tryDetermineBestNode(gossip.members);
               if (bestNode) {
                 self._oldGossip = gossip.members;
@@ -105,10 +105,11 @@ ClusterDnsEndPointDiscoverer.prototype._arrangeGossipCandidates = function (memb
   var j = members.length;
   for (var k = 0; k < members.length; ++k)
   {
-    if (members[k].state === 'Manager')
+    if (members[k].state === 'Manager') {
       result[--j] = new GossipSeed({host: members[k].externalHttpIp, port: members[k].externalHttpPort});
-    else
+    } else {
       result[++i] = new GossipSeed({host: members[k].externalHttpIp, port: members[k].externalHttpPort});
+    }
   }
   this._randomShuffle(result, 0, i); // shuffle nodes
   this._randomShuffle(result, j, members.length - 1); // shuffle managers
@@ -122,8 +123,7 @@ ClusterDnsEndPointDiscoverer.prototype._getGossipCandidatesFromDns = function ()
       var endpoints = self._gossipSeeds;
       self._randomShuffle(endpoints, 0, endpoints.length - 1);
       resolve(endpoints);
-    }
-    else {
+    } else {
       const dnsOptions = {
         family: 4,
         hints: dns.ADDRCONFIG | dns.V4MAPPED,
@@ -192,7 +192,7 @@ ClusterDnsEndPointDiscoverer.prototype._tryGetGossipFrom = function (endPoint) {
   });
 };
 
-const VNodeStates = {
+const VNodeStates = Object.freeze({
   'Initializing': 0,
   'Unknown': 1,
   'PreReplica': 2,
@@ -204,7 +204,7 @@ const VNodeStates = {
   'Manager': 8,
   'ShuttingDown': 9,
   'Shutdown': 10
-};
+});
 
 ClusterDnsEndPointDiscoverer.prototype._tryDetermineBestNode = function (members) {
   var notAllowedStates = [
@@ -240,8 +240,7 @@ function rndNext(min, max) {
 }
 
 ClusterDnsEndPointDiscoverer.prototype._randomShuffle = function (arr, i, j) {
-  if (i >= j)
-    return;
+  if (i >= j) return;
   for (var k = i; k <= j; ++k)
   {
     var index = rndNext(k, j + 1);

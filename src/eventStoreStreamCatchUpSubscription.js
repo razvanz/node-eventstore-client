@@ -49,19 +49,18 @@ EventStoreStreamCatchUpSubscription.prototype._readEventsTill = function(
                   .then(function() {
                     self._nextReadEventNumber = slice.nextEventNumber;
                     var done = Promise.resolve(lastEventNumber === null ? slice.isEndOfStream : slice.nextEventNumber.compare(lastEventNumber) > 0);
-                    if (!done && slice.isEndOfStream)
-                        return delay(100, false);
+                    if (!done && slice.isEndOfStream) return delay(100, false);
                     return done;
                   });
-              break;
             case SliceReadStatus.StreamNotFound:
-              if (lastEventNumber && lastEventNumber.compare(-1) !== 0)
+              if (lastEventNumber && lastEventNumber.compare(-1) !== 0) {
                 throw new Error(util.format("Impossible: stream %s disappeared in the middle of catching up subscription.", self.streamId));
+              }
               return true;
             case SliceReadStatus.StreamDeleted:
               throw new Error("Stream deleted: " + self.streamId);
             default:
-              throw new Error("Unexpected StreamEventsSlice.Status: %s.", slice.status);
+              throw new Error(util.format("Unexpected StreamEventsSlice.Status: %s.", slice.status));
           }
         })
         .then(function(done) {
@@ -72,9 +71,10 @@ EventStoreStreamCatchUpSubscription.prototype._readEventsTill = function(
   }
   return readNext()
       .then(function() {
-        if (self._verbose)
+        if (self._verbose) {
           self._log.debug("Catch-up Subscription to %s: finished reading events, nextReadEventNumber = %d.",
-              self.isSubscribedToAll ? '<all>' : self.streamId, self._nextReadEventNumber);
+            self.isSubscribedToAll ? '<all>' : self.streamId, self._nextReadEventNumber);
+        }
       });
 };
 
@@ -86,10 +86,11 @@ EventStoreStreamCatchUpSubscription.prototype._tryProcess = function(e) {
     this._lastProcessedEventNumber = e.originalEventNumber;
     processed = true;
   }
-  if (this._verbose)
+  if (this._verbose) {
     this._log.debug("Catch-up Subscription to %s: %s event (%s, %d, %s @ %d).",
-        this.isSubscribedToAll ? '<all>' : this.streamId, processed ? "processed" : "skipping",
-        e.originalEvent.eventStreamId, e.originalEvent.eventNumber, e.originalEvent.eventType, e.originalEventNumber);
+      this.isSubscribedToAll ? '<all>' : this.streamId, processed ? "processed" : "skipping",
+      e.originalEvent.eventStreamId, e.originalEvent.eventNumber, e.originalEvent.eventType, e.originalEventNumber);
+  }
   return (promise && promise.then) ? promise : Promise.resolve();
 };
 

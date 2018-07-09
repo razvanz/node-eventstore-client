@@ -1,4 +1,4 @@
-const SubscriptionDropReason = {
+const SubscriptionDropReason = Object.freeze({
   AccessDenied: 'accessDenied',
   CatchUpError: 'catchUpError',
   ConnectionClosed: 'connectionClosed',
@@ -11,6 +11,6 @@ const SubscriptionDropReason = {
   SubscribingError: 'subscribingError',
   UserInitiated: 'userInitiated',
   Unknown: 'unknown'
-};
+});
 
 module.exports = SubscriptionDropReason;
