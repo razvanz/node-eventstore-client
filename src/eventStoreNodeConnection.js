@@ -140,8 +140,7 @@ EventStoreNodeConnection.prototype.appendToStream = function(stream, expectedVer
   ensure.notNullOrEmpty(stream, "stream");
   ensure.isLongOrInteger(expectedVersion, "expectedVersion");
   expectedVersion = Long.fromValue(expectedVersion);
-  if (!Array.isArray(events))
-    events = [events];
+  if (!Array.isArray(events)) events = [events];
   ensure.isArrayOf(EventData, events, "events");
   userCredentials = userCredentials || null;
 
@@ -413,8 +412,7 @@ EventStoreNodeConnection.prototype.subscribeToStream = function(
 ) {
   ensure.notNullOrEmpty(stream, "stream");
   ensure.isTypeOf(Function, eventAppeared, "eventAppeared");
-  if (subscriptionDropped)
-    ensure.isTypeOf(Function, subscriptionDropped, "subscriptionDropped");
+  if (subscriptionDropped) ensure.isTypeOf(Function, subscriptionDropped, "subscriptionDropped");
 
   var self = this;
   return new Promise(function(resolve,reject) {
@@ -641,8 +639,9 @@ EventStoreNodeConnection.prototype.setStreamMetadataRaw = function(
     stream, expectedMetastreamVersion, metadata, userCredentials
 ) {
   ensure.notNullOrEmpty(stream, "stream");
-  if (systemStreams.isMetastream(stream))
+  if (systemStreams.isMetastream(stream)) {
     throw new Error(util.format("Setting metadata for metastream '%s' is not supported.", stream));
+  }
   ensure.isLongOrInteger(expectedMetastreamVersion, "expectedMetastreamVersion");
   expectedMetastreamVersion = Long.fromValue(expectedMetastreamVersion);
   var self = this;
@@ -713,7 +712,7 @@ EventStoreNodeConnection.prototype._enqueueOperation = function(operation) {
   var message = new messages.StartOperationMessage(operation, self._settings.maxRetries, self._settings.operationTimeout);
   function tryEnqueue() {
     if (self._handler.totalOperationCount >= self._settings.maxQueueSize) {
-      setImmediate(tryEnqueue);
+      setTimeout(tryEnqueue, 0);
       return;
     }
     self._handler.enqueueMessage(message);

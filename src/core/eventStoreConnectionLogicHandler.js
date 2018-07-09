@@ -17,14 +17,14 @@ var TcpCommand = require('../systemData/tcpCommand');
 var TcpFlags = require('../systemData/tcpFlags');
 var InspectionDecision = require('../systemData/inspectionDecision');
 
-const ConnectionState = {
+const ConnectionState = Object.freeze({
   Init: 'init',
   Connecting: 'connecting',
   Connected: 'connected',
   Closed: 'closed'
-};
+});
 
-const ConnectingPhase = {
+const ConnectingPhase = Object.freeze({
   Invalid: 'invalid',
   Reconnecting: 'reconnecting',
   EndPointDiscovery: 'endpointDiscovery',
@@ -32,7 +32,7 @@ const ConnectingPhase = {
   Authentication: 'authentication',
   Identification: 'identification',
   Connected: 'connected'
-};
+});
 
 const TimerPeriod = 200;
 const TimerTickMessage = new messages.TimerTickMessage();
@@ -187,8 +187,7 @@ EventStoreConnectionLogicHandler.prototype._closeConnection = function(reason, e
 
   this._logInfo("Closed. Reason: %s", reason);
 
-  if (error)
-      this.emit('error', error);
+  if (error) this.emit('error', error);
 
   this.emit('closed', reason);
 };
@@ -205,7 +204,7 @@ EventStoreConnectionLogicHandler.prototype._closeTcpConnection = function(reason
   this._connection = null;
 };
 
-var _nextSeqNo = -1;
+var _nextSeqNo = 0;
 function createOperationItem(operation, maxRetries, timeout) {
   var operationItem = {
     seqNo: _nextSeqNo++,
@@ -283,10 +282,11 @@ EventStoreConnectionLogicHandler.prototype._startSubscription = function(msg) {
           this._state === ConnectionState.Connected ? "fire" : "enqueue",
           operation.constructor.name, operation, msg.maxRetries, msg.timeout);
       var subscription = createSubscriptionItem(operation, msg.maxRetries, msg.timeout);
-      if (this._state === ConnectionState.Connecting)
+      if (this._state === ConnectionState.Connecting) {
         this._subscriptions.enqueueSubscription(subscription);
-      else
+      } else {
         this._subscriptions.startSubscription(subscription, this._connection);
+      }
       break;
     case ConnectionState.Closed:
       msg.cb(new Error("Connection closed. Connection: " + this._esConnection.connectionName));
@@ -312,10 +312,11 @@ EventStoreConnectionLogicHandler.prototype._startPersistentSubscription = functi
           this._state === ConnectionState.Connected ? "fire" : "enqueue",
           operation.constructor.name, operation, msg.maxRetries, msg.timeout);
       var subscription = createSubscriptionItem(operation, msg.maxRetries, msg.timeout);
-      if (this._state === ConnectionState.Connecting)
+      if (this._state === ConnectionState.Connecting) {
         this._subscriptions.enqueueSubscription(subscription);
-      else
+      } else {
         this._subscriptions.startSubscription(subscription, this._connection);
+      }
       break;
     case ConnectionState.Closed:
       msg.cb(new Error("Connection closed. " + this._esConnection.connectionName));
@@ -561,8 +562,9 @@ EventStoreConnectionLogicHandler.prototype._handleTcpPackage = function(connecti
       default:
         throw new Error("Unknown InspectionDecision: " + result.decision);
     }
-    if (this._state === ConnectionState.Connected)
+    if (this._state === ConnectionState.Connected) {
       this._operations.scheduleWaitingOperations(connection);
+    }
 
     return;
   }
@@ -609,8 +611,7 @@ EventStoreConnectionLogicHandler.prototype._reconnectTo = function(endPoints) {
     return;
   }
 
-  if (this._state !== ConnectionState.Connected || this._connection.remoteEndPoint === endPoint)
-    return;
+  if (this._state !== ConnectionState.Connected || this._connection.remoteEndPoint === endPoint) return;
 
   var msg = util.format("EventStoreConnection '%s': going to reconnect to [%j]. Current endpoint: [%j, L%j].",
       this._esConnection.connectionName, endPoint, this._connection.remoteEndPoint, this._connection.localEndPoint);
@@ -627,30 +628,26 @@ EventStoreConnectionLogicHandler.prototype._timerTick = function() {
   {
     case ConnectionState.Init: break;
     case ConnectionState.Connecting:
-      if (this._connectingPhase === ConnectingPhase.Reconnecting && (Date.now() - this._reconnInfo.timeStamp) >= this._settings.reconnectionDelay)
-      {
+      if (this._connectingPhase === ConnectingPhase.Reconnecting && (Date.now() - this._reconnInfo.timeStamp) >= this._settings.reconnectionDelay) {
         this._logDebug("TimerTick checking reconnection...");
 
         this._reconnInfo = {reconnectionAttempt: this._reconnInfo.reconnectionAttempt + 1, timeStamp: Date.now()};
-        if (this._settings.maxReconnections >= 0 && this._reconnInfo.reconnectionAttempt > this._settings.maxReconnections)
+        if (this._settings.maxReconnections >= 0 && this._reconnInfo.reconnectionAttempt > this._settings.maxReconnections) {
           this._closeConnection("Reconnection limit reached.");
-        else
-        {
+        } else {
           this.emit('reconnecting', {});
           this._discoverEndpoint(null);
         }
-      }
-      else if (this._connectingPhase === ConnectingPhase.Authentication && (Date.now() - this._authInfo.timeStamp) >= this._settings.operationTimeout)
-      {
+      } else if (this._connectingPhase === ConnectingPhase.Authentication && (Date.now() - this._authInfo.timeStamp) >= this._settings.operationTimeout) {
         this.emit('authenticationFailed', "Authentication timed out.");
         if (this._clientVersion === 1) {
           this._goToIdentifiedState();
         } else {
           this._goToConnectedState();
         }
-      }
-      else if (this._connectingPhase === ConnectingPhase.Authentication || this._connectingPhase === ConnectingPhase.Connected)
+      } else if (this._connectingPhase === ConnectingPhase.Authentication || this._connectingPhase === ConnectingPhase.Connected) {
         this._manageHeartbeats();
+      }
       break;
     case ConnectionState.Connected:
       // operations timeouts are checked only if connection is established and check period time passed
@@ -677,8 +674,7 @@ EventStoreConnectionLogicHandler.prototype._manageHeartbeats = function() {
   if (this._connection === null) return;
 
   var timeout = this._heartbeatInfo.isIntervalStage ? this._settings.heartbeatInterval : this._settings.heartbeatTimeout;
-  if ((Date.now() - this._heartbeatInfo.timeStamp) < timeout)
-    return;
+  if ((Date.now() - this._heartbeatInfo.timeStamp) < timeout) return;
 
   var packageNumber = this._packageNumber;
   if (this._heartbeatInfo.lastPackageNumber !== packageNumber)
@@ -711,15 +707,17 @@ EventStoreConnectionLogicHandler.prototype._manageHeartbeats = function() {
 EventStoreConnectionLogicHandler.prototype._logDebug = function(message) {
   if (!this._settings.verboseLogging) return;
 
-  if (arguments.length > 1)
-      message = util.format.apply(util, Array.prototype.slice.call(arguments));
+  if (arguments.length > 1) {
+    message = util.format.apply(util, Array.prototype.slice.call(arguments));
+  }
 
   this._settings.log.debug("EventStoreConnection '%s': %s", this._esConnection.connectionName, message);
 };
 
 EventStoreConnectionLogicHandler.prototype._logInfo = function(message){
-  if (arguments.length > 1)
+  if (arguments.length > 1) {
     message = util.format.apply(util, Array.prototype.slice.call(arguments));
+  }
 
   this._settings.log.info("EventStoreConnection '%s': %s", this._esConnection.connectionName, message);
 };

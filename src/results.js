@@ -19,10 +19,12 @@ function Position(commitPosition, preparePosition) {
 }
 
 Position.prototype.compareTo = function(other) {
-  if (this.commitPosition.lt(other.commitPosition) || (this.commitPosition.eq(other.commitPosition)&& this.preparePosition.lt(other.preparePosition)))
+  if (this.commitPosition.lt(other.commitPosition) || (this.commitPosition.eq(other.commitPosition)&& this.preparePosition.lt(other.preparePosition))) {
     return -1;
-  if (this.commitPosition.gt(other.commitPosition) || (this.commitPosition.eq(other.commitPosition) && this.preparePosition.gt(other.preparePosition)))
+  }
+  if (this.commitPosition.gt(other.commitPosition) || (this.commitPosition.eq(other.commitPosition) && this.preparePosition.gt(other.preparePosition))) {
     return 1;
+  }
   return 0;
 };
 
@@ -33,13 +35,12 @@ Position.prototype.toString = function() {
 Position.start = new Position(0,0);
 Position.end = new Position(-1,-1);
 
-const EventReadStatus = {
+const EventReadStatus = Object.freeze({
   Success: 'success',
   NotFound: 'notFound',
   NoStream: 'noStream',
   StreamDeleted: 'streamDeleted'
-};
-Object.freeze(EventReadStatus);
+});
 
 /**
  * @param {object} ev
@@ -204,12 +205,11 @@ function RawStreamMetadataResult(stream, isStreamDeleted, metastreamVersion, str
   Object.freeze(this);
 }
 
-const PersistentSubscriptionCreateStatus = {
+const PersistentSubscriptionCreateStatus = Object.freeze({
   Success: 'success',
   NotFound: 'notFound',
   Failure: 'failure'
-};
-Object.freeze(PersistentSubscriptionCreateStatus);
+});
 
 /**
  * @param {string} status
@@ -221,13 +221,12 @@ function PersistentSubscriptionCreateResult(status) {
   Object.freeze(this);
 }
 
-const PersistentSubscriptionUpdateStatus = {
+const PersistentSubscriptionUpdateStatus = Object.freeze({
   Success: 'success',
   NotFound: 'notFound',
   Failure: 'failure',
   AccessDenied: 'accessDenied'
-};
-Object.freeze(PersistentSubscriptionUpdateStatus);
+});
 
 /**
  * @param {string} status
@@ -239,11 +238,10 @@ function PersistentSubscriptionUpdateResult(status) {
   Object.freeze(this);
 }
 
-const PersistentSubscriptionDeleteStatus = {
+const PersistentSubscriptionDeleteStatus = Object.freeze({
   Success: 'success',
   Failure: 'failure'
-};
-Object.freeze(PersistentSubscriptionDeleteStatus);
+});
 
 /**
  * @param {string} status
@@ -256,18 +254,18 @@ function PersistentSubscriptionDeleteResult(status) {
 }
 
 // Exports Constructors
-module.exports.Position = Position;
-module.exports.ResolvedEvent = ResolvedEvent;
-module.exports.EventReadStatus = EventReadStatus;
-module.exports.EventReadResult = EventReadResult;
-module.exports.WriteResult = WriteResult;
-module.exports.StreamEventsSlice = StreamEventsSlice;
-module.exports.AllEventsSlice = AllEventsSlice;
-module.exports.DeleteResult = DeleteResult;
-module.exports.RawStreamMetadataResult = RawStreamMetadataResult;
-module.exports.PersistentSubscriptionCreateResult = PersistentSubscriptionCreateResult;
-module.exports.PersistentSubscriptionCreateStatus = PersistentSubscriptionCreateStatus;
-module.exports.PersistentSubscriptionUpdateResult = PersistentSubscriptionUpdateResult;
-module.exports.PersistentSubscriptionUpdateStatus = PersistentSubscriptionUpdateStatus;
-module.exports.PersistentSubscriptionDeleteResult = PersistentSubscriptionDeleteResult;
-module.exports.PersistentSubscriptionDeleteStatus = PersistentSubscriptionDeleteStatus;
+exports.Position = Position;
+exports.ResolvedEvent = ResolvedEvent;
+exports.EventReadStatus = EventReadStatus;
+exports.EventReadResult = EventReadResult;
+exports.WriteResult = WriteResult;
+exports.StreamEventsSlice = StreamEventsSlice;
+exports.AllEventsSlice = AllEventsSlice;
+exports.DeleteResult = DeleteResult;
+exports.RawStreamMetadataResult = RawStreamMetadataResult;
+exports.PersistentSubscriptionCreateResult = PersistentSubscriptionCreateResult;
+exports.PersistentSubscriptionCreateStatus = PersistentSubscriptionCreateStatus;
+exports.PersistentSubscriptionUpdateResult = PersistentSubscriptionUpdateResult;
+exports.PersistentSubscriptionUpdateStatus = PersistentSubscriptionUpdateStatus;
+exports.PersistentSubscriptionDeleteResult = PersistentSubscriptionDeleteResult;
+exports.PersistentSubscriptionDeleteStatus = PersistentSubscriptionDeleteStatus;

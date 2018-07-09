@@ -1,12 +1,10 @@
 var util = require('util');
-var uuid = require('uuid');
 
 var TcpCommand = require('../systemData/tcpCommand');
 var InspectionDecision = require('../systemData/inspectionDecision');
 var InspectionResult = require('./../systemData/inspectionResult');
 var ClientMessage = require('../messages/clientMessage');
 var EventStoreTransaction = require('../eventStoreTransaction');
-var results = require('../results');
 var AccessDeniedError = require('../errors/accessDeniedError');
 var WrongExpectedVersionError = require('../errors/wrongExpectedVersionError');
 var StreamDeletedError = require('../errors/streamDeletedError');

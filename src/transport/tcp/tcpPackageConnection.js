@@ -1,5 +1,4 @@
 var util = require('util');
-var uuid = require('uuid');
 
 var LengthPrefixMessageFramer = require('./lengthPrefixMessageFramer');
 var TcpConnection = require('./tcpConnection');
@@ -57,8 +56,7 @@ function TcpPackageConnection(
       },
       function (conn, had_error) {
         var error;
-        if (had_error)
-            error = new Error('transmission error.');
+        if (had_error) error = new Error('transmission error.');
 
         log.debug("TcpPackageConnection: connection [%j, L%j, %s] was closed %s", conn.remoteEndPoint, conn.localEndPoint,
             connectionId, had_error ? "with error: " + error + "." : "cleanly.");
@@ -120,27 +118,23 @@ TcpPackageConnection.prototype._incomingMessageArrived = function(data) {
     var message = util.format("TcpPackageConnection: [%j, L%j, %s] ERROR for %s. Connection will be closed.",
         this.remoteEndPoint, this.localEndPoint, this._connectionId,
         valid ? TcpCommand.getName(pkg.command) : "<invalid package>");
-    if (this._onError !== null)
-      this._onError(this, e);
+    if (this._onError !== null) this._onError(this, e);
     this._log.debug(e, message);
   }
 };
 
 TcpPackageConnection.prototype.startReceiving = function() {
-  if (this._connection === null)
-    throw new Error("Failed connection.");
+  if (this._connection === null) throw new Error("Failed connection.");
   this._connection.receive(this._onRawDataReceived.bind(this));
 };
 
 TcpPackageConnection.prototype.enqueueSend = function(pkg) {
-  if (this._connection === null)
-    throw new Error("Failed connection.");
+  if (this._connection === null) throw new Error("Failed connection.");
   this._connection.enqueueSend(this._framer.frameData(pkg.asBufferSegment()));
 };
 
 TcpPackageConnection.prototype.close = function(reason) {
-  if (this._connection === null)
-    throw new Error("Failed connection.");
+  if (this._connection === null) throw new Error("Failed connection.");
   this._connection.close(reason);
 };
 

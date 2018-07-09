@@ -1,5 +1,4 @@
 var util = require('util');
-var uuid = require('uuid');
 
 var TcpCommand = require('../systemData/tcpCommand');
 var ClientMessage = require('../messages/clientMessage');

@@ -19,8 +19,7 @@ function TcpPackage(command, flags, correlationId, login, password, data) {
 }
 
 TcpPackage.fromBufferSegment = function(data) {
-  if (data.length < MandatorySize)
-    throw new Error("ArraySegment too short, length: " + data.length);
+  if (data.length < MandatorySize) throw new Error("ArraySegment too short, length: " + data.length);
 
   var command = data.buffer[data.offset + CommandOffset];
   var flags = data.buffer[data.offset + FlagsOffset];
@@ -32,13 +31,15 @@ TcpPackage.fromBufferSegment = function(data) {
   if ((flags & TcpFlags.Authenticated) !== 0)
   {
     var loginLen = data.buffer[data.offset + AuthOffset];
-    if (AuthOffset + 1 + loginLen + 1 >= data.count)
-        throw new Error("Login length is too big, it doesn't fit into TcpPackage.");
+    if (AuthOffset + 1 + loginLen + 1 >= data.count) {
+      throw new Error("Login length is too big, it doesn't fit into TcpPackage.");
+    }
     login = data.buffer.toString('utf8', data.offset + AuthOffset + 1, data.offset + AuthOffset + 1 + loginLen);
 
     var passLen = data.buffer[data.offset + AuthOffset + 1 + loginLen];
-    if (AuthOffset + 1 + loginLen + 1 + passLen > data.count)
-        throw new Error("Password length is too big, it doesn't fit into TcpPackage.");
+    if (AuthOffset + 1 + loginLen + 1 + passLen > data.count) {
+      throw new Error("Password length is too big, it doesn't fit into TcpPackage.");
+    }
     headerSize += 1 + loginLen + 1 + passLen;
     pass = data.buffer.toString('utf8', data.offset + AuthOffset + 1 + loginLen + 1, data.offset + headerSize);
   }
@@ -64,8 +65,7 @@ TcpPackage.prototype.asBuffer = function() {
     res[AuthOffset + 1 + loginBytes.length] = passwordBytes.length;
     passwordBytes.copy(res, AuthOffset + 2 + loginBytes.length);
 
-    if (this.data)
-      this.data.copyTo(res, res.length - this.data.count);
+    if (this.data) this.data.copyTo(res, res.length - this.data.count);
 
     return res;
   } else {
@@ -73,8 +73,7 @@ TcpPackage.prototype.asBuffer = function() {
     res[CommandOffset] = this.command;
     res[FlagsOffset] = this.flags;
     guidParse.parse(this.correlationId, res, CorrelationOffset);
-    if (this.data)
-      this.data.copyTo(res, AuthOffset);
+    if (this.data) this.data.copyTo(res, AuthOffset);
     return res;
   }
 };

@@ -45,8 +45,7 @@ EventStoreAllCatchUpSubscription.prototype._readEventsTill = function(
               });
         })
         .then(function(done) {
-          if (done || self._shouldStop)
-              return;
+          if (done || self._shouldStop) return;
           return readNext();
         });
   }
@@ -69,10 +68,11 @@ EventStoreAllCatchUpSubscription.prototype._tryProcess = function(e) {
     this._lastProcessedPosition = e.originalPosition;
     processed = true;
   }
-  if (this._verbose)
+  if (this._verbose) {
     this._log.debug("Catch-up Subscription to %s: %s event (%s, %d, %s @ %s).",
-        this.streamId || '<all>', processed ? "processed" : "skipping",
-        e.originalEvent.eventStreamId, e.originalEvent.eventNumber, e.originalEvent.eventType, e.originalPosition);
+      this.streamId || '<all>', processed ? "processed" : "skipping",
+      e.originalEvent.eventStreamId, e.originalEvent.eventNumber, e.originalEvent.eventType, e.originalPosition);
+  }
   return (promise && promise.then) ? promise : Promise.resolve();
 };
 

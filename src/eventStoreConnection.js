@@ -4,7 +4,7 @@ var ClusterDnsEndPointDiscoverer = require('./core/clusterDnsEndPointDiscoverer'
 var NoopLogger = require('./common/log/noopLogger');
 var ensure = require('./common/utils/ensure');
 
-var defaultConnectionSettings = {
+var defaultConnectionSettings = Object.freeze({
   log: new NoopLogger(),
   verboseLogging: false,
 
@@ -34,7 +34,7 @@ var defaultConnectionSettings = {
   maxDiscoverAttempts: 10,
   externalGossipPort: 0,
   gossipTimeout: 1000
-};
+});
 
 
 function merge(a,b) {

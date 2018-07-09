@@ -56,8 +56,7 @@ EventStorePersistentSubscriptionBase.prototype.acknowledge = function(events) {
   ensure.notNull(events, "events");
 
   if (this._subscription === null) throw new Error("Invalid operation. Subscription is not active yet.");
-  if (!Array.isArray(events))
-    events = [events];
+  if (!Array.isArray(events)) events = [events];
   var ids = events.map(function(x) { return x.originalEvent.eventId; });
   this._subscription.notifyEventsProcessed(ids);
 };
@@ -73,8 +72,7 @@ EventStorePersistentSubscriptionBase.prototype.fail = function(events, action, r
   ensure.notNull(reason, "reason");
 
   if (this._subscription === null) throw new Error("Invalid operation. Subscription is not active yet.");
-  if (!Array.isArray(events))
-    events = [events];
+  if (!Array.isArray(events)) events = [events];
   var ids = events.map(function(x) { return x.originalEvent.eventId; });
   this._subscription.notifyEventsFailed(ids, action, reason);
 };
@@ -145,12 +143,12 @@ EventStorePersistentSubscriptionBase.prototype._processQueue = function() {
     return self._eventAppeared(self, ev);
   })
     .then(function() {
-      if(self._autoAck)
-        self._subscription.notifyEventsProcessed([ev.originalEvent.eventId]);
-      if (self._verbose)
+      if(self._autoAck) self._subscription.notifyEventsProcessed([ev.originalEvent.eventId]);
+      if (self._verbose) {
         self._log.debug("Persistent Subscription to %s: processed event (%s, %d, %s @ %d).",
           self._streamId, ev.originalEvent.eventStreamId, ev.originalEvent.eventNumber, ev.originalEvent.eventType,
           ev.originalEventNumber);
+      }
       return false;
     }, function(err) {
       //TODO GFY should we autonak here?
@@ -168,12 +166,12 @@ EventStorePersistentSubscriptionBase.prototype._dropSubscription = function(reas
   if (!this._isDropped)
   {
     this._isDropped = true;
-    if (this._verbose)
+    if (this._verbose) {
       this._log.debug("Persistent Subscription to %s: dropping subscription, reason: %s %s.",
-                      this._streamId, reason, error);
+        this._streamId, reason, error);
+    }
 
-    if (this._subscription !== null)
-      this._subscription.unsubscribe();
+    if (this._subscription !== null) this._subscription.unsubscribe();
     if (this._subscriptionDropped !== null) {
       try {
         this._subscriptionDropped(this, reason, error);

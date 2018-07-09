@@ -110,8 +110,7 @@ OperationsManager.prototype.checkTimeoutsAndRetry = function(connection) {
 };
 
 OperationsManager.prototype.scheduleOperationRetry = function(operation) {
-  if (!this.removeOperation(operation))
-    return;
+  if (!this.removeOperation(operation)) return;
 
   this._logDebug("ScheduleOperationRetry for %s.", operation);
   if (operation.maxRetries >= 0 && operation.retryCount >= operation.maxRetries)
@@ -166,8 +165,9 @@ OperationsManager.prototype.scheduleOperation = function(operation, connection) 
 OperationsManager.prototype._logDebug = function(message) {
   if (!this._settings.verboseLogging) return;
 
-  if (arguments.length > 1)
+  if (arguments.length > 1) {
     message = util.format.apply(util, Array.prototype.slice.call(arguments));
+  }
 
   this._settings.log.debug("EventStoreConnection '%s': %s.", this._connectionName, message);
 };

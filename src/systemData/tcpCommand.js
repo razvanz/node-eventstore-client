@@ -1,4 +1,4 @@
-const TcpCommand = {
+const TcpCommand = Object.freeze({
   HeartbeatRequestCommand: 0x01,
   HeartbeatResponseCommand: 0x02,
 
@@ -73,16 +73,18 @@ const TcpCommand = {
   Authenticated: 0xF3,
   NotAuthenticated: 0xF4,
   IdentifyClient: 0xF5,
-  ClientIdentified: 0xF6
-};
+  ClientIdentified: 0xF6,
+
+  getName: function(v) {
+    return _reverseLookup[v];
+  }
+});
 
 var _reverseLookup = {};
 for(var n in TcpCommand) {
+  if (n === 'getName') continue;
   var v = TcpCommand[n];
   _reverseLookup[v] = n;
 }
 
 module.exports = TcpCommand;
-module.exports.getName = function(v) {
-  return _reverseLookup[v];
-};

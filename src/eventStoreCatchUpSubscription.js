@@ -1,7 +1,6 @@
 var util = require('util');
 
 var SubscriptionDropReason = require('./subscriptionDropReason');
-var results = require('./results');
 
 const DefaultReadBatchSize = 500;
 const DefaultMaxPushQueueSize = 10000;
@@ -68,9 +67,9 @@ function EventStoreCatchUpSubscription(
 
   var self = this;
   this._onReconnect = function() {
-    if (self._verbose) self._log.debug("Catch-up Subscription to %s: recovering after reconnection.", self._streamId || '<all>');
     if (self._verbose) self._log.debug("Catch-up Subscription to %s: unhooking from connection.Connected.", self._streamId || '<all>');
     self._connection.removeListener('connected', self._onReconnect);
+    if (self._verbose) self._log.debug("Catch-up Subscription to %s: recovering after reconnection.", self._streamId || '<all>');
     self._runSubscription();
   }
 }
@@ -133,10 +132,11 @@ EventStoreCatchUpSubscription.prototype._runSubscription = function() {
       .then(function() {
         if (self._shouldStop) return;
         if (self._verbose) self._log.debug("Catch-up Subscription to %s: subscribing...", logStreamName);
-        if (self._streamId === '')
+        if (self._streamId === '') {
           return self._connection.subscribeToAll(self._resolveLinkTos, self._enqueuePushedEvent.bind(self), self._serverSubscriptionDropped.bind(self), self._userCredentials);
-        else
+        } else {
           return self._connection.subscribeToStream(self._streamId, self._resolveLinkTos, self._enqueuePushedEvent.bind(self), self._serverSubscriptionDropped.bind(self), self._userCredentials);
+        }
       })
       .then(function(subscription) {
         if (subscription === undefined) return;
@@ -155,12 +155,13 @@ EventStoreCatchUpSubscription.prototype._runSubscription = function() {
           return;
         }
         if (self._verbose) self._log.debug("Catch-up Subscription to %s: processing live events...", logStreamName);
-        if (self._liveProcessingStarted)
+        if (self._liveProcessingStarted) {
           try {
             self._liveProcessingStarted(self);
-          } catch(e) {
+          } catch (e) {
             self._log.error(e, "Catch-up Subscription to %s: liveProcessingStarted callback failed.", logStreamName);
           }
+        }
         if (self._verbose) self._log.debug("Catch-up Subscription to %s: hooking to connection.Connected", logStreamName);
         self._connection.on('connected', self._onReconnect);
         self._allowProcessing = true;
@@ -169,10 +170,11 @@ EventStoreCatchUpSubscription.prototype._runSubscription = function() {
 };
 
 EventStoreCatchUpSubscription.prototype._enqueuePushedEvent = function(subscription, e) {
-  if (this._verbose)
+  if (this._verbose) {
     this._log.debug("Catch-up Subscription to %s: event appeared (%s, %d, %s @ %s).",
-        this._streamId || '<all>',
-        e.originalStreamId, e.originalEventNumber, e.originalEvent.eventType, e.originalPosition);
+      this._streamId || '<all>',
+      e.originalStreamId, e.originalEventNumber, e.originalEvent.eventType, e.originalPosition);
+  }
 
   if (this._liveQueue.length >= this.maxPushQueueSize)
   {
@@ -183,8 +185,7 @@ EventStoreCatchUpSubscription.prototype._enqueuePushedEvent = function(subscript
 
   this._liveQueue.push(e);
 
-  if (this._allowProcessing)
-    this._ensureProcessingPushQueue();
+  if (this._allowProcessing) this._ensureProcessingPushQueue();
 };
 
 EventStoreCatchUpSubscription.prototype._serverSubscriptionDropped = function(subscription, reason, err) {
@@ -196,8 +197,7 @@ EventStoreCatchUpSubscription.prototype._enqueueSubscriptionDropNotification = f
   if (this._dropData) return;
   this._dropData = {reason: reason, error: error};
   this._liveQueue.push(new DropSubscriptionEvent());
-  if (this._allowProcessing)
-    this._ensureProcessingPushQueue();
+  if (this._allowProcessing) this._ensureProcessingPushQueue();
 };
 
 EventStoreCatchUpSubscription.prototype._ensureProcessingPushQueue = function() {
@@ -244,18 +244,19 @@ EventStoreCatchUpSubscription.prototype._dropSubscription = function(reason, err
   if (this._isDropped) return;
 
   this._isDropped = true;
-  if (this._verbose)
+  if (this._verbose) {
     this._log.debug("Catch-up Subscription to %s: dropping subscription, reason: %s %s.",
-                    this._streamId || '<all>', reason, error);
+      this._streamId || '<all>', reason, error);
+  }
 
-  if (this._subscription)
-    this._subscription.unsubscribe();
-  if (this._subscriptionDropped)
+  if (this._subscription) this._subscription.unsubscribe();
+  if (this._subscriptionDropped) {
     try {
       this._subscriptionDropped(this, reason, error);
-    } catch(e) {
+    } catch (e) {
       this._log.error(e, "Catch-up Subscription to %s: subscriptionDropped callback failed.", this._streamId || '<all>');
     }
+  }
   this._stopped = true;
 };
 

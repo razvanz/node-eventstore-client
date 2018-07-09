@@ -19,8 +19,7 @@ BufferSegment.prototype.toString = function() {
 };
 
 BufferSegment.prototype.toBuffer = function() {
-  if (this.offset === 0 && this.count === this.buffer.length)
-      return this.buffer;
+  if (this.offset === 0 && this.count === this.buffer.length) return this.buffer;
   return this.buffer.slice(this.offset, this.offset + this.count);
 };
 
