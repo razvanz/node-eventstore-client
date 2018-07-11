@@ -11,12 +11,14 @@ const server = net.createServer(function(socket) {
   var recvBuf = new Buffer(0);
   socket.on('data', function(buf) {
     recvBuf = Buffer.concat([recvBuf, buf]);
-    const pkgData = tryReadPackage(recvBuf);
-    if (pkgData) {
-      handlePackage(pkgData, socket);
-      var oldBuf = recvBuf;
-      recvBuf = new Buffer(recvBuf.length - pkgData.size - 4);
-      oldBuf.copy(recvBuf, 0, 4 + pkgData.size);
+    let pkgData;
+    while(pkgData = tryReadPackage(recvBuf)) {
+      if (pkgData) {
+        handlePackage(pkgData, socket);
+        var oldBuf = recvBuf;
+        recvBuf = new Buffer(recvBuf.length - pkgData.size - 4);
+        oldBuf.copy(recvBuf, 0, 4 + pkgData.size);
+      }
     }
   });
   socket.on('end', function() {
