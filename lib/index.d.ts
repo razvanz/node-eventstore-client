@@ -325,9 +325,9 @@ export interface EventStoreNodeConnection {
     subscribeToAll(resolveLinkTos: boolean, eventAppeared: EventAppearedCallback<EventStoreSubscription>, subscriptionDropped?: SubscriptionDroppedCallback<EventStoreSubscription>, userCredentials?: UserCredentials): Promise<EventStoreSubscription>;
     subscribeToAllFrom(lastCheckpoint: Position|null, resolveLinkTos: boolean, eventAppeared: EventAppearedCallback<EventStoreCatchUpSubscription>, liveProcessingStarted?: LiveProcessingStartedCallback, subscriptionDropped?: SubscriptionDroppedCallback<EventStoreCatchUpSubscription>, userCredentials?: UserCredentials, readBatchSize?: number): EventStoreCatchUpSubscription;
     // persistent subscriptions
-    createPersistentSubscription(stream: string, groupName: string, settings: PersistentSubscriptionSettings, userCredentials?: PersistentSubscriptionSettings): Promise<PersistentSubscriptionCreateResult>;
-    updatePersistentSubscription(stream: string, groupName: string, settings: PersistentSubscriptionSettings, userCredentials?: PersistentSubscriptionSettings): Promise<PersistentSubscriptionUpdateResult>;
-    deletePersistentSubscription(stream: string, groupName: string, userCredentials?: PersistentSubscriptionSettings): Promise<PersistentSubscriptionDeleteResult>
+    createPersistentSubscription(stream: string, groupName: string, settings: PersistentSubscriptionSettings, userCredentials?: UserCredentials): Promise<PersistentSubscriptionCreateResult>;
+    updatePersistentSubscription(stream: string, groupName: string, settings: PersistentSubscriptionSettings, userCredentials?: UserCredentials): Promise<PersistentSubscriptionUpdateResult>;
+    deletePersistentSubscription(stream: string, groupName: string, userCredentials?: UserCredentials): Promise<PersistentSubscriptionDeleteResult>
     connectToPersistentSubscription(stream: string, groupName: string, eventAppeared: EventAppearedCallback<EventStorePersistentSubscription>, subscriptionDropped?: SubscriptionDroppedCallback<EventStorePersistentSubscription>, userCredentials?: UserCredentials, bufferSize?: number, autoAck?: boolean): Promise<EventStorePersistentSubscription>;
     // metadata actions
     setStreamMetadataRaw(stream: string, expectedMetastreamVersion: Long|number, metadata: any, userCredentials?: UserCredentials): Promise<WriteResult>;
