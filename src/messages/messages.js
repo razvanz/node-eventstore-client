@@ -841,7 +841,6 @@
             if (!(reader instanceof $Reader))
               reader = $Reader.create(reader);
             var end = length === undefined ? reader.len : reader.pos + length, message = new $root.EventStore.Client.Messages.ResolvedIndexedEvent();
-            message.event = null;
             while (reader.pos < end) {
               var tag = reader.uint32();
               switch (tag >>> 3) {
@@ -856,8 +855,8 @@
                   break;
               }
             }
-            if (!message.hasOwnProperty("event"))
-              throw $util.ProtocolError("missing required 'event'", { instance: message });
+            //if (!message.hasOwnProperty("event"))
+            //  throw $util.ProtocolError("missing required 'event'", { instance: message });
             return message;
           };
 
@@ -1082,8 +1081,8 @@
                   break;
               }
             }
-            if (!message.hasOwnProperty("event"))
-              throw $util.ProtocolError("missing required 'event'", { instance: message });
+            //if (!message.hasOwnProperty("event"))
+            //  throw $util.ProtocolError("missing required 'event'", { instance: message });
             if (!message.hasOwnProperty("commitPosition"))
               throw $util.ProtocolError("missing required 'commitPosition'", { instance: message });
             if (!message.hasOwnProperty("preparePosition"))
