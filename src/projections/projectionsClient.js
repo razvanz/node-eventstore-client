@@ -139,6 +139,7 @@ ProjectionsClient.prototype.request = function(method, _url, data, userCredentia
     });
     req.on('error', reject);
     if (data) {
+      req.setHeader('Content-Length', data.length);
       req.setHeader('Content-Type', 'application/json');
       req.write(data);
     }
