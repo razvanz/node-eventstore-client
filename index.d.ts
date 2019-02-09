@@ -1,6 +1,9 @@
 /// <reference types="node" />
 /// <reference types="Long" />
 
+import { EventEmitter } from "events";
+import { StrictEventEmitter } from "strict-event-emitter-types";
+
 // Expose classes
 export class Position {
     constructor(commitPosition: number|Long, preparePosition: number|Long);
@@ -305,7 +308,18 @@ export interface EventData {
     readonly metadata: Buffer;
 }
 
-export interface EventStoreNodeConnection {
+interface EventStoreNodeConnectionEvents {
+    connected: TcpEndPoint;
+    disconnected: TcpEndPoint;
+    reconnecting: void;
+    closed:string;
+    error: Error;
+    heartbeatInfo: HeartbeatInfo;
+}
+
+type EventStoreNodeConnectionEventEmitter = StrictEventEmitter<EventEmitter, EventStoreNodeConnectionEvents>;
+
+export class EventStoreNodeConnection extends (EventEmitter as { new(): EventStoreNodeConnectionEventEmitter }) {
     connect(): Promise<void>;
     close(): void;
     // write actions
@@ -332,9 +346,6 @@ export interface EventStoreNodeConnection {
     // metadata actions
     setStreamMetadataRaw(stream: string, expectedMetastreamVersion: Long|number, metadata: any, userCredentials?: UserCredentials): Promise<WriteResult>;
     getStreamMetadataRaw(stream: string, userCredentials?: UserCredentials): Promise<RawStreamMetadataResult>;
-
-    on(event: "connected" | "disconnected" | "reconnecting" | "closed" | "error" | "heartbeatInfo", listener: (arg: Error | string | TcpEndPoint | HeartbeatInfo) => void): this;
-    once(event: "connected" | "disconnected" | "reconnecting" | "closed" | "error" | "heartbeatInfo", listener: (arg: Error | string | TcpEndPoint | HeartbeatInfo) => void): this;
 }
 
 // Expose helper functions
