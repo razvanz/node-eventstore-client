@@ -50,7 +50,7 @@ function EventStoreConnectionLogicHandler(esConnection, settings) {
   EventEmitter.call(this);
   this._esConnection = esConnection;
   this._settings = settings;
-  this._queue = new SimpleQueuedHandler();
+  this._queue = new SimpleQueuedHandler(this._settings.log);
   this._state = ConnectionState.Init;
   this._connectingPhase = ConnectingPhase.Invalid;
   this._endpointDiscoverer = null;

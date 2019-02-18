@@ -4,10 +4,11 @@ function typeName(t) {
   throw new TypeError('type must be a function or object, not ' + typeof t);
 }
 
-function SimpleQueuedHandler() {
+function SimpleQueuedHandler(log) {
   this._handlers = {};
   this._messages = [];
   this._isProcessing = false;
+  this._log = log;
 }
 
 SimpleQueuedHandler.prototype.registerHandler = function(type, handler) {
@@ -16,7 +17,7 @@ SimpleQueuedHandler.prototype.registerHandler = function(type, handler) {
     try {
       handler(msg);
     } catch(e) {
-      console.log('ERROR: ', e.stack);
+      this._log.error('handle for', type, 'failed:', e.stack);
     }
   };
 };
