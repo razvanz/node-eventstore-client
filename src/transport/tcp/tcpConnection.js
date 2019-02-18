@@ -35,16 +35,15 @@ TcpConnection.prototype._initSocket = function(socket) {
   this._localEndPoint = {host: socket.localAddress, port: socket.localPort};
   this._remoteEndPoint.host = socket.remoteAddress;
 
-  this._socket.on('drain', this._trySend.bind(this));
   this._socket.on('error', this._processError.bind(this));
+  this._socket.on('drain', this._trySend.bind(this));
   this._socket.on('data', this._processReceive.bind(this));
+  this._socket.on('close', this._processClose.bind(this));
 
   this._trySend();
 };
 
 TcpConnection.prototype.enqueueSend = function(bufSegmentArray) {
-  //console.log(bufSegmentArray);
-
   for(var i = 0; i < bufSegmentArray.length; i++) {
     var bufSegment = bufSegmentArray[i];
     this._sendQueue.push(bufSegment.toBuffer());
@@ -59,7 +58,7 @@ TcpConnection.prototype._trySend = function() {
   var buffers = [];
   var bytes = 0;
   var sendPiece;
-  while(sendPiece = this._sendQueue.shift()) {
+  while((sendPiece = this._sendQueue.shift())) {
     buffers.push(sendPiece);
     bytes += sendPiece.length;
     if (bytes > MaxSendPacketSize) break;
@@ -73,6 +72,10 @@ TcpConnection.prototype._trySend = function() {
 
 TcpConnection.prototype._processError = function(err) {
   this._closeInternal(err, "Socket error");
+};
+
+TcpConnection.prototype._processClose = function(had_error) {
+  this._closeInternal(had_error, "Socket closed");
 };
 
 TcpConnection.prototype._processReceive = function(buf) {
@@ -140,19 +143,20 @@ TcpConnection.createConnectingConnection = function(
   var provider = ssl ? tls : net;
   var options = {
     servername: targetHost,
-    rejectUnauthorized: validateServer
+    rejectUnauthorized: validateServer,
+    port: remoteEndPoint.port,
+    host: remoteEndPoint.host,
+    timeout: connectionTimeout
   };
-  var socket = provider.connect(remoteEndPoint.port, remoteEndPoint.host, options);
-  function onError(err) {
-    if (onConnectionFailed)
-      onConnectionFailed(connection, err);
-  }
-  socket.once('error', onError);
-  socket.on('connect', function() {
+  var socket = provider.connect(options, function() {
     socket.removeListener('error', onError);
     connection._initSocket(socket);
     if (onConnectionEstablished) onConnectionEstablished(connection);
   });
+  socket.once('error', onError);
+  function onError(err) {
+    if (onConnectionFailed) onConnectionFailed(connection, err);
+  }
   return connection;
 };
 
