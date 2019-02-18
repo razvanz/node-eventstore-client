@@ -38,6 +38,7 @@ EventStorePersistentSubscriptionBase.prototype.start = function() {
   return this._startSubscription(this._subscriptionId, this._streamId, this._bufferSize, this._userCredentials,
                           this._onEventAppeared.bind(this), this._onSubscriptionDropped.bind(this), this._settings)
       .then(function(subscription) {
+        this._log.debug('Subscription started.');
         self._subscription = subscription;
         return self;
       });

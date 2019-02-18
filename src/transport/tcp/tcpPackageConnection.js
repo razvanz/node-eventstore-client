@@ -54,12 +54,11 @@ function TcpPackageConnection(
         log.debug("TcpPackageConnection: connection to [%j, L%j, %s] failed. Error: %s.", conn.remoteEndPoint, conn.localEndPoint, connectionId, error);
         connectionClosed(self, error);
       },
-      function (conn, had_error) {
-        var error;
-        if (had_error) error = new Error('transmission error.');
+      function (conn, error) {
+        if (error === true) error = new Error('transmission error.');
 
         log.debug("TcpPackageConnection: connection [%j, L%j, %s] was closed %s", conn.remoteEndPoint, conn.localEndPoint,
-            connectionId, had_error ? "with error: " + error + "." : "cleanly.");
+            connectionId, error ? "with error: " + error.stack : "cleanly.");
 
         connectionClosed(self, error);
       });
