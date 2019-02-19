@@ -2982,6 +2982,11 @@ stream-http@^2.7.2:
     to-arraybuffer "^1.0.0"
     xtend "^4.0.0"
 
+strict-event-emitter-types@^1.2.0:
+  version "1.2.0"
+  resolved "https://registry.yarnpkg.com/strict-event-emitter-types/-/strict-event-emitter-types-1.2.0.tgz#00c413587c0cf7d5b7acb70ce9aa75526b36601c"
+  integrity sha512-KqQQvQapOVn99SI/L6tEnW2mDXWddzlr+D1AAmiaXqI7Annq2hbfac8XnZzZHXOV50dCKtUsw1OCNjCezFHAMw==
+
 string-width@^1.0.1, string-width@^1.0.2:
   version "1.0.2"
   resolved "https://registry.yarnpkg.com/string-width/-/string-width-1.0.2.tgz#118bdf5b8cdc51a2a7e70d211e07e2b0b9b107d3"
