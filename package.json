@@ -1,6 +1,6 @@
 {
   "name": "@razvanz/eventstore-client",
-  "version": "0.2.8",
+  "version": "0.2.10",
   "description": "A port of the EventStore .Net ClientAPI to Node.js",
   "main": "lib/index.js",
   "types": "lib/index.d.ts",
@@ -37,9 +37,6 @@
   },
   "homepage": "https://github.com/razvanz/node-eventstore-client#readme",
   "dependencies": {
-    "@types/long": "^3.0.31",
-    "@types/node": "^6.0.47",
-    "strict-event-emitter-types": "^1.2.0",
     "long": "^3.2",
     "protobufjs": "^6.7.3",
     "uuid": "^3.0.1"
@@ -51,6 +48,9 @@
     "eslint-plugin-node": "^5.2.1",
     "eslint-plugin-promise": "^3.6.0",
     "eslint-plugin-standard": "^3.0.1",
+    "@types/long": "^3.0.31",
+    "@types/node": "^6.0.47",
+    "strict-event-emitter-types": "^1.2.0",
     "jsdoc": "^3.5.5",
     "nodeunit": "^0.11.1"
   }
