@@ -40,7 +40,7 @@ ProjectionsClient.prototype.createTransient = function(httpEndPoint, name, query
 };
 
 ProjectionsClient.prototype.createContinuous = function(httpEndPoint, name, query, trackEmittedStreams, userCredentials) {
-  return this.sendPost(httpEndPoint + '/projections/continuous?name=' + name + '&type=JS&emit=1&trackEmittedStreams=' + trackEmittedStreams, query, userCredentials, HTTP_CREATED);
+  return this.sendPost(httpEndPoint + '/projections/continuous?name=' + name + '&type=JS&emit=1&trackemittedstreams=' + trackEmittedStreams, query, userCredentials, HTTP_CREATED);
 };
 
 ProjectionsClient.prototype.listAll = function(httpEndPoint, userCredentials) {
