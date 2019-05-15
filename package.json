@@ -37,9 +37,12 @@
   },
   "homepage": "https://github.com/razvanz/node-eventstore-client#readme",
   "dependencies": {
+    "@types/long": "^3.0.31",
+    "@types/node": "^6.0.47",
     "long": "^3.2",
     "protobufjs": "^6.7.3",
-    "uuid": "^3.0.1"
+    "uuid": "^3.0.1",
+    "strict-event-emitter-types": "^1.2.0"
   },
   "devDependencies": {
     "eslint": "^4.12.1",
