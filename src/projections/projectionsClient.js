@@ -32,7 +32,7 @@ ProjectionsClient.prototype.abort = function(httpEndPoint, name, userCredentials
 };
 
 ProjectionsClient.prototype.reset = function(httpEndPoint, name, userCredentials) {
-  return this.sendPost(httpEndPoint + '/projection/' + name + 'command/reset', userCredentials, HTTP_OK);
+  return this.sendPost(httpEndPoint + '/projection/' + name + '/command/reset', '', userCredentials, HTTP_OK);
 };
 
 ProjectionsClient.prototype.createOneTime = function(httpEndPoint, query, userCredentials) {
