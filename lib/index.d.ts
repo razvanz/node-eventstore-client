@@ -1,13 +1,8 @@
 /// <reference types="node" />
 /// <reference types="Long" />
 
-<<<<<<< HEAD
 import { EventEmitter } from 'events';
 import { StrictEventEmitter } from 'strict-event-emitter-types';
-=======
-import { EventEmitter } from "events";
-import { StrictEventEmitter } from "strict-event-emitter-types";
->>>>>>> c3de95f (Changes ts declaration for EventStoreNodeConnection so that it offers all EventEmitter methods.)
 
 // Expose classes
 export class Position {
