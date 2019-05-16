@@ -72,6 +72,7 @@ export class ProjectionsManager {
     enable(name: string, userCredentials: UserCredentials): Promise<void>;
     disable(name: string, userCredentials: UserCredentials): Promise<void>;
     abort(name: string, userCredentials: UserCredentials): Promise<void>;
+    reset(name: string, userCredentials: UserCredentials): Promise<void>;
     createOneTime(query: string, userCredentials: UserCredentials): Promise<void>;
     createTransient(name: string, query: string, userCredentials: UserCredentials): Promise<void>;
     createContinuous(name: string, query: string, trackEmittedStreams: boolean, userCredentials: UserCredentials): Promise<void>;

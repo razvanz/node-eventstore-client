@@ -46,6 +46,16 @@ ProjectionsManager.prototype.abort = function(name, userCredentials) {
 };
 
 /**
+ * Reset a projection. (This will re-emit events, streams that are written to from the projection will also be soft deleted)
+ * @param name            The name of the projection.
+ * @param userCredentials Credentials for a user with permission to disable a projection.
+ * @returns {Promise<void>}
+ */
+ProjectionsManager.prototype.reset = function(name, userCredentials) {
+  return this._client.abort(this._httpEndPoint, name, userCredentials);
+};
+
+/**
  * Creates a one-time query.
  * @param query           The JavaScript source code for the query.
  * @param userCredentials Credentials for a user with permission to create a query.
