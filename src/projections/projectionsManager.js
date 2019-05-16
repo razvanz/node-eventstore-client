@@ -190,13 +190,15 @@ ProjectionsManager.prototype.updateQuery = function(name, query, userCredentials
 
 /**
  * Updates the definition of a query.
- * @param name                  The name of the projection.
- * @param deleteEmittedStreams  Whether to delete the streams that were emitted by this projection.
- * @param userCredentials       Credentials for a user with permission to delete a projection.
+ * @param name                    The name of the projection.
+ * @param deleteEmittedStreams    Whether to delete the streams that were emitted by this projection.
+ * @param deleteStateStream       Where to delete the state stream for this projection
+ * @param deleteCheckpointStream  Where to delete the checkpoint stream for this projection
+ * @param userCredentials         Credentials for a user with permission to delete a projection.
  * @returns {Promise<void>}
  */
-ProjectionsManager.prototype.delete = function(name, deleteEmittedStreams, userCredentials) {
-  return this._client.delete(this._httpEndPoint, name, deleteEmittedStreams, userCredentials);
+ProjectionsManager.prototype.delete = function(name, deleteEmittedStreams, deleteStateStream, deleteCheckpointStream, userCredentials) {
+  return this._client.delete(this._httpEndPoint, name, deleteEmittedStreams, deleteStateStream, deleteCheckpointStream, userCredentials);
 };
 
 module.exports = ProjectionsManager;
