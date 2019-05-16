@@ -52,7 +52,7 @@ ProjectionsManager.prototype.abort = function(name, userCredentials) {
  * @returns {Promise<void>}
  */
 ProjectionsManager.prototype.reset = function(name, userCredentials) {
-  return this._client.abort(this._httpEndPoint, name, userCredentials);
+  return this._client.reset(this._httpEndPoint, name, userCredentials);
 };
 
 /**
