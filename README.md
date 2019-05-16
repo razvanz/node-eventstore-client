@@ -23,7 +23,7 @@ Install using `npm install node-eventstore-client`
 ### Dependencies
 
 - Node.js >= 4.0
-- Modules: [long](https://www.npmjs.org/package/long), [protobufjs](https://www.npmjs.org/package/protobufjs), [uuid](https://www.npmjs.org/package/uuid) (installed via `npm install`)
+- Modules: [long](https://www.npmjs.org/package/long), [protobufjs](https://www.npmjs.org/package/protobufjs), [uuid](https://www.npmjs.org/package/uuid), [strict-event-emitter-types](https://www.npmjs.com/package/strict-event-emitter-types) (installed via `npm install`)
 
 ### Install and run an Eventstore on localhost
 
