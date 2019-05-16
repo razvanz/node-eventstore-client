@@ -31,6 +31,10 @@ ProjectionsClient.prototype.abort = function(httpEndPoint, name, userCredentials
   return this.sendPost(httpEndPoint + '/projection/' + name + '/command/abort', '', userCredentials, HTTP_OK);
 };
 
+ProjectionsClient.prototype.reset = function(httpEndPoint, name, userCredentials) {
+  return this.sendPost(httpEndPoint + '/projection/' + name + 'command/reset', userCredentials, HTTP_OK);
+};
+
 ProjectionsClient.prototype.createOneTime = function(httpEndPoint, query, userCredentials) {
   return this.sendPost(httpEndPoint + '/projections/onetime?type=JS', query, userCredentials, HTTP_CREATED);
 };
