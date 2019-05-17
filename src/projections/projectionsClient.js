@@ -103,7 +103,7 @@ ProjectionsClient.prototype.updateQuery = function(httpEndPoint, name, query, us
 };
 
 ProjectionsClient.prototype.delete = function(httpEndPoint, name, deleteEmittedStreams, deleteStateStream, deleteCheckpointStream, userCredentials) {
-  return this.sendDelete(httpEndPoint + '/projection/' + name + '?deleteStateStream=' + deleteStateStream + '&deleteCheckpointStream' + deleteCheckpointStream + '&deleteEmittedStreams=' + deleteEmittedStreams, '', userCredentials, HTTP_OK);
+  return this.sendDelete(httpEndPoint + '/projection/' + name + '?deleteStateStream=' + deleteStateStream + '&deleteCheckpointStream=' + deleteCheckpointStream + '&deleteEmittedStreams=' + deleteEmittedStreams, '', userCredentials, HTTP_OK);
 };
 
 ProjectionsClient.prototype.request = function(method, _url, data, userCredentials, expectedCode) {
