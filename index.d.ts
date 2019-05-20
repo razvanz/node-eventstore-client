@@ -88,7 +88,7 @@ export class ProjectionsManager {
     getQuery(name: string, userCredentials: UserCredentials): Promise<string>;
     getState(name: string, userCredentials: UserCredentials): Promise<string>;
     updateQuery(name: string, query: string, userCredentials: UserCredentials): Promise<void>;
-    deleteQuery(name: string, deleteEmittedStreams: boolean, userCredentials: UserCredentials): Promise<void>;
+    delete(name: string, deleteEmittedStreams: boolean, deleteStateStream: boolean, deleteCheckpointStream: boolean, userCredentials: UserCredentials): Promise<void>;
 }
 
 // Expose errors
