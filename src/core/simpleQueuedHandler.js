@@ -13,11 +13,12 @@ function SimpleQueuedHandler(log) {
 
 SimpleQueuedHandler.prototype.registerHandler = function(type, handler) {
   var typeId = typeName(type);
+  var log = this._log;
   this._handlers[typeId] = function (msg) {
     try {
       handler(msg);
     } catch(e) {
-      this._log.error('handle for', type, 'failed:', e.stack);
+      log.error('handle for', type, 'failed:', e.stack);
     }
   };
 };
