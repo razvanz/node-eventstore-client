@@ -1,4 +1,4 @@
-/*eslint-disable block-scoped-var, no-redeclare, no-control-regex, no-prototype-builtins*/
+/*eslint-disable block-scoped-var, id-length, no-control-regex, no-magic-numbers, no-prototype-builtins, no-redeclare, no-shadow, no-var, sort-vars*/
 (function(global, factory) { /* global define, require, module */
 
     /* AMD */ if (typeof define === 'function' && define.amd)
@@ -340,12 +340,30 @@
                             options = {};
                         var object = {};
                         if (options.defaults) {
-                            object.eventId = options.bytes === String ? "" : [];
+                            if (options.bytes === String)
+                                object.eventId = "";
+                            else {
+                                object.eventId = [];
+                                if (options.bytes !== Array)
+                                    object.eventId = $util.newBuffer(object.eventId);
+                            }
                             object.eventType = "";
                             object.dataContentType = 0;
                             object.metadataContentType = 0;
-                            object.data = options.bytes === String ? "" : [];
-                            object.metadata = options.bytes === String ? "" : [];
+                            if (options.bytes === String)
+                                object.data = "";
+                            else {
+                                object.data = [];
+                                if (options.bytes !== Array)
+                                    object.data = $util.newBuffer(object.data);
+                            }
+                            if (options.bytes === String)
+                                object.metadata = "";
+                            else {
+                                object.metadata = [];
+                                if (options.bytes !== Array)
+                                    object.metadata = $util.newBuffer(object.metadata);
+                            }
                         }
                         if (message.eventId != null && message.hasOwnProperty("eventId"))
                             object.eventId = options.bytes === String ? $util.base64.encode(message.eventId, 0, message.eventId.length) : options.bytes === Array ? Array.prototype.slice.call(message.eventId) : message.eventId;
@@ -750,12 +768,30 @@
                                 object.eventNumber = options.longs === String ? long.toString() : options.longs === Number ? long.toNumber() : long;
                             } else
                                 object.eventNumber = options.longs === String ? "0" : 0;
-                            object.eventId = options.bytes === String ? "" : [];
+                            if (options.bytes === String)
+                                object.eventId = "";
+                            else {
+                                object.eventId = [];
+                                if (options.bytes !== Array)
+                                    object.eventId = $util.newBuffer(object.eventId);
+                            }
                             object.eventType = "";
                             object.dataContentType = 0;
                             object.metadataContentType = 0;
-                            object.data = options.bytes === String ? "" : [];
-                            object.metadata = options.bytes === String ? "" : [];
+                            if (options.bytes === String)
+                                object.data = "";
+                            else {
+                                object.data = [];
+                                if (options.bytes !== Array)
+                                    object.data = $util.newBuffer(object.data);
+                            }
+                            if (options.bytes === String)
+                                object.metadata = "";
+                            else {
+                                object.metadata = [];
+                                if (options.bytes !== Array)
+                                    object.metadata = $util.newBuffer(object.metadata);
+                            }
                             if ($util.Long) {
                                 var long = new $util.Long(0, 0, false);
                                 object.created = options.longs === String ? long.toString() : options.longs === Number ? long.toNumber() : long;
@@ -10930,7 +10966,13 @@
                         var object = {};
                         if (options.defaults) {
                             object.reason = options.enums === String ? "NotReady" : 0;
-                            object.additionalInfo = options.bytes === String ? "" : [];
+                            if (options.bytes === String)
+                                object.additionalInfo = "";
+                            else {
+                                object.additionalInfo = [];
+                                if (options.bytes !== Array)
+                                    object.additionalInfo = $util.newBuffer(object.additionalInfo);
+                            }
                         }
                         if (message.reason != null && message.hasOwnProperty("reason"))
                             object.reason = options.enums === String ? $root.EventStore.Client.Messages.NotHandled.NotHandledReason[message.reason] : message.reason;
