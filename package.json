@@ -13,7 +13,7 @@
     "pretest": "npm run build",
     "test": "nodeunit",
     "test-debug": "TESTS_VERBOSE_LOGGING=1 nodeunit",
-    "prepublish": "npm run build && npm run gendocs",
+    "prepare": "npm run build && npm run gendocs",
     "gendocs": "rm -rf docs && jsdoc src -r -d docs"
   },
   "files": [
@@ -37,21 +37,21 @@
   },
   "homepage": "https://github.com/razvanz/node-eventstore-client#readme",
   "dependencies": {
-    "@types/long": "^3.0.31",
-    "@types/node": "^6.0.47",
-    "long": "^3.2",
+    "@types/long": "^4.0.0",
+    "@types/node": "^12.7.2",
+    "long": "^4.0.0",
     "protobufjs": "^6.8.8",
-    "strict-event-emitter-types": "^1.2.0",
-    "uuid": "^3.0.1"
+    "strict-event-emitter-types": "^2.0.0",
+    "uuid": "^3.3.3"
   },
   "devDependencies": {
-    "eslint": "^4.12.1",
-    "eslint-config-standard": "^10.2.1",
-    "eslint-plugin-import": "^2.8.0",
-    "eslint-plugin-node": "^5.2.1",
-    "eslint-plugin-promise": "^3.6.0",
-    "eslint-plugin-standard": "^3.0.1",
-    "jsdoc": "^3.5.5",
-    "nodeunit": "^0.11.1"
+    "eslint": "^6.2.2",
+    "eslint-config-standard": "^14.0.1",
+    "eslint-plugin-import": "^2.18.2",
+    "eslint-plugin-node": "^9.1.0",
+    "eslint-plugin-promise": "^4.2.1",
+    "eslint-plugin-standard": "^4.0.1",
+    "jsdoc": "^3.6.3",
+    "nodeunit": "^0.11.3"
   }
 }
