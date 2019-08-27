@@ -26,6 +26,7 @@
     "compose:cluster:test": "docker-compose -f docker-compose-cluster.yaml exec nodejs bash -c \"npm i && npm run build && EVENTSTORE_CONNECTION_TYPE=gossip EVENTSTORE_HOST=192.168.33.10 EVENTSTORE_HOST_1=192.168.33.10 EVENTSTORE_HOST_2=192.168.33.11 EVENTSTORE_HOST_3=192.168.33.12 npm run test-debug\"",
     "compose:gossip:test": "docker-compose -f docker-compose-cluster.yaml exec nodejs bash -c \"npm i && npm run build && EVENTSTORE_CONNECTION_TYPE=dns EVENTSTORE_HOST=192.168.33.10 npm run test-debug\"",
     "prepublishOnly": "npm run build && npm run gendocs",
+    "prepare": "npm run build && npm run gendocs",
     "gendocs": "rm -rf docs && jsdoc src -r -d docs"
   },
   "files": [
@@ -49,19 +50,21 @@
   },
   "homepage": "https://github.com/billyfree/node-eventstore-client#readme",
   "dependencies": {
-    "long": "^3.2.0",
+    "long": "^4.0.0",
     "protobufjs": "^6.8.8",
-    "strict-event-emitter-types": "^1.2.0",
-    "uuid": "^3.0.1"
+    "strict-event-emitter-types": "^2.0.0",
+    "uuid": "^3.3.3"
   },
   "devDependencies": {
-    "eslint": "^4.12.1",
-    "eslint-config-standard": "^10.2.1",
-    "eslint-plugin-import": "^2.8.0",
-    "eslint-plugin-node": "^5.2.1",
-    "eslint-plugin-promise": "^3.6.0",
-    "eslint-plugin-standard": "^3.0.1",
-    "jsdoc": "^3.5.5",
-    "nodeunit": "^0.11.1"
+    "@types/long": "^4.0.0",
+    "@types/node": "^12.7.2",
+    "eslint": "^6.2.2",
+    "eslint-config-standard": "^14.0.1",
+    "eslint-plugin-import": "^2.18.2",
+    "eslint-plugin-node": "^9.1.0",
+    "eslint-plugin-promise": "^4.2.1",
+    "eslint-plugin-standard": "^4.0.1",
+    "jsdoc": "^3.6.3",
+    "nodeunit": "^0.11.3"
   }
 }
