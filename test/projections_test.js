@@ -1,4 +1,4 @@
-const client = require('../src/client');
+const client = require('../lib/dist');
 const userCredentials = new client.UserCredentials('admin', 'changeit');
 
 const log = new client.NoopLogger();

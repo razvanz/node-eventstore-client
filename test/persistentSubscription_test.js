@@ -1,6 +1,6 @@
 var util = require('util');
 var uuid = require('uuid');
-var client = require('../src/client');
+var client = require('../lib/dist');
 const adminCredentials = new client.UserCredentials("admin", "changeit");
 
 function createRandomEvent() {

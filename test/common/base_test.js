@@ -1,6 +1,6 @@
 var util = require('util');
 var uuid = require('uuid');
-var client = require('../../src/client');
+var client = require('../../lib/dist');
 var FileLogger = require('../../src/common/log/fileLogger');
 var NoopLogger = require('../../src/common/log/noopLogger');
 

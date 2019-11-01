@@ -1,8 +1,10 @@
 module.exports = {
+  mode: "none",
   entry: "./src/client.js",
   target: "node",
   output: {
-    filename: "./lib/dist.js",
+    path: process.env.PWD + "/lib",
+    filename: "dist.js",
     libraryTarget: "commonjs2"
   },
   externals: [

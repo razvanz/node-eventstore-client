@@ -51,10 +51,11 @@
     "uuid": "^3.0.1"
   },
   "devDependencies": {
-    "@types/long": "^3.0.31",
-    "@types/node": "^6.0.47",
-    "jsdoc": "^3.5.5",
-    "nodeunit": "^0.11.1",
-    "webpack": "^3.3.0"
+    "@types/long": "^3.0.32",
+    "@types/node": "^12.12.5",
+    "jsdoc": "^3.6.3",
+    "nodeunit": "^0.11.3",
+    "webpack": "^4.41.2",
+    "webpack-cli": "^3.3.10"
   }
 }

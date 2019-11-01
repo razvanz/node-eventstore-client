@@ -1,5 +1,5 @@
 const uuid = require('uuid');
-const client = require('../src/client');
+const client = require('../lib/dist');
 const Long = require('long');
 
 function delay(ms) {

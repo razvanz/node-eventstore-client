@@ -1,6 +1,6 @@
 var uuid = require('uuid');
 var Long = require('long');
-var client = require('../src/client');
+var client = require('../lib/dist');
 
 var ANY_VERSION = Long.fromNumber(client.expectedVersion.any);
 var NOSTREAM_VERSION = Long.fromNumber(client.expectedVersion.noStream);
