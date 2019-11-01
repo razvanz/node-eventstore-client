@@ -175,6 +175,7 @@ export interface RecordedEvent {
     readonly eventId: string;
     readonly eventNumber: Long;
     readonly eventType: string;
+    readonly created: Date;
     readonly createdEpoch: number;
     readonly data?: Buffer;
     readonly metadata?: Buffer;
