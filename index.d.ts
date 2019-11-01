@@ -125,6 +125,7 @@ export namespace expectedVersion {
     const any: number;
     const noStream: number;
     const emptyStream: number;
+    const streamExists: number;
 }
 
 export namespace positions {
