@@ -1,4 +1,4 @@
-var client = require('../src/client');
+var client = require('../lib/dist');
 const Long = require('long');
 
 const EMPTY_VERSION = Long.fromNumber(client.expectedVersion.emptyStream);

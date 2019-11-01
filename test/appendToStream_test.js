@@ -1,5 +1,5 @@
 var uuid = require('uuid');
-var client = require('../src/client');
+var client = require('../lib/dist');
 var Long = require('long');
 
 var ANY_VERSION = Long.fromNumber(client.expectedVersion.any);
@@ -63,7 +63,7 @@ module.exports = {
     test.expect(2);
     const largeData = Buffer.alloc(3 * 1024 *1024, " ");
     const event = client.createJsonEventData(uuid.v4(), {a: largeData.toString()}, null, 'largePayloadEvent');
-    
+
     this.conn.appendToStream(this.testStreamName, ANY_VERSION, event)
         .then(function(result) {
           test.areEqual("result.nextExpectedVersion", result.nextExpectedVersion, Long.fromNumber(0));

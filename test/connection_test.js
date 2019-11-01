@@ -1,4 +1,4 @@
-var client = require('../src/client.js');
+var client = require('../lib/dist');
 var GossipSeed = require('../src/gossipSeed');
 
 var testBase = require('./common/base_test');

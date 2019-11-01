@@ -1,4 +1,4 @@
-var client = require('../../src/client');
+var client = require('../../lib/dist');
 var uuid = require('uuid');
 
 var settings = {
