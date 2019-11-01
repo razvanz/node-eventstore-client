@@ -24,8 +24,8 @@ function EventData(eventId, type, isJson, data, metadata) {
   this.eventId = eventId;
   this.type = type;
   this.isJson = isJson || false;
-  this.data = data || new Buffer(0);
-  this.metadata = metadata || new Buffer(0);
+  this.data = data || Buffer.alloc(0);
+  this.metadata = metadata || Buffer.alloc(0);
   Object.freeze(this);
 }
 

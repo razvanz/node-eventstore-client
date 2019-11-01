@@ -14,14 +14,14 @@ function parse(s, buf, offset) {
   var ii = 0;
 
   if (buf) buf.fill(0, i, i + 16);
-  buf = buf || new Buffer(16);
+  buf = buf || Buffer.alloc(16);
   s.toLowerCase().replace(/[0-9a-f]{2}/g, function(oct) {
     if (ii < 16) { // Don't overflow!
       buf[i + ii++] = _hexToByte[oct];
     }
   });
 
-  var buf2 = new Buffer(buf.slice(i, i + 16));
+  var buf2 = Buffer.from(buf.slice(i, i + 16));
   buf[i + 0] = buf2[3];
   buf[i + 1] = buf2[2];
   buf[i + 2] = buf2[1];

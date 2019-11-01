@@ -5,11 +5,12 @@
   "main": "index.js",
   "types": "index.d.ts",
   "engines": {
-    "node": ">=4.0"
+    "node": ">=5.10"
   },
   "engineStrict": true,
   "scripts": {
     "clean": "rm lib/dist.js",
+    "prebuild": "npm run clean",
     "build": "webpack",
     "pretest": "npm run build",
     "test": "nodeunit",
@@ -45,7 +46,7 @@
   },
   "homepage": "https://github.com/nicdex/node-eventstore-client#readme",
   "dependencies": {
-    "long": "^3.2",
+    "long": "^3.2.0",
     "protobufjs": "^6.8.8",
     "strict-event-emitter-types": "^1.2.0",
     "uuid": "^3.0.1"

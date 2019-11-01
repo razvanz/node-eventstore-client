@@ -50,12 +50,12 @@ TcpPackage.fromBufferSegment = function(data) {
 
 TcpPackage.prototype.asBuffer = function() {
   if ((this.flags & TcpFlags.Authenticated) !== 0) {
-    var loginBytes = new Buffer(this.login);
+    var loginBytes = Buffer.from(this.login);
     if (loginBytes.length > 255) throw new Error("Login serialized length should be less than 256 bytes.");
-    var passwordBytes = new Buffer(this.password);
+    var passwordBytes = Buffer.from(this.password);
     if (passwordBytes.length > 255) throw new Error("Password serialized length should be less than 256 bytes.");
 
-    var res = new Buffer(MandatorySize + 2 + loginBytes.length + passwordBytes.length + (this.data ? this.data.count : 0));
+    var res = Buffer.alloc(MandatorySize + 2 + loginBytes.length + passwordBytes.length + (this.data ? this.data.count : 0));
     res[CommandOffset] = this.command;
     res[FlagsOffset] = this.flags;
     guidParse.parse(this.correlationId, res, CorrelationOffset);
@@ -69,7 +69,7 @@ TcpPackage.prototype.asBuffer = function() {
 
     return res;
   } else {
-    var res = new Buffer(MandatorySize + (this.data ? this.data.count : 0));
+    var res = Buffer.alloc(MandatorySize + (this.data ? this.data.count : 0));
     res[CommandOffset] = this.command;
     res[FlagsOffset] = this.flags;
     guidParse.parse(this.correlationId, res, CorrelationOffset);

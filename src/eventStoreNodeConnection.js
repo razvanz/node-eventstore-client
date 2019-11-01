@@ -650,7 +650,7 @@ EventStoreNodeConnection.prototype.setStreamMetadataRaw = function(
       if (err) return reject(err);
       resolve(result);
     }
-    var data = metadata ? new Buffer(JSON.stringify(metadata)) : null;
+    var data = metadata ? Buffer.from(JSON.stringify(metadata)) : null;
     var metaevent = new EventData(uuid.v4(), systemEventTypes.StreamMetadata, true, data, null);
     self._enqueueOperation(
         new AppendToStreamOperation(self._settings.log, cb, self._settings.requireMaster,
