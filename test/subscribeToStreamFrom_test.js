@@ -22,7 +22,7 @@ function delayOnlyFirst(count, action) {
 
 module.exports = {
   'Test Subscribe to Stream From Beginning (null)': function(test) {
-    test.expect(32);
+    test.expect(48);
     var self = this;
     var liveProcessing = false;
     var catchUpEvents = [];
@@ -78,7 +78,7 @@ module.exports = {
       .catch(test.done);
   },
   'Test Subscribe to Stream From 0': function(test) {
-    test.expect(26);
+    test.expect(38);
     var self = this;
     var liveProcessing = false;
     var catchUpEvents = [];

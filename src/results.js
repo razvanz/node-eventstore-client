@@ -49,6 +49,7 @@ const EventReadStatus = Object.freeze({
  * @property {string} eventId
  * @property {Long} eventNumber
  * @property {string} eventType
+ * @property {Date} created
  * @property {number} createdEpoch
  * @property {?Buffer} data
  * @property {?Buffer} metadata
@@ -61,8 +62,8 @@ function RecordedEvent(ev) {
   this.eventType = ev.eventType;
   this.created = new Date(ev.createdEpoch ? ev.createdEpoch.toNumber() : 0);
   this.createdEpoch = ev.createdEpoch ? ev.createdEpoch.toNumber() : 0;
-  this.data = ev.data ? ev.data : new Buffer(0);
-  this.metadata = ev.metadata ? ev.metadata : new Buffer(0);
+  this.data = ev.data ? ev.data : Buffer.alloc(0);
+  this.metadata = ev.metadata ? ev.metadata : Buffer.alloc(0);
   this.isJson = ev.dataContentType === 1;
   Object.freeze(this);
 }

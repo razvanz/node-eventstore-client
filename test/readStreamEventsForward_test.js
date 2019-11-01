@@ -18,7 +18,7 @@ module.exports = {
         .catch(cb);
   },
   'Read Stream Events Forward Happy Path': function(test) {
-    test.expect(7 + (streamSize * 11));
+    test.expect(7 + (streamSize * 15));
     var self = this;
     this.conn.readStreamEventsForward(this.testStreamName, Long.fromNumber(0), streamSize)
         .then(function(slice) {
