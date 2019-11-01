@@ -1,5 +1,6 @@
 var util = require('util');
 var uuid = require('uuid');
+var Long = require('long');
 var client = require('../../lib/dist');
 var FileLogger = require('../../src/common/log/fileLogger');
 var NoopLogger = require('../../src/common/log/noopLogger');
@@ -71,17 +72,23 @@ function eventEqualEventData(name, resolvedEvent, eventData) {
   this.ok(Buffer.compare(ev.metadata, eventData.metadata) === 0, name + ".originalEvent.metadata is not equal to original metadata.");
 }
 
+function testRecordedEvent(name, event) {
+  this.ok(Long.isLong(event.eventNumber), name + ".eventNumber is not a Long");
+  this.ok(event.created instanceof Date, name + ".created is not a Date");
+  this.ok(typeof event.createdEpoch === 'number', name + ".createdEpoch is not a number");
+}
+
 function testLiveEvent(name, event, evNumber) {
   this.ok(event.event, name + ".event not defined (or null)");
   this.ok(event.originalEvent, name + ".originalEvent not defined (or null)");
   this.ok(event.isResolved === false, name + ".isResolved should be true");
   this.ok(event.originalPosition instanceof client.Position, name + ".originalPosition is not an instance of Position");
   this.ok(event.originalStreamId, name + ".originalStreamId not defined (or null)");
+  this.ok(Long.isLong(event.originalEventNumber), name + ".originalEventNumber is not a Long");
   if (typeof evNumber === 'number') {
     this.ok(event.originalEventNumber.toNumber() === evNumber, name + '.originalEventNumber expected ' + evNumber + ' got ' + event.originalEventNumber);
-  } else {
-    this.ok(typeof event.originalEventNumber === 'number', name + ".originalEventNumber is not a number");
   }
+  testRecordedEvent.call(this, name + '.event', event.event);
 }
 
 function testReadEvent(name, event, evNumber) {
@@ -90,11 +97,11 @@ function testReadEvent(name, event, evNumber) {
   this.ok(event.isResolved === false, name + ".isResolved should be true");
   this.ok(event.originalPosition === null, name + ".originalPosition is not null");
   this.ok(event.originalStreamId, name + ".originalStreamId not defined (or null)");
+  this.ok(Long.isLong(event.originalEventNumber), name + ".originalEventNumber is not a Long");
   if (typeof evNumber === 'number') {
     this.ok(event.originalEventNumber.toNumber() === evNumber, name + '.originalEventNumber expected ' + evNumber + ' got ' + event.originalEventNumber);
-  } else {
-    this.ok(typeof event.originalEventNumber === 'number', name + ".originalEventNumber is not a number");
   }
+  testRecordedEvent.call(this, name + '.event', event.event);
 }
 
 var _ = {
