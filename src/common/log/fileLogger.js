@@ -26,6 +26,11 @@ FileLogger.prototype.info = function() {
   fs.appendFileSync(this._filePath, line);
 };
 
+FileLogger.prototype.warn = function() {
+  var line = createLine('WARN', arguments, 0);
+  fs.appendFileSync(this._filePath, line);
+};
+
 FileLogger.prototype.error = function(e) {
   var hasError = e instanceof Error;
   var line = createLine('ERROR', arguments, hasError ? 1 : 0);
