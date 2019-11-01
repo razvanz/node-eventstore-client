@@ -5,7 +5,7 @@
   "main": "lib/index.js",
   "types": "lib/index.d.ts",
   "engines": {
-    "node": ">=4.0"
+    "node": ">=5.10"
   },
   "engineStrict": true,
   "scripts": {

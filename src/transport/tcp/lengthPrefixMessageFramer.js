@@ -35,7 +35,7 @@ LengthPrefixMessageFramer.prototype._parse = function(bytes) {
           throw new Error(["Package size is out of bounds: ", this._packageLength, "(max: ", this._maxPackageSize, "."].join(''));
         }
 
-        this._messageBuffer = new Buffer(this._packageLength);
+        this._messageBuffer = Buffer.alloc(this._packageLength);
       }
     }
     else
@@ -58,7 +58,7 @@ LengthPrefixMessageFramer.prototype._parse = function(bytes) {
 
 LengthPrefixMessageFramer.prototype.frameData = function(data) {
   var length = data.count;
-  var lengthBuffer = new Buffer(HeaderLength);
+  var lengthBuffer = Buffer.alloc(HeaderLength);
   lengthBuffer.writeInt32LE(length, 0);
   return [
     createBufferSegment(lengthBuffer, 0, HeaderLength),

@@ -33,8 +33,8 @@ Object.freeze(streamPosition);
 function createJsonEventData(eventId, event, metadata, type) {
   if (!event || typeof event !== 'object') throw new TypeError("data must be an object.");
 
-  var eventBuf = new Buffer(JSON.stringify(event));
-  var metaBuf = metadata ? new Buffer(JSON.stringify(metadata)) : null;
+  var eventBuf = Buffer.from(JSON.stringify(event));
+  var metaBuf = metadata ? Buffer.from(JSON.stringify(metadata)) : null;
   return new EventData(eventId, type || event.constructor.name, true, eventBuf, metaBuf);
 }
 
