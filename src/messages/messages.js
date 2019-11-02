@@ -2,15 +2,21 @@
 (function(global, factory) { /* global define, require, module */
 
     /* CommonJS */if (typeof require === 'function' && typeof module === 'object' && module && module.exports)
-        module.exports = factory(require("protobufjs/minimal"), require("../utils/modules"));
+        module.exports = factory(require("../utils/modules"));
 
-})(this, function($protobuf, $moduleUtil) {
+})(this, function($moduleUtil) {
     "use strict";
 
     // This fixes bug #91 by giving us an isolate copy of protobufjs library so any tampering with it doesn't affect us
-    var old = $moduleUtil.uncache(require.resolve('protobufjs/minimal'));
-    $protobuf = require('protobufjs/minimal');
-    $moduleUtil.recache(old);
+    var $moduleName = 'protobufjs/minimal';
+    var $id = require.resolve($moduleName);
+    var $uncached = $moduleUtil.uncache($id);
+    var $protobuf = require($moduleName);
+    if ($uncached) {
+        $moduleUtil.recache($uncached);
+    } else {
+        $moduleUtil.uncache($id);
+    }
 
     // Common aliases
     var $Reader = $protobuf.Reader, $Writer = $protobuf.Writer, $util = $protobuf.util;
