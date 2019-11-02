@@ -2,55 +2,49 @@
 (function(global, factory) { /* global define, require, module */
 
     /* CommonJS */if (typeof require === 'function' && typeof module === 'object' && module && module.exports)
-        module.exports = factory(require("../utils/modules"));
+        module.exports = factory(require("protobufjs/minimal"), require("../utils/modules"));
 
-})(this, function($moduleUtil) {
+})(this, function($protobuf, $moduleUtil) {
     "use strict";
 
     // This fixes bug #91 by giving us an isolate copy of protobufjs library so any tampering with it doesn't affect us
-    var $moduleName = 'protobufjs/minimal';
-    var $id = require.resolve($moduleName);
-    var $uncached = $moduleUtil.uncache($id);
-    var $protobuf = require($moduleName);
-    if ($uncached) {
-        $moduleUtil.recache($uncached);
-    } else {
-        $moduleUtil.uncache($id);
-    }
+    var old = $moduleUtil.uncache(require.resolve('protobufjs/minimal'));
+    $protobuf = require('protobufjs/minimal');
+    $moduleUtil.recache(old);
 
     // Common aliases
     var $Reader = $protobuf.Reader, $Writer = $protobuf.Writer, $util = $protobuf.util;
-    
+
     // Exported root namespace
     var $root = $protobuf.roots["default"] || ($protobuf.roots["default"] = {});
-    
+
     $root.EventStore = (function() {
-    
+
         /**
          * Namespace EventStore.
          * @exports EventStore
          * @namespace
          */
         var EventStore = {};
-    
+
         EventStore.Client = (function() {
-    
+
             /**
              * Namespace Client.
              * @memberof EventStore
              * @namespace
              */
             var Client = {};
-    
+
             Client.Messages = (function() {
-    
+
                 /**
                  * Namespace Messages.
                  * @memberof EventStore.Client
                  * @namespace
                  */
                 var Messages = {};
-    
+
                 /**
                  * OperationResult enum.
                  * @name EventStore.Client.Messages.OperationResult
@@ -76,9 +70,9 @@
                     values[valuesById[7] = "AccessDenied"] = 7;
                     return values;
                 })();
-    
+
                 Messages.NewEvent = (function() {
-    
+
                     /**
                      * Properties of a NewEvent.
                      * @memberof EventStore.Client.Messages
@@ -90,7 +84,7 @@
                      * @property {Uint8Array} data NewEvent data
                      * @property {Uint8Array|null} [metadata] NewEvent metadata
                      */
-    
+
                     /**
                      * Constructs a new NewEvent.
                      * @memberof EventStore.Client.Messages
@@ -105,7 +99,7 @@
                                 if (properties[keys[i]] != null)
                                     this[keys[i]] = properties[keys[i]];
                     }
-    
+
                     /**
                      * NewEvent eventId.
                      * @member {Uint8Array} eventId
@@ -113,7 +107,7 @@
                      * @instance
                      */
                     NewEvent.prototype.eventId = $util.newBuffer([]);
-    
+
                     /**
                      * NewEvent eventType.
                      * @member {string} eventType
@@ -121,7 +115,7 @@
                      * @instance
                      */
                     NewEvent.prototype.eventType = "";
-    
+
                     /**
                      * NewEvent dataContentType.
                      * @member {number} dataContentType
@@ -129,7 +123,7 @@
                      * @instance
                      */
                     NewEvent.prototype.dataContentType = 0;
-    
+
                     /**
                      * NewEvent metadataContentType.
                      * @member {number} metadataContentType
@@ -137,7 +131,7 @@
                      * @instance
                      */
                     NewEvent.prototype.metadataContentType = 0;
-    
+
                     /**
                      * NewEvent data.
                      * @member {Uint8Array} data
@@ -145,7 +139,7 @@
                      * @instance
                      */
                     NewEvent.prototype.data = $util.newBuffer([]);
-    
+
                     /**
                      * NewEvent metadata.
                      * @member {Uint8Array} metadata
@@ -153,7 +147,7 @@
                      * @instance
                      */
                     NewEvent.prototype.metadata = $util.newBuffer([]);
-    
+
                     /**
                      * Creates a new NewEvent instance using the specified properties.
                      * @function create
@@ -165,7 +159,7 @@
                     NewEvent.create = function create(properties) {
                         return new NewEvent(properties);
                     };
-    
+
                     /**
                      * Encodes the specified NewEvent message. Does not implicitly {@link EventStore.Client.Messages.NewEvent.verify|verify} messages.
                      * @function encode
@@ -187,7 +181,7 @@
                             writer.uint32(/* id 6, wireType 2 =*/50).bytes(message.metadata);
                         return writer;
                     };
-    
+
                     /**
                      * Encodes the specified NewEvent message, length delimited. Does not implicitly {@link EventStore.Client.Messages.NewEvent.verify|verify} messages.
                      * @function encodeDelimited
@@ -200,7 +194,7 @@
                     NewEvent.encodeDelimited = function encodeDelimited(message, writer) {
                         return this.encode(message, writer).ldelim();
                     };
-    
+
                     /**
                      * Decodes a NewEvent message from the specified reader or buffer.
                      * @function decode
@@ -254,7 +248,7 @@
                             throw $util.ProtocolError("missing required 'data'", { instance: message });
                         return message;
                     };
-    
+
                     /**
                      * Decodes a NewEvent message from the specified reader or buffer, length delimited.
                      * @function decodeDelimited
@@ -270,7 +264,7 @@
                             reader = new $Reader(reader);
                         return this.decode(reader, reader.uint32());
                     };
-    
+
                     /**
                      * Verifies a NewEvent message.
                      * @function verify
@@ -297,7 +291,7 @@
                                 return "metadata: buffer expected";
                         return null;
                     };
-    
+
                     /**
                      * Creates a NewEvent message from a plain object. Also converts values to their respective internal types.
                      * @function fromObject
@@ -333,7 +327,7 @@
                                 message.metadata = object.metadata;
                         return message;
                     };
-    
+
                     /**
                      * Creates a plain object from a NewEvent message. Also converts values to other types if specified.
                      * @function toObject
@@ -387,7 +381,7 @@
                             object.metadata = options.bytes === String ? $util.base64.encode(message.metadata, 0, message.metadata.length) : options.bytes === Array ? Array.prototype.slice.call(message.metadata) : message.metadata;
                         return object;
                     };
-    
+
                     /**
                      * Converts this NewEvent to JSON.
                      * @function toJSON
@@ -398,12 +392,12 @@
                     NewEvent.prototype.toJSON = function toJSON() {
                         return this.constructor.toObject(this, $protobuf.util.toJSONOptions);
                     };
-    
+
                     return NewEvent;
                 })();
-    
+
                 Messages.EventRecord = (function() {
-    
+
                     /**
                      * Properties of an EventRecord.
                      * @memberof EventStore.Client.Messages
@@ -419,7 +413,7 @@
                      * @property {number|Long|null} [created] EventRecord created
                      * @property {number|Long|null} [createdEpoch] EventRecord createdEpoch
                      */
-    
+
                     /**
                      * Constructs a new EventRecord.
                      * @memberof EventStore.Client.Messages
@@ -434,7 +428,7 @@
                                 if (properties[keys[i]] != null)
                                     this[keys[i]] = properties[keys[i]];
                     }
-    
+
                     /**
                      * EventRecord eventStreamId.
                      * @member {string} eventStreamId
@@ -442,7 +436,7 @@
                      * @instance
                      */
                     EventRecord.prototype.eventStreamId = "";
-    
+
                     /**
                      * EventRecord eventNumber.
                      * @member {number|Long} eventNumber
@@ -450,7 +444,7 @@
                      * @instance
                      */
                     EventRecord.prototype.eventNumber = $util.Long ? $util.Long.fromBits(0,0,false) : 0;
-    
+
                     /**
                      * EventRecord eventId.
                      * @member {Uint8Array} eventId
@@ -458,7 +452,7 @@
                      * @instance
                      */
                     EventRecord.prototype.eventId = $util.newBuffer([]);
-    
+
                     /**
                      * EventRecord eventType.
                      * @member {string} eventType
@@ -466,7 +460,7 @@
                      * @instance
                      */
                     EventRecord.prototype.eventType = "";
-    
+
                     /**
                      * EventRecord dataContentType.
                      * @member {number} dataContentType
@@ -474,7 +468,7 @@
                      * @instance
                      */
                     EventRecord.prototype.dataContentType = 0;
-    
+
                     /**
                      * EventRecord metadataContentType.
                      * @member {number} metadataContentType
@@ -482,7 +476,7 @@
                      * @instance
                      */
                     EventRecord.prototype.metadataContentType = 0;
-    
+
                     /**
                      * EventRecord data.
                      * @member {Uint8Array} data
@@ -490,7 +484,7 @@
                      * @instance
                      */
                     EventRecord.prototype.data = $util.newBuffer([]);
-    
+
                     /**
                      * EventRecord metadata.
                      * @member {Uint8Array} metadata
@@ -498,7 +492,7 @@
                      * @instance
                      */
                     EventRecord.prototype.metadata = $util.newBuffer([]);
-    
+
                     /**
                      * EventRecord created.
                      * @member {number|Long} created
@@ -506,7 +500,7 @@
                      * @instance
                      */
                     EventRecord.prototype.created = $util.Long ? $util.Long.fromBits(0,0,false) : 0;
-    
+
                     /**
                      * EventRecord createdEpoch.
                      * @member {number|Long} createdEpoch
@@ -514,7 +508,7 @@
                      * @instance
                      */
                     EventRecord.prototype.createdEpoch = $util.Long ? $util.Long.fromBits(0,0,false) : 0;
-    
+
                     /**
                      * Creates a new EventRecord instance using the specified properties.
                      * @function create
@@ -526,7 +520,7 @@
                     EventRecord.create = function create(properties) {
                         return new EventRecord(properties);
                     };
-    
+
                     /**
                      * Encodes the specified EventRecord message. Does not implicitly {@link EventStore.Client.Messages.EventRecord.verify|verify} messages.
                      * @function encode
@@ -554,7 +548,7 @@
                             writer.uint32(/* id 10, wireType 0 =*/80).int64(message.createdEpoch);
                         return writer;
                     };
-    
+
                     /**
                      * Encodes the specified EventRecord message, length delimited. Does not implicitly {@link EventStore.Client.Messages.EventRecord.verify|verify} messages.
                      * @function encodeDelimited
@@ -567,7 +561,7 @@
                     EventRecord.encodeDelimited = function encodeDelimited(message, writer) {
                         return this.encode(message, writer).ldelim();
                     };
-    
+
                     /**
                      * Decodes an EventRecord message from the specified reader or buffer.
                      * @function decode
@@ -637,7 +631,7 @@
                             throw $util.ProtocolError("missing required 'data'", { instance: message });
                         return message;
                     };
-    
+
                     /**
                      * Decodes an EventRecord message from the specified reader or buffer, length delimited.
                      * @function decodeDelimited
@@ -653,7 +647,7 @@
                             reader = new $Reader(reader);
                         return this.decode(reader, reader.uint32());
                     };
-    
+
                     /**
                      * Verifies an EventRecord message.
                      * @function verify
@@ -690,7 +684,7 @@
                                 return "createdEpoch: integer|Long expected";
                         return null;
                     };
-    
+
                     /**
                      * Creates an EventRecord message from a plain object. Also converts values to their respective internal types.
                      * @function fromObject
@@ -755,7 +749,7 @@
                                 message.createdEpoch = new $util.LongBits(object.createdEpoch.low >>> 0, object.createdEpoch.high >>> 0).toNumber();
                         return message;
                     };
-    
+
                     /**
                      * Creates a plain object from an EventRecord message. Also converts values to other types if specified.
                      * @function toObject
@@ -842,7 +836,7 @@
                                 object.createdEpoch = options.longs === String ? $util.Long.prototype.toString.call(message.createdEpoch) : options.longs === Number ? new $util.LongBits(message.createdEpoch.low >>> 0, message.createdEpoch.high >>> 0).toNumber() : message.createdEpoch;
                         return object;
                     };
-    
+
                     /**
                      * Converts this EventRecord to JSON.
                      * @function toJSON
@@ -853,12 +847,12 @@
                     EventRecord.prototype.toJSON = function toJSON() {
                         return this.constructor.toObject(this, $protobuf.util.toJSONOptions);
                     };
-    
+
                     return EventRecord;
                 })();
-    
+
                 Messages.ResolvedIndexedEvent = (function() {
-    
+
                     /**
                      * Properties of a ResolvedIndexedEvent.
                      * @memberof EventStore.Client.Messages
@@ -866,7 +860,7 @@
                      * @property {EventStore.Client.Messages.IEventRecord|null} [event] ResolvedIndexedEvent event
                      * @property {EventStore.Client.Messages.IEventRecord|null} [link] ResolvedIndexedEvent link
                      */
-    
+
                     /**
                      * Constructs a new ResolvedIndexedEvent.
                      * @memberof EventStore.Client.Messages
@@ -881,7 +875,7 @@
                                 if (properties[keys[i]] != null)
                                     this[keys[i]] = properties[keys[i]];
                     }
-    
+
                     /**
                      * ResolvedIndexedEvent event.
                      * @member {EventStore.Client.Messages.IEventRecord|null|undefined} event
@@ -889,7 +883,7 @@
                      * @instance
                      */
                     ResolvedIndexedEvent.prototype.event = null;
-    
+
                     /**
                      * ResolvedIndexedEvent link.
                      * @member {EventStore.Client.Messages.IEventRecord|null|undefined} link
@@ -897,7 +891,7 @@
                      * @instance
                      */
                     ResolvedIndexedEvent.prototype.link = null;
-    
+
                     /**
                      * Creates a new ResolvedIndexedEvent instance using the specified properties.
                      * @function create
@@ -909,7 +903,7 @@
                     ResolvedIndexedEvent.create = function create(properties) {
                         return new ResolvedIndexedEvent(properties);
                     };
-    
+
                     /**
                      * Encodes the specified ResolvedIndexedEvent message. Does not implicitly {@link EventStore.Client.Messages.ResolvedIndexedEvent.verify|verify} messages.
                      * @function encode
@@ -928,7 +922,7 @@
                             $root.EventStore.Client.Messages.EventRecord.encode(message.link, writer.uint32(/* id 2, wireType 2 =*/18).fork()).ldelim();
                         return writer;
                     };
-    
+
                     /**
                      * Encodes the specified ResolvedIndexedEvent message, length delimited. Does not implicitly {@link EventStore.Client.Messages.ResolvedIndexedEvent.verify|verify} messages.
                      * @function encodeDelimited
@@ -941,7 +935,7 @@
                     ResolvedIndexedEvent.encodeDelimited = function encodeDelimited(message, writer) {
                         return this.encode(message, writer).ldelim();
                     };
-    
+
                     /**
                      * Decodes a ResolvedIndexedEvent message from the specified reader or buffer.
                      * @function decode
@@ -973,7 +967,7 @@
                         }
                         return message;
                     };
-    
+
                     /**
                      * Decodes a ResolvedIndexedEvent message from the specified reader or buffer, length delimited.
                      * @function decodeDelimited
@@ -989,7 +983,7 @@
                             reader = new $Reader(reader);
                         return this.decode(reader, reader.uint32());
                     };
-    
+
                     /**
                      * Verifies a ResolvedIndexedEvent message.
                      * @function verify
@@ -1013,7 +1007,7 @@
                         }
                         return null;
                     };
-    
+
                     /**
                      * Creates a ResolvedIndexedEvent message from a plain object. Also converts values to their respective internal types.
                      * @function fromObject
@@ -1038,7 +1032,7 @@
                         }
                         return message;
                     };
-    
+
                     /**
                      * Creates a plain object from a ResolvedIndexedEvent message. Also converts values to other types if specified.
                      * @function toObject
@@ -1062,7 +1056,7 @@
                             object.link = $root.EventStore.Client.Messages.EventRecord.toObject(message.link, options);
                         return object;
                     };
-    
+
                     /**
                      * Converts this ResolvedIndexedEvent to JSON.
                      * @function toJSON
@@ -1073,12 +1067,12 @@
                     ResolvedIndexedEvent.prototype.toJSON = function toJSON() {
                         return this.constructor.toObject(this, $protobuf.util.toJSONOptions);
                     };
-    
+
                     return ResolvedIndexedEvent;
                 })();
-    
+
                 Messages.ResolvedEvent = (function() {
-    
+
                     /**
                      * Properties of a ResolvedEvent.
                      * @memberof EventStore.Client.Messages
@@ -1088,7 +1082,7 @@
                      * @property {number|Long} commitPosition ResolvedEvent commitPosition
                      * @property {number|Long} preparePosition ResolvedEvent preparePosition
                      */
-    
+
                     /**
                      * Constructs a new ResolvedEvent.
                      * @memberof EventStore.Client.Messages
@@ -1103,7 +1097,7 @@
                                 if (properties[keys[i]] != null)
                                     this[keys[i]] = properties[keys[i]];
                     }
-    
+
                     /**
                      * ResolvedEvent event.
                      * @member {EventStore.Client.Messages.IEventRecord|null|undefined} event
@@ -1111,7 +1105,7 @@
                      * @instance
                      */
                     ResolvedEvent.prototype.event = null;
-    
+
                     /**
                      * ResolvedEvent link.
                      * @member {EventStore.Client.Messages.IEventRecord|null|undefined} link
@@ -1119,7 +1113,7 @@
                      * @instance
                      */
                     ResolvedEvent.prototype.link = null;
-    
+
                     /**
                      * ResolvedEvent commitPosition.
                      * @member {number|Long} commitPosition
@@ -1127,7 +1121,7 @@
                      * @instance
                      */
                     ResolvedEvent.prototype.commitPosition = $util.Long ? $util.Long.fromBits(0,0,false) : 0;
-    
+
                     /**
                      * ResolvedEvent preparePosition.
                      * @member {number|Long} preparePosition
@@ -1135,7 +1129,7 @@
                      * @instance
                      */
                     ResolvedEvent.prototype.preparePosition = $util.Long ? $util.Long.fromBits(0,0,false) : 0;
-    
+
                     /**
                      * Creates a new ResolvedEvent instance using the specified properties.
                      * @function create
@@ -1147,7 +1141,7 @@
                     ResolvedEvent.create = function create(properties) {
                         return new ResolvedEvent(properties);
                     };
-    
+
                     /**
                      * Encodes the specified ResolvedEvent message. Does not implicitly {@link EventStore.Client.Messages.ResolvedEvent.verify|verify} messages.
                      * @function encode
@@ -1168,7 +1162,7 @@
                         writer.uint32(/* id 4, wireType 0 =*/32).int64(message.preparePosition);
                         return writer;
                     };
-    
+
                     /**
                      * Encodes the specified ResolvedEvent message, length delimited. Does not implicitly {@link EventStore.Client.Messages.ResolvedEvent.verify|verify} messages.
                      * @function encodeDelimited
@@ -1181,7 +1175,7 @@
                     ResolvedEvent.encodeDelimited = function encodeDelimited(message, writer) {
                         return this.encode(message, writer).ldelim();
                     };
-    
+
                     /**
                      * Decodes a ResolvedEvent message from the specified reader or buffer.
                      * @function decode
@@ -1223,7 +1217,7 @@
                             throw $util.ProtocolError("missing required 'preparePosition'", { instance: message });
                         return message;
                     };
-    
+
                     /**
                      * Decodes a ResolvedEvent message from the specified reader or buffer, length delimited.
                      * @function decodeDelimited
@@ -1239,7 +1233,7 @@
                             reader = new $Reader(reader);
                         return this.decode(reader, reader.uint32());
                     };
-    
+
                     /**
                      * Verifies a ResolvedEvent message.
                      * @function verify
@@ -1267,7 +1261,7 @@
                             return "preparePosition: integer|Long expected";
                         return null;
                     };
-    
+
                     /**
                      * Creates a ResolvedEvent message from a plain object. Also converts values to their respective internal types.
                      * @function fromObject
@@ -1310,7 +1304,7 @@
                                 message.preparePosition = new $util.LongBits(object.preparePosition.low >>> 0, object.preparePosition.high >>> 0).toNumber();
                         return message;
                     };
-    
+
                     /**
                      * Creates a plain object from a ResolvedEvent message. Also converts values to other types if specified.
                      * @function toObject
@@ -1354,7 +1348,7 @@
                                 object.preparePosition = options.longs === String ? $util.Long.prototype.toString.call(message.preparePosition) : options.longs === Number ? new $util.LongBits(message.preparePosition.low >>> 0, message.preparePosition.high >>> 0).toNumber() : message.preparePosition;
                         return object;
                     };
-    
+
                     /**
                      * Converts this ResolvedEvent to JSON.
                      * @function toJSON
@@ -1365,12 +1359,12 @@
                     ResolvedEvent.prototype.toJSON = function toJSON() {
                         return this.constructor.toObject(this, $protobuf.util.toJSONOptions);
                     };
-    
+
                     return ResolvedEvent;
                 })();
-    
+
                 Messages.WriteEvents = (function() {
-    
+
                     /**
                      * Properties of a WriteEvents.
                      * @memberof EventStore.Client.Messages
@@ -1380,7 +1374,7 @@
                      * @property {Array.<EventStore.Client.Messages.INewEvent>|null} [events] WriteEvents events
                      * @property {boolean} requireMaster WriteEvents requireMaster
                      */
-    
+
                     /**
                      * Constructs a new WriteEvents.
                      * @memberof EventStore.Client.Messages
@@ -1396,7 +1390,7 @@
                                 if (properties[keys[i]] != null)
                                     this[keys[i]] = properties[keys[i]];
                     }
-    
+
                     /**
                      * WriteEvents eventStreamId.
                      * @member {string} eventStreamId
@@ -1404,7 +1398,7 @@
                      * @instance
                      */
                     WriteEvents.prototype.eventStreamId = "";
-    
+
                     /**
                      * WriteEvents expectedVersion.
                      * @member {number|Long} expectedVersion
@@ -1412,7 +1406,7 @@
                      * @instance
                      */
                     WriteEvents.prototype.expectedVersion = $util.Long ? $util.Long.fromBits(0,0,false) : 0;
-    
+
                     /**
                      * WriteEvents events.
                      * @member {Array.<EventStore.Client.Messages.INewEvent>} events
@@ -1420,7 +1414,7 @@
                      * @instance
                      */
                     WriteEvents.prototype.events = $util.emptyArray;
-    
+
                     /**
                      * WriteEvents requireMaster.
                      * @member {boolean} requireMaster
@@ -1428,7 +1422,7 @@
                      * @instance
                      */
                     WriteEvents.prototype.requireMaster = false;
-    
+
                     /**
                      * Creates a new WriteEvents instance using the specified properties.
                      * @function create
@@ -1440,7 +1434,7 @@
                     WriteEvents.create = function create(properties) {
                         return new WriteEvents(properties);
                     };
-    
+
                     /**
                      * Encodes the specified WriteEvents message. Does not implicitly {@link EventStore.Client.Messages.WriteEvents.verify|verify} messages.
                      * @function encode
@@ -1461,7 +1455,7 @@
                         writer.uint32(/* id 4, wireType 0 =*/32).bool(message.requireMaster);
                         return writer;
                     };
-    
+
                     /**
                      * Encodes the specified WriteEvents message, length delimited. Does not implicitly {@link EventStore.Client.Messages.WriteEvents.verify|verify} messages.
                      * @function encodeDelimited
@@ -1474,7 +1468,7 @@
                     WriteEvents.encodeDelimited = function encodeDelimited(message, writer) {
                         return this.encode(message, writer).ldelim();
                     };
-    
+
                     /**
                      * Decodes a WriteEvents message from the specified reader or buffer.
                      * @function decode
@@ -1520,7 +1514,7 @@
                             throw $util.ProtocolError("missing required 'requireMaster'", { instance: message });
                         return message;
                     };
-    
+
                     /**
                      * Decodes a WriteEvents message from the specified reader or buffer, length delimited.
                      * @function decodeDelimited
@@ -1536,7 +1530,7 @@
                             reader = new $Reader(reader);
                         return this.decode(reader, reader.uint32());
                     };
-    
+
                     /**
                      * Verifies a WriteEvents message.
                      * @function verify
@@ -1565,7 +1559,7 @@
                             return "requireMaster: boolean expected";
                         return null;
                     };
-    
+
                     /**
                      * Creates a WriteEvents message from a plain object. Also converts values to their respective internal types.
                      * @function fromObject
@@ -1603,7 +1597,7 @@
                             message.requireMaster = Boolean(object.requireMaster);
                         return message;
                     };
-    
+
                     /**
                      * Creates a plain object from a WriteEvents message. Also converts values to other types if specified.
                      * @function toObject
@@ -1644,7 +1638,7 @@
                             object.requireMaster = message.requireMaster;
                         return object;
                     };
-    
+
                     /**
                      * Converts this WriteEvents to JSON.
                      * @function toJSON
@@ -1655,12 +1649,12 @@
                     WriteEvents.prototype.toJSON = function toJSON() {
                         return this.constructor.toObject(this, $protobuf.util.toJSONOptions);
                     };
-    
+
                     return WriteEvents;
                 })();
-    
+
                 Messages.WriteEventsCompleted = (function() {
-    
+
                     /**
                      * Properties of a WriteEventsCompleted.
                      * @memberof EventStore.Client.Messages
@@ -1673,7 +1667,7 @@
                      * @property {number|Long|null} [commitPosition] WriteEventsCompleted commitPosition
                      * @property {number|Long|null} [currentVersion] WriteEventsCompleted currentVersion
                      */
-    
+
                     /**
                      * Constructs a new WriteEventsCompleted.
                      * @memberof EventStore.Client.Messages
@@ -1688,7 +1682,7 @@
                                 if (properties[keys[i]] != null)
                                     this[keys[i]] = properties[keys[i]];
                     }
-    
+
                     /**
                      * WriteEventsCompleted result.
                      * @member {EventStore.Client.Messages.OperationResult} result
@@ -1696,7 +1690,7 @@
                      * @instance
                      */
                     WriteEventsCompleted.prototype.result = 0;
-    
+
                     /**
                      * WriteEventsCompleted message.
                      * @member {string} message
@@ -1704,7 +1698,7 @@
                      * @instance
                      */
                     WriteEventsCompleted.prototype.message = "";
-    
+
                     /**
                      * WriteEventsCompleted firstEventNumber.
                      * @member {number|Long} firstEventNumber
@@ -1712,7 +1706,7 @@
                      * @instance
                      */
                     WriteEventsCompleted.prototype.firstEventNumber = $util.Long ? $util.Long.fromBits(0,0,false) : 0;
-    
+
                     /**
                      * WriteEventsCompleted lastEventNumber.
                      * @member {number|Long} lastEventNumber
@@ -1720,7 +1714,7 @@
                      * @instance
                      */
                     WriteEventsCompleted.prototype.lastEventNumber = $util.Long ? $util.Long.fromBits(0,0,false) : 0;
-    
+
                     /**
                      * WriteEventsCompleted preparePosition.
                      * @member {number|Long} preparePosition
@@ -1728,7 +1722,7 @@
                      * @instance
                      */
                     WriteEventsCompleted.prototype.preparePosition = $util.Long ? $util.Long.fromBits(0,0,false) : 0;
-    
+
                     /**
                      * WriteEventsCompleted commitPosition.
                      * @member {number|Long} commitPosition
@@ -1736,7 +1730,7 @@
                      * @instance
                      */
                     WriteEventsCompleted.prototype.commitPosition = $util.Long ? $util.Long.fromBits(0,0,false) : 0;
-    
+
                     /**
                      * WriteEventsCompleted currentVersion.
                      * @member {number|Long} currentVersion
@@ -1744,7 +1738,7 @@
                      * @instance
                      */
                     WriteEventsCompleted.prototype.currentVersion = $util.Long ? $util.Long.fromBits(0,0,false) : 0;
-    
+
                     /**
                      * Creates a new WriteEventsCompleted instance using the specified properties.
                      * @function create
@@ -1756,7 +1750,7 @@
                     WriteEventsCompleted.create = function create(properties) {
                         return new WriteEventsCompleted(properties);
                     };
-    
+
                     /**
                      * Encodes the specified WriteEventsCompleted message. Does not implicitly {@link EventStore.Client.Messages.WriteEventsCompleted.verify|verify} messages.
                      * @function encode
@@ -1782,7 +1776,7 @@
                             writer.uint32(/* id 7, wireType 0 =*/56).int64(message.currentVersion);
                         return writer;
                     };
-    
+
                     /**
                      * Encodes the specified WriteEventsCompleted message, length delimited. Does not implicitly {@link EventStore.Client.Messages.WriteEventsCompleted.verify|verify} messages.
                      * @function encodeDelimited
@@ -1795,7 +1789,7 @@
                     WriteEventsCompleted.encodeDelimited = function encodeDelimited(message, writer) {
                         return this.encode(message, writer).ldelim();
                     };
-    
+
                     /**
                      * Decodes a WriteEventsCompleted message from the specified reader or buffer.
                      * @function decode
@@ -1848,7 +1842,7 @@
                             throw $util.ProtocolError("missing required 'lastEventNumber'", { instance: message });
                         return message;
                     };
-    
+
                     /**
                      * Decodes a WriteEventsCompleted message from the specified reader or buffer, length delimited.
                      * @function decodeDelimited
@@ -1864,7 +1858,7 @@
                             reader = new $Reader(reader);
                         return this.decode(reader, reader.uint32());
                     };
-    
+
                     /**
                      * Verifies a WriteEventsCompleted message.
                      * @function verify
@@ -1907,7 +1901,7 @@
                                 return "currentVersion: integer|Long expected";
                         return null;
                     };
-    
+
                     /**
                      * Creates a WriteEventsCompleted message from a plain object. Also converts values to their respective internal types.
                      * @function fromObject
@@ -2003,7 +1997,7 @@
                                 message.currentVersion = new $util.LongBits(object.currentVersion.low >>> 0, object.currentVersion.high >>> 0).toNumber();
                         return message;
                     };
-    
+
                     /**
                      * Creates a plain object from a WriteEventsCompleted message. Also converts values to other types if specified.
                      * @function toObject
@@ -2077,7 +2071,7 @@
                                 object.currentVersion = options.longs === String ? $util.Long.prototype.toString.call(message.currentVersion) : options.longs === Number ? new $util.LongBits(message.currentVersion.low >>> 0, message.currentVersion.high >>> 0).toNumber() : message.currentVersion;
                         return object;
                     };
-    
+
                     /**
                      * Converts this WriteEventsCompleted to JSON.
                      * @function toJSON
@@ -2088,12 +2082,12 @@
                     WriteEventsCompleted.prototype.toJSON = function toJSON() {
                         return this.constructor.toObject(this, $protobuf.util.toJSONOptions);
                     };
-    
+
                     return WriteEventsCompleted;
                 })();
-    
+
                 Messages.DeleteStream = (function() {
-    
+
                     /**
                      * Properties of a DeleteStream.
                      * @memberof EventStore.Client.Messages
@@ -2103,7 +2097,7 @@
                      * @property {boolean} requireMaster DeleteStream requireMaster
                      * @property {boolean|null} [hardDelete] DeleteStream hardDelete
                      */
-    
+
                     /**
                      * Constructs a new DeleteStream.
                      * @memberof EventStore.Client.Messages
@@ -2118,7 +2112,7 @@
                                 if (properties[keys[i]] != null)
                                     this[keys[i]] = properties[keys[i]];
                     }
-    
+
                     /**
                      * DeleteStream eventStreamId.
                      * @member {string} eventStreamId
@@ -2126,7 +2120,7 @@
                      * @instance
                      */
                     DeleteStream.prototype.eventStreamId = "";
-    
+
                     /**
                      * DeleteStream expectedVersion.
                      * @member {number|Long} expectedVersion
@@ -2134,7 +2128,7 @@
                      * @instance
                      */
                     DeleteStream.prototype.expectedVersion = $util.Long ? $util.Long.fromBits(0,0,false) : 0;
-    
+
                     /**
                      * DeleteStream requireMaster.
                      * @member {boolean} requireMaster
@@ -2142,7 +2136,7 @@
                      * @instance
                      */
                     DeleteStream.prototype.requireMaster = false;
-    
+
                     /**
                      * DeleteStream hardDelete.
                      * @member {boolean} hardDelete
@@ -2150,7 +2144,7 @@
                      * @instance
                      */
                     DeleteStream.prototype.hardDelete = false;
-    
+
                     /**
                      * Creates a new DeleteStream instance using the specified properties.
                      * @function create
@@ -2162,7 +2156,7 @@
                     DeleteStream.create = function create(properties) {
                         return new DeleteStream(properties);
                     };
-    
+
                     /**
                      * Encodes the specified DeleteStream message. Does not implicitly {@link EventStore.Client.Messages.DeleteStream.verify|verify} messages.
                      * @function encode
@@ -2182,7 +2176,7 @@
                             writer.uint32(/* id 4, wireType 0 =*/32).bool(message.hardDelete);
                         return writer;
                     };
-    
+
                     /**
                      * Encodes the specified DeleteStream message, length delimited. Does not implicitly {@link EventStore.Client.Messages.DeleteStream.verify|verify} messages.
                      * @function encodeDelimited
@@ -2195,7 +2189,7 @@
                     DeleteStream.encodeDelimited = function encodeDelimited(message, writer) {
                         return this.encode(message, writer).ldelim();
                     };
-    
+
                     /**
                      * Decodes a DeleteStream message from the specified reader or buffer.
                      * @function decode
@@ -2239,7 +2233,7 @@
                             throw $util.ProtocolError("missing required 'requireMaster'", { instance: message });
                         return message;
                     };
-    
+
                     /**
                      * Decodes a DeleteStream message from the specified reader or buffer, length delimited.
                      * @function decodeDelimited
@@ -2255,7 +2249,7 @@
                             reader = new $Reader(reader);
                         return this.decode(reader, reader.uint32());
                     };
-    
+
                     /**
                      * Verifies a DeleteStream message.
                      * @function verify
@@ -2278,7 +2272,7 @@
                                 return "hardDelete: boolean expected";
                         return null;
                     };
-    
+
                     /**
                      * Creates a DeleteStream message from a plain object. Also converts values to their respective internal types.
                      * @function fromObject
@@ -2308,7 +2302,7 @@
                             message.hardDelete = Boolean(object.hardDelete);
                         return message;
                     };
-    
+
                     /**
                      * Creates a plain object from a DeleteStream message. Also converts values to other types if specified.
                      * @function toObject
@@ -2345,7 +2339,7 @@
                             object.hardDelete = message.hardDelete;
                         return object;
                     };
-    
+
                     /**
                      * Converts this DeleteStream to JSON.
                      * @function toJSON
@@ -2356,12 +2350,12 @@
                     DeleteStream.prototype.toJSON = function toJSON() {
                         return this.constructor.toObject(this, $protobuf.util.toJSONOptions);
                     };
-    
+
                     return DeleteStream;
                 })();
-    
+
                 Messages.DeleteStreamCompleted = (function() {
-    
+
                     /**
                      * Properties of a DeleteStreamCompleted.
                      * @memberof EventStore.Client.Messages
@@ -2371,7 +2365,7 @@
                      * @property {number|Long|null} [preparePosition] DeleteStreamCompleted preparePosition
                      * @property {number|Long|null} [commitPosition] DeleteStreamCompleted commitPosition
                      */
-    
+
                     /**
                      * Constructs a new DeleteStreamCompleted.
                      * @memberof EventStore.Client.Messages
@@ -2386,7 +2380,7 @@
                                 if (properties[keys[i]] != null)
                                     this[keys[i]] = properties[keys[i]];
                     }
-    
+
                     /**
                      * DeleteStreamCompleted result.
                      * @member {EventStore.Client.Messages.OperationResult} result
@@ -2394,7 +2388,7 @@
                      * @instance
                      */
                     DeleteStreamCompleted.prototype.result = 0;
-    
+
                     /**
                      * DeleteStreamCompleted message.
                      * @member {string} message
@@ -2402,7 +2396,7 @@
                      * @instance
                      */
                     DeleteStreamCompleted.prototype.message = "";
-    
+
                     /**
                      * DeleteStreamCompleted preparePosition.
                      * @member {number|Long} preparePosition
@@ -2410,7 +2404,7 @@
                      * @instance
                      */
                     DeleteStreamCompleted.prototype.preparePosition = $util.Long ? $util.Long.fromBits(0,0,false) : 0;
-    
+
                     /**
                      * DeleteStreamCompleted commitPosition.
                      * @member {number|Long} commitPosition
@@ -2418,7 +2412,7 @@
                      * @instance
                      */
                     DeleteStreamCompleted.prototype.commitPosition = $util.Long ? $util.Long.fromBits(0,0,false) : 0;
-    
+
                     /**
                      * Creates a new DeleteStreamCompleted instance using the specified properties.
                      * @function create
@@ -2430,7 +2424,7 @@
                     DeleteStreamCompleted.create = function create(properties) {
                         return new DeleteStreamCompleted(properties);
                     };
-    
+
                     /**
                      * Encodes the specified DeleteStreamCompleted message. Does not implicitly {@link EventStore.Client.Messages.DeleteStreamCompleted.verify|verify} messages.
                      * @function encode
@@ -2452,7 +2446,7 @@
                             writer.uint32(/* id 4, wireType 0 =*/32).int64(message.commitPosition);
                         return writer;
                     };
-    
+
                     /**
                      * Encodes the specified DeleteStreamCompleted message, length delimited. Does not implicitly {@link EventStore.Client.Messages.DeleteStreamCompleted.verify|verify} messages.
                      * @function encodeDelimited
@@ -2465,7 +2459,7 @@
                     DeleteStreamCompleted.encodeDelimited = function encodeDelimited(message, writer) {
                         return this.encode(message, writer).ldelim();
                     };
-    
+
                     /**
                      * Decodes a DeleteStreamCompleted message from the specified reader or buffer.
                      * @function decode
@@ -2505,7 +2499,7 @@
                             throw $util.ProtocolError("missing required 'result'", { instance: message });
                         return message;
                     };
-    
+
                     /**
                      * Decodes a DeleteStreamCompleted message from the specified reader or buffer, length delimited.
                      * @function decodeDelimited
@@ -2521,7 +2515,7 @@
                             reader = new $Reader(reader);
                         return this.decode(reader, reader.uint32());
                     };
-    
+
                     /**
                      * Verifies a DeleteStreamCompleted message.
                      * @function verify
@@ -2557,7 +2551,7 @@
                                 return "commitPosition: integer|Long expected";
                         return null;
                     };
-    
+
                     /**
                      * Creates a DeleteStreamCompleted message from a plain object. Also converts values to their respective internal types.
                      * @function fromObject
@@ -2626,7 +2620,7 @@
                                 message.commitPosition = new $util.LongBits(object.commitPosition.low >>> 0, object.commitPosition.high >>> 0).toNumber();
                         return message;
                     };
-    
+
                     /**
                      * Creates a plain object from a DeleteStreamCompleted message. Also converts values to other types if specified.
                      * @function toObject
@@ -2670,7 +2664,7 @@
                                 object.commitPosition = options.longs === String ? $util.Long.prototype.toString.call(message.commitPosition) : options.longs === Number ? new $util.LongBits(message.commitPosition.low >>> 0, message.commitPosition.high >>> 0).toNumber() : message.commitPosition;
                         return object;
                     };
-    
+
                     /**
                      * Converts this DeleteStreamCompleted to JSON.
                      * @function toJSON
@@ -2681,12 +2675,12 @@
                     DeleteStreamCompleted.prototype.toJSON = function toJSON() {
                         return this.constructor.toObject(this, $protobuf.util.toJSONOptions);
                     };
-    
+
                     return DeleteStreamCompleted;
                 })();
-    
+
                 Messages.TransactionStart = (function() {
-    
+
                     /**
                      * Properties of a TransactionStart.
                      * @memberof EventStore.Client.Messages
@@ -2695,7 +2689,7 @@
                      * @property {number|Long} expectedVersion TransactionStart expectedVersion
                      * @property {boolean} requireMaster TransactionStart requireMaster
                      */
-    
+
                     /**
                      * Constructs a new TransactionStart.
                      * @memberof EventStore.Client.Messages
@@ -2710,7 +2704,7 @@
                                 if (properties[keys[i]] != null)
                                     this[keys[i]] = properties[keys[i]];
                     }
-    
+
                     /**
                      * TransactionStart eventStreamId.
                      * @member {string} eventStreamId
@@ -2718,7 +2712,7 @@
                      * @instance
                      */
                     TransactionStart.prototype.eventStreamId = "";
-    
+
                     /**
                      * TransactionStart expectedVersion.
                      * @member {number|Long} expectedVersion
@@ -2726,7 +2720,7 @@
                      * @instance
                      */
                     TransactionStart.prototype.expectedVersion = $util.Long ? $util.Long.fromBits(0,0,false) : 0;
-    
+
                     /**
                      * TransactionStart requireMaster.
                      * @member {boolean} requireMaster
@@ -2734,7 +2728,7 @@
                      * @instance
                      */
                     TransactionStart.prototype.requireMaster = false;
-    
+
                     /**
                      * Creates a new TransactionStart instance using the specified properties.
                      * @function create
@@ -2746,7 +2740,7 @@
                     TransactionStart.create = function create(properties) {
                         return new TransactionStart(properties);
                     };
-    
+
                     /**
                      * Encodes the specified TransactionStart message. Does not implicitly {@link EventStore.Client.Messages.TransactionStart.verify|verify} messages.
                      * @function encode
@@ -2764,7 +2758,7 @@
                         writer.uint32(/* id 3, wireType 0 =*/24).bool(message.requireMaster);
                         return writer;
                     };
-    
+
                     /**
                      * Encodes the specified TransactionStart message, length delimited. Does not implicitly {@link EventStore.Client.Messages.TransactionStart.verify|verify} messages.
                      * @function encodeDelimited
@@ -2777,7 +2771,7 @@
                     TransactionStart.encodeDelimited = function encodeDelimited(message, writer) {
                         return this.encode(message, writer).ldelim();
                     };
-    
+
                     /**
                      * Decodes a TransactionStart message from the specified reader or buffer.
                      * @function decode
@@ -2818,7 +2812,7 @@
                             throw $util.ProtocolError("missing required 'requireMaster'", { instance: message });
                         return message;
                     };
-    
+
                     /**
                      * Decodes a TransactionStart message from the specified reader or buffer, length delimited.
                      * @function decodeDelimited
@@ -2834,7 +2828,7 @@
                             reader = new $Reader(reader);
                         return this.decode(reader, reader.uint32());
                     };
-    
+
                     /**
                      * Verifies a TransactionStart message.
                      * @function verify
@@ -2854,7 +2848,7 @@
                             return "requireMaster: boolean expected";
                         return null;
                     };
-    
+
                     /**
                      * Creates a TransactionStart message from a plain object. Also converts values to their respective internal types.
                      * @function fromObject
@@ -2882,7 +2876,7 @@
                             message.requireMaster = Boolean(object.requireMaster);
                         return message;
                     };
-    
+
                     /**
                      * Creates a plain object from a TransactionStart message. Also converts values to other types if specified.
                      * @function toObject
@@ -2916,7 +2910,7 @@
                             object.requireMaster = message.requireMaster;
                         return object;
                     };
-    
+
                     /**
                      * Converts this TransactionStart to JSON.
                      * @function toJSON
@@ -2927,12 +2921,12 @@
                     TransactionStart.prototype.toJSON = function toJSON() {
                         return this.constructor.toObject(this, $protobuf.util.toJSONOptions);
                     };
-    
+
                     return TransactionStart;
                 })();
-    
+
                 Messages.TransactionStartCompleted = (function() {
-    
+
                     /**
                      * Properties of a TransactionStartCompleted.
                      * @memberof EventStore.Client.Messages
@@ -2941,7 +2935,7 @@
                      * @property {EventStore.Client.Messages.OperationResult} result TransactionStartCompleted result
                      * @property {string|null} [message] TransactionStartCompleted message
                      */
-    
+
                     /**
                      * Constructs a new TransactionStartCompleted.
                      * @memberof EventStore.Client.Messages
@@ -2956,7 +2950,7 @@
                                 if (properties[keys[i]] != null)
                                     this[keys[i]] = properties[keys[i]];
                     }
-    
+
                     /**
                      * TransactionStartCompleted transactionId.
                      * @member {number|Long} transactionId
@@ -2964,7 +2958,7 @@
                      * @instance
                      */
                     TransactionStartCompleted.prototype.transactionId = $util.Long ? $util.Long.fromBits(0,0,false) : 0;
-    
+
                     /**
                      * TransactionStartCompleted result.
                      * @member {EventStore.Client.Messages.OperationResult} result
@@ -2972,7 +2966,7 @@
                      * @instance
                      */
                     TransactionStartCompleted.prototype.result = 0;
-    
+
                     /**
                      * TransactionStartCompleted message.
                      * @member {string} message
@@ -2980,7 +2974,7 @@
                      * @instance
                      */
                     TransactionStartCompleted.prototype.message = "";
-    
+
                     /**
                      * Creates a new TransactionStartCompleted instance using the specified properties.
                      * @function create
@@ -2992,7 +2986,7 @@
                     TransactionStartCompleted.create = function create(properties) {
                         return new TransactionStartCompleted(properties);
                     };
-    
+
                     /**
                      * Encodes the specified TransactionStartCompleted message. Does not implicitly {@link EventStore.Client.Messages.TransactionStartCompleted.verify|verify} messages.
                      * @function encode
@@ -3011,7 +3005,7 @@
                             writer.uint32(/* id 3, wireType 2 =*/26).string(message.message);
                         return writer;
                     };
-    
+
                     /**
                      * Encodes the specified TransactionStartCompleted message, length delimited. Does not implicitly {@link EventStore.Client.Messages.TransactionStartCompleted.verify|verify} messages.
                      * @function encodeDelimited
@@ -3024,7 +3018,7 @@
                     TransactionStartCompleted.encodeDelimited = function encodeDelimited(message, writer) {
                         return this.encode(message, writer).ldelim();
                     };
-    
+
                     /**
                      * Decodes a TransactionStartCompleted message from the specified reader or buffer.
                      * @function decode
@@ -3063,7 +3057,7 @@
                             throw $util.ProtocolError("missing required 'result'", { instance: message });
                         return message;
                     };
-    
+
                     /**
                      * Decodes a TransactionStartCompleted message from the specified reader or buffer, length delimited.
                      * @function decodeDelimited
@@ -3079,7 +3073,7 @@
                             reader = new $Reader(reader);
                         return this.decode(reader, reader.uint32());
                     };
-    
+
                     /**
                      * Verifies a TransactionStartCompleted message.
                      * @function verify
@@ -3111,7 +3105,7 @@
                                 return "message: string expected";
                         return null;
                     };
-    
+
                     /**
                      * Creates a TransactionStartCompleted message from a plain object. Also converts values to their respective internal types.
                      * @function fromObject
@@ -3171,7 +3165,7 @@
                             message.message = String(object.message);
                         return message;
                     };
-    
+
                     /**
                      * Creates a plain object from a TransactionStartCompleted message. Also converts values to other types if specified.
                      * @function toObject
@@ -3205,7 +3199,7 @@
                             object.message = message.message;
                         return object;
                     };
-    
+
                     /**
                      * Converts this TransactionStartCompleted to JSON.
                      * @function toJSON
@@ -3216,12 +3210,12 @@
                     TransactionStartCompleted.prototype.toJSON = function toJSON() {
                         return this.constructor.toObject(this, $protobuf.util.toJSONOptions);
                     };
-    
+
                     return TransactionStartCompleted;
                 })();
-    
+
                 Messages.TransactionWrite = (function() {
-    
+
                     /**
                      * Properties of a TransactionWrite.
                      * @memberof EventStore.Client.Messages
@@ -3230,7 +3224,7 @@
                      * @property {Array.<EventStore.Client.Messages.INewEvent>|null} [events] TransactionWrite events
                      * @property {boolean} requireMaster TransactionWrite requireMaster
                      */
-    
+
                     /**
                      * Constructs a new TransactionWrite.
                      * @memberof EventStore.Client.Messages
@@ -3246,7 +3240,7 @@
                                 if (properties[keys[i]] != null)
                                     this[keys[i]] = properties[keys[i]];
                     }
-    
+
                     /**
                      * TransactionWrite transactionId.
                      * @member {number|Long} transactionId
@@ -3254,7 +3248,7 @@
                      * @instance
                      */
                     TransactionWrite.prototype.transactionId = $util.Long ? $util.Long.fromBits(0,0,false) : 0;
-    
+
                     /**
                      * TransactionWrite events.
                      * @member {Array.<EventStore.Client.Messages.INewEvent>} events
@@ -3262,7 +3256,7 @@
                      * @instance
                      */
                     TransactionWrite.prototype.events = $util.emptyArray;
-    
+
                     /**
                      * TransactionWrite requireMaster.
                      * @member {boolean} requireMaster
@@ -3270,7 +3264,7 @@
                      * @instance
                      */
                     TransactionWrite.prototype.requireMaster = false;
-    
+
                     /**
                      * Creates a new TransactionWrite instance using the specified properties.
                      * @function create
@@ -3282,7 +3276,7 @@
                     TransactionWrite.create = function create(properties) {
                         return new TransactionWrite(properties);
                     };
-    
+
                     /**
                      * Encodes the specified TransactionWrite message. Does not implicitly {@link EventStore.Client.Messages.TransactionWrite.verify|verify} messages.
                      * @function encode
@@ -3302,7 +3296,7 @@
                         writer.uint32(/* id 3, wireType 0 =*/24).bool(message.requireMaster);
                         return writer;
                     };
-    
+
                     /**
                      * Encodes the specified TransactionWrite message, length delimited. Does not implicitly {@link EventStore.Client.Messages.TransactionWrite.verify|verify} messages.
                      * @function encodeDelimited
@@ -3315,7 +3309,7 @@
                     TransactionWrite.encodeDelimited = function encodeDelimited(message, writer) {
                         return this.encode(message, writer).ldelim();
                     };
-    
+
                     /**
                      * Decodes a TransactionWrite message from the specified reader or buffer.
                      * @function decode
@@ -3356,7 +3350,7 @@
                             throw $util.ProtocolError("missing required 'requireMaster'", { instance: message });
                         return message;
                     };
-    
+
                     /**
                      * Decodes a TransactionWrite message from the specified reader or buffer, length delimited.
                      * @function decodeDelimited
@@ -3372,7 +3366,7 @@
                             reader = new $Reader(reader);
                         return this.decode(reader, reader.uint32());
                     };
-    
+
                     /**
                      * Verifies a TransactionWrite message.
                      * @function verify
@@ -3399,7 +3393,7 @@
                             return "requireMaster: boolean expected";
                         return null;
                     };
-    
+
                     /**
                      * Creates a TransactionWrite message from a plain object. Also converts values to their respective internal types.
                      * @function fromObject
@@ -3435,7 +3429,7 @@
                             message.requireMaster = Boolean(object.requireMaster);
                         return message;
                     };
-    
+
                     /**
                      * Creates a plain object from a TransactionWrite message. Also converts values to other types if specified.
                      * @function toObject
@@ -3473,7 +3467,7 @@
                             object.requireMaster = message.requireMaster;
                         return object;
                     };
-    
+
                     /**
                      * Converts this TransactionWrite to JSON.
                      * @function toJSON
@@ -3484,12 +3478,12 @@
                     TransactionWrite.prototype.toJSON = function toJSON() {
                         return this.constructor.toObject(this, $protobuf.util.toJSONOptions);
                     };
-    
+
                     return TransactionWrite;
                 })();
-    
+
                 Messages.TransactionWriteCompleted = (function() {
-    
+
                     /**
                      * Properties of a TransactionWriteCompleted.
                      * @memberof EventStore.Client.Messages
@@ -3498,7 +3492,7 @@
                      * @property {EventStore.Client.Messages.OperationResult} result TransactionWriteCompleted result
                      * @property {string|null} [message] TransactionWriteCompleted message
                      */
-    
+
                     /**
                      * Constructs a new TransactionWriteCompleted.
                      * @memberof EventStore.Client.Messages
@@ -3513,7 +3507,7 @@
                                 if (properties[keys[i]] != null)
                                     this[keys[i]] = properties[keys[i]];
                     }
-    
+
                     /**
                      * TransactionWriteCompleted transactionId.
                      * @member {number|Long} transactionId
@@ -3521,7 +3515,7 @@
                      * @instance
                      */
                     TransactionWriteCompleted.prototype.transactionId = $util.Long ? $util.Long.fromBits(0,0,false) : 0;
-    
+
                     /**
                      * TransactionWriteCompleted result.
                      * @member {EventStore.Client.Messages.OperationResult} result
@@ -3529,7 +3523,7 @@
                      * @instance
                      */
                     TransactionWriteCompleted.prototype.result = 0;
-    
+
                     /**
                      * TransactionWriteCompleted message.
                      * @member {string} message
@@ -3537,7 +3531,7 @@
                      * @instance
                      */
                     TransactionWriteCompleted.prototype.message = "";
-    
+
                     /**
                      * Creates a new TransactionWriteCompleted instance using the specified properties.
                      * @function create
@@ -3549,7 +3543,7 @@
                     TransactionWriteCompleted.create = function create(properties) {
                         return new TransactionWriteCompleted(properties);
                     };
-    
+
                     /**
                      * Encodes the specified TransactionWriteCompleted message. Does not implicitly {@link EventStore.Client.Messages.TransactionWriteCompleted.verify|verify} messages.
                      * @function encode
@@ -3568,7 +3562,7 @@
                             writer.uint32(/* id 3, wireType 2 =*/26).string(message.message);
                         return writer;
                     };
-    
+
                     /**
                      * Encodes the specified TransactionWriteCompleted message, length delimited. Does not implicitly {@link EventStore.Client.Messages.TransactionWriteCompleted.verify|verify} messages.
                      * @function encodeDelimited
@@ -3581,7 +3575,7 @@
                     TransactionWriteCompleted.encodeDelimited = function encodeDelimited(message, writer) {
                         return this.encode(message, writer).ldelim();
                     };
-    
+
                     /**
                      * Decodes a TransactionWriteCompleted message from the specified reader or buffer.
                      * @function decode
@@ -3620,7 +3614,7 @@
                             throw $util.ProtocolError("missing required 'result'", { instance: message });
                         return message;
                     };
-    
+
                     /**
                      * Decodes a TransactionWriteCompleted message from the specified reader or buffer, length delimited.
                      * @function decodeDelimited
@@ -3636,7 +3630,7 @@
                             reader = new $Reader(reader);
                         return this.decode(reader, reader.uint32());
                     };
-    
+
                     /**
                      * Verifies a TransactionWriteCompleted message.
                      * @function verify
@@ -3668,7 +3662,7 @@
                                 return "message: string expected";
                         return null;
                     };
-    
+
                     /**
                      * Creates a TransactionWriteCompleted message from a plain object. Also converts values to their respective internal types.
                      * @function fromObject
@@ -3728,7 +3722,7 @@
                             message.message = String(object.message);
                         return message;
                     };
-    
+
                     /**
                      * Creates a plain object from a TransactionWriteCompleted message. Also converts values to other types if specified.
                      * @function toObject
@@ -3762,7 +3756,7 @@
                             object.message = message.message;
                         return object;
                     };
-    
+
                     /**
                      * Converts this TransactionWriteCompleted to JSON.
                      * @function toJSON
@@ -3773,12 +3767,12 @@
                     TransactionWriteCompleted.prototype.toJSON = function toJSON() {
                         return this.constructor.toObject(this, $protobuf.util.toJSONOptions);
                     };
-    
+
                     return TransactionWriteCompleted;
                 })();
-    
+
                 Messages.TransactionCommit = (function() {
-    
+
                     /**
                      * Properties of a TransactionCommit.
                      * @memberof EventStore.Client.Messages
@@ -3786,7 +3780,7 @@
                      * @property {number|Long} transactionId TransactionCommit transactionId
                      * @property {boolean} requireMaster TransactionCommit requireMaster
                      */
-    
+
                     /**
                      * Constructs a new TransactionCommit.
                      * @memberof EventStore.Client.Messages
@@ -3801,7 +3795,7 @@
                                 if (properties[keys[i]] != null)
                                     this[keys[i]] = properties[keys[i]];
                     }
-    
+
                     /**
                      * TransactionCommit transactionId.
                      * @member {number|Long} transactionId
@@ -3809,7 +3803,7 @@
                      * @instance
                      */
                     TransactionCommit.prototype.transactionId = $util.Long ? $util.Long.fromBits(0,0,false) : 0;
-    
+
                     /**
                      * TransactionCommit requireMaster.
                      * @member {boolean} requireMaster
@@ -3817,7 +3811,7 @@
                      * @instance
                      */
                     TransactionCommit.prototype.requireMaster = false;
-    
+
                     /**
                      * Creates a new TransactionCommit instance using the specified properties.
                      * @function create
@@ -3829,7 +3823,7 @@
                     TransactionCommit.create = function create(properties) {
                         return new TransactionCommit(properties);
                     };
-    
+
                     /**
                      * Encodes the specified TransactionCommit message. Does not implicitly {@link EventStore.Client.Messages.TransactionCommit.verify|verify} messages.
                      * @function encode
@@ -3846,7 +3840,7 @@
                         writer.uint32(/* id 2, wireType 0 =*/16).bool(message.requireMaster);
                         return writer;
                     };
-    
+
                     /**
                      * Encodes the specified TransactionCommit message, length delimited. Does not implicitly {@link EventStore.Client.Messages.TransactionCommit.verify|verify} messages.
                      * @function encodeDelimited
@@ -3859,7 +3853,7 @@
                     TransactionCommit.encodeDelimited = function encodeDelimited(message, writer) {
                         return this.encode(message, writer).ldelim();
                     };
-    
+
                     /**
                      * Decodes a TransactionCommit message from the specified reader or buffer.
                      * @function decode
@@ -3895,7 +3889,7 @@
                             throw $util.ProtocolError("missing required 'requireMaster'", { instance: message });
                         return message;
                     };
-    
+
                     /**
                      * Decodes a TransactionCommit message from the specified reader or buffer, length delimited.
                      * @function decodeDelimited
@@ -3911,7 +3905,7 @@
                             reader = new $Reader(reader);
                         return this.decode(reader, reader.uint32());
                     };
-    
+
                     /**
                      * Verifies a TransactionCommit message.
                      * @function verify
@@ -3929,7 +3923,7 @@
                             return "requireMaster: boolean expected";
                         return null;
                     };
-    
+
                     /**
                      * Creates a TransactionCommit message from a plain object. Also converts values to their respective internal types.
                      * @function fromObject
@@ -3955,7 +3949,7 @@
                             message.requireMaster = Boolean(object.requireMaster);
                         return message;
                     };
-    
+
                     /**
                      * Creates a plain object from a TransactionCommit message. Also converts values to other types if specified.
                      * @function toObject
@@ -3986,7 +3980,7 @@
                             object.requireMaster = message.requireMaster;
                         return object;
                     };
-    
+
                     /**
                      * Converts this TransactionCommit to JSON.
                      * @function toJSON
@@ -3997,12 +3991,12 @@
                     TransactionCommit.prototype.toJSON = function toJSON() {
                         return this.constructor.toObject(this, $protobuf.util.toJSONOptions);
                     };
-    
+
                     return TransactionCommit;
                 })();
-    
+
                 Messages.TransactionCommitCompleted = (function() {
-    
+
                     /**
                      * Properties of a TransactionCommitCompleted.
                      * @memberof EventStore.Client.Messages
@@ -4015,7 +4009,7 @@
                      * @property {number|Long|null} [preparePosition] TransactionCommitCompleted preparePosition
                      * @property {number|Long|null} [commitPosition] TransactionCommitCompleted commitPosition
                      */
-    
+
                     /**
                      * Constructs a new TransactionCommitCompleted.
                      * @memberof EventStore.Client.Messages
@@ -4030,7 +4024,7 @@
                                 if (properties[keys[i]] != null)
                                     this[keys[i]] = properties[keys[i]];
                     }
-    
+
                     /**
                      * TransactionCommitCompleted transactionId.
                      * @member {number|Long} transactionId
@@ -4038,7 +4032,7 @@
                      * @instance
                      */
                     TransactionCommitCompleted.prototype.transactionId = $util.Long ? $util.Long.fromBits(0,0,false) : 0;
-    
+
                     /**
                      * TransactionCommitCompleted result.
                      * @member {EventStore.Client.Messages.OperationResult} result
@@ -4046,7 +4040,7 @@
                      * @instance
                      */
                     TransactionCommitCompleted.prototype.result = 0;
-    
+
                     /**
                      * TransactionCommitCompleted message.
                      * @member {string} message
@@ -4054,7 +4048,7 @@
                      * @instance
                      */
                     TransactionCommitCompleted.prototype.message = "";
-    
+
                     /**
                      * TransactionCommitCompleted firstEventNumber.
                      * @member {number|Long} firstEventNumber
@@ -4062,7 +4056,7 @@
                      * @instance
                      */
                     TransactionCommitCompleted.prototype.firstEventNumber = $util.Long ? $util.Long.fromBits(0,0,false) : 0;
-    
+
                     /**
                      * TransactionCommitCompleted lastEventNumber.
                      * @member {number|Long} lastEventNumber
@@ -4070,7 +4064,7 @@
                      * @instance
                      */
                     TransactionCommitCompleted.prototype.lastEventNumber = $util.Long ? $util.Long.fromBits(0,0,false) : 0;
-    
+
                     /**
                      * TransactionCommitCompleted preparePosition.
                      * @member {number|Long} preparePosition
@@ -4078,7 +4072,7 @@
                      * @instance
                      */
                     TransactionCommitCompleted.prototype.preparePosition = $util.Long ? $util.Long.fromBits(0,0,false) : 0;
-    
+
                     /**
                      * TransactionCommitCompleted commitPosition.
                      * @member {number|Long} commitPosition
@@ -4086,7 +4080,7 @@
                      * @instance
                      */
                     TransactionCommitCompleted.prototype.commitPosition = $util.Long ? $util.Long.fromBits(0,0,false) : 0;
-    
+
                     /**
                      * Creates a new TransactionCommitCompleted instance using the specified properties.
                      * @function create
@@ -4098,7 +4092,7 @@
                     TransactionCommitCompleted.create = function create(properties) {
                         return new TransactionCommitCompleted(properties);
                     };
-    
+
                     /**
                      * Encodes the specified TransactionCommitCompleted message. Does not implicitly {@link EventStore.Client.Messages.TransactionCommitCompleted.verify|verify} messages.
                      * @function encode
@@ -4123,7 +4117,7 @@
                             writer.uint32(/* id 7, wireType 0 =*/56).int64(message.commitPosition);
                         return writer;
                     };
-    
+
                     /**
                      * Encodes the specified TransactionCommitCompleted message, length delimited. Does not implicitly {@link EventStore.Client.Messages.TransactionCommitCompleted.verify|verify} messages.
                      * @function encodeDelimited
@@ -4136,7 +4130,7 @@
                     TransactionCommitCompleted.encodeDelimited = function encodeDelimited(message, writer) {
                         return this.encode(message, writer).ldelim();
                     };
-    
+
                     /**
                      * Decodes a TransactionCommitCompleted message from the specified reader or buffer.
                      * @function decode
@@ -4191,7 +4185,7 @@
                             throw $util.ProtocolError("missing required 'lastEventNumber'", { instance: message });
                         return message;
                     };
-    
+
                     /**
                      * Decodes a TransactionCommitCompleted message from the specified reader or buffer, length delimited.
                      * @function decodeDelimited
@@ -4207,7 +4201,7 @@
                             reader = new $Reader(reader);
                         return this.decode(reader, reader.uint32());
                     };
-    
+
                     /**
                      * Verifies a TransactionCommitCompleted message.
                      * @function verify
@@ -4249,7 +4243,7 @@
                                 return "commitPosition: integer|Long expected";
                         return null;
                     };
-    
+
                     /**
                      * Creates a TransactionCommitCompleted message from a plain object. Also converts values to their respective internal types.
                      * @function fromObject
@@ -4345,7 +4339,7 @@
                                 message.commitPosition = new $util.LongBits(object.commitPosition.low >>> 0, object.commitPosition.high >>> 0).toNumber();
                         return message;
                     };
-    
+
                     /**
                      * Creates a plain object from a TransactionCommitCompleted message. Also converts values to other types if specified.
                      * @function toObject
@@ -4419,7 +4413,7 @@
                                 object.commitPosition = options.longs === String ? $util.Long.prototype.toString.call(message.commitPosition) : options.longs === Number ? new $util.LongBits(message.commitPosition.low >>> 0, message.commitPosition.high >>> 0).toNumber() : message.commitPosition;
                         return object;
                     };
-    
+
                     /**
                      * Converts this TransactionCommitCompleted to JSON.
                      * @function toJSON
@@ -4430,12 +4424,12 @@
                     TransactionCommitCompleted.prototype.toJSON = function toJSON() {
                         return this.constructor.toObject(this, $protobuf.util.toJSONOptions);
                     };
-    
+
                     return TransactionCommitCompleted;
                 })();
-    
+
                 Messages.ReadEvent = (function() {
-    
+
                     /**
                      * Properties of a ReadEvent.
                      * @memberof EventStore.Client.Messages
@@ -4445,7 +4439,7 @@
                      * @property {boolean} resolveLinkTos ReadEvent resolveLinkTos
                      * @property {boolean} requireMaster ReadEvent requireMaster
                      */
-    
+
                     /**
                      * Constructs a new ReadEvent.
                      * @memberof EventStore.Client.Messages
@@ -4460,7 +4454,7 @@
                                 if (properties[keys[i]] != null)
                                     this[keys[i]] = properties[keys[i]];
                     }
-    
+
                     /**
                      * ReadEvent eventStreamId.
                      * @member {string} eventStreamId
@@ -4468,7 +4462,7 @@
                      * @instance
                      */
                     ReadEvent.prototype.eventStreamId = "";
-    
+
                     /**
                      * ReadEvent eventNumber.
                      * @member {number|Long} eventNumber
@@ -4476,7 +4470,7 @@
                      * @instance
                      */
                     ReadEvent.prototype.eventNumber = $util.Long ? $util.Long.fromBits(0,0,false) : 0;
-    
+
                     /**
                      * ReadEvent resolveLinkTos.
                      * @member {boolean} resolveLinkTos
@@ -4484,7 +4478,7 @@
                      * @instance
                      */
                     ReadEvent.prototype.resolveLinkTos = false;
-    
+
                     /**
                      * ReadEvent requireMaster.
                      * @member {boolean} requireMaster
@@ -4492,7 +4486,7 @@
                      * @instance
                      */
                     ReadEvent.prototype.requireMaster = false;
-    
+
                     /**
                      * Creates a new ReadEvent instance using the specified properties.
                      * @function create
@@ -4504,7 +4498,7 @@
                     ReadEvent.create = function create(properties) {
                         return new ReadEvent(properties);
                     };
-    
+
                     /**
                      * Encodes the specified ReadEvent message. Does not implicitly {@link EventStore.Client.Messages.ReadEvent.verify|verify} messages.
                      * @function encode
@@ -4523,7 +4517,7 @@
                         writer.uint32(/* id 4, wireType 0 =*/32).bool(message.requireMaster);
                         return writer;
                     };
-    
+
                     /**
                      * Encodes the specified ReadEvent message, length delimited. Does not implicitly {@link EventStore.Client.Messages.ReadEvent.verify|verify} messages.
                      * @function encodeDelimited
@@ -4536,7 +4530,7 @@
                     ReadEvent.encodeDelimited = function encodeDelimited(message, writer) {
                         return this.encode(message, writer).ldelim();
                     };
-    
+
                     /**
                      * Decodes a ReadEvent message from the specified reader or buffer.
                      * @function decode
@@ -4582,7 +4576,7 @@
                             throw $util.ProtocolError("missing required 'requireMaster'", { instance: message });
                         return message;
                     };
-    
+
                     /**
                      * Decodes a ReadEvent message from the specified reader or buffer, length delimited.
                      * @function decodeDelimited
@@ -4598,7 +4592,7 @@
                             reader = new $Reader(reader);
                         return this.decode(reader, reader.uint32());
                     };
-    
+
                     /**
                      * Verifies a ReadEvent message.
                      * @function verify
@@ -4620,7 +4614,7 @@
                             return "requireMaster: boolean expected";
                         return null;
                     };
-    
+
                     /**
                      * Creates a ReadEvent message from a plain object. Also converts values to their respective internal types.
                      * @function fromObject
@@ -4650,7 +4644,7 @@
                             message.requireMaster = Boolean(object.requireMaster);
                         return message;
                     };
-    
+
                     /**
                      * Creates a plain object from a ReadEvent message. Also converts values to other types if specified.
                      * @function toObject
@@ -4687,7 +4681,7 @@
                             object.requireMaster = message.requireMaster;
                         return object;
                     };
-    
+
                     /**
                      * Converts this ReadEvent to JSON.
                      * @function toJSON
@@ -4698,12 +4692,12 @@
                     ReadEvent.prototype.toJSON = function toJSON() {
                         return this.constructor.toObject(this, $protobuf.util.toJSONOptions);
                     };
-    
+
                     return ReadEvent;
                 })();
-    
+
                 Messages.ReadEventCompleted = (function() {
-    
+
                     /**
                      * Properties of a ReadEventCompleted.
                      * @memberof EventStore.Client.Messages
@@ -4712,7 +4706,7 @@
                      * @property {EventStore.Client.Messages.IResolvedIndexedEvent} event ReadEventCompleted event
                      * @property {string|null} [error] ReadEventCompleted error
                      */
-    
+
                     /**
                      * Constructs a new ReadEventCompleted.
                      * @memberof EventStore.Client.Messages
@@ -4727,7 +4721,7 @@
                                 if (properties[keys[i]] != null)
                                     this[keys[i]] = properties[keys[i]];
                     }
-    
+
                     /**
                      * ReadEventCompleted result.
                      * @member {EventStore.Client.Messages.ReadEventCompleted.ReadEventResult} result
@@ -4735,7 +4729,7 @@
                      * @instance
                      */
                     ReadEventCompleted.prototype.result = 0;
-    
+
                     /**
                      * ReadEventCompleted event.
                      * @member {EventStore.Client.Messages.IResolvedIndexedEvent} event
@@ -4743,7 +4737,7 @@
                      * @instance
                      */
                     ReadEventCompleted.prototype.event = null;
-    
+
                     /**
                      * ReadEventCompleted error.
                      * @member {string} error
@@ -4751,7 +4745,7 @@
                      * @instance
                      */
                     ReadEventCompleted.prototype.error = "";
-    
+
                     /**
                      * Creates a new ReadEventCompleted instance using the specified properties.
                      * @function create
@@ -4763,7 +4757,7 @@
                     ReadEventCompleted.create = function create(properties) {
                         return new ReadEventCompleted(properties);
                     };
-    
+
                     /**
                      * Encodes the specified ReadEventCompleted message. Does not implicitly {@link EventStore.Client.Messages.ReadEventCompleted.verify|verify} messages.
                      * @function encode
@@ -4782,7 +4776,7 @@
                             writer.uint32(/* id 3, wireType 2 =*/26).string(message.error);
                         return writer;
                     };
-    
+
                     /**
                      * Encodes the specified ReadEventCompleted message, length delimited. Does not implicitly {@link EventStore.Client.Messages.ReadEventCompleted.verify|verify} messages.
                      * @function encodeDelimited
@@ -4795,7 +4789,7 @@
                     ReadEventCompleted.encodeDelimited = function encodeDelimited(message, writer) {
                         return this.encode(message, writer).ldelim();
                     };
-    
+
                     /**
                      * Decodes a ReadEventCompleted message from the specified reader or buffer.
                      * @function decode
@@ -4834,7 +4828,7 @@
                             throw $util.ProtocolError("missing required 'event'", { instance: message });
                         return message;
                     };
-    
+
                     /**
                      * Decodes a ReadEventCompleted message from the specified reader or buffer, length delimited.
                      * @function decodeDelimited
@@ -4850,7 +4844,7 @@
                             reader = new $Reader(reader);
                         return this.decode(reader, reader.uint32());
                     };
-    
+
                     /**
                      * Verifies a ReadEventCompleted message.
                      * @function verify
@@ -4883,7 +4877,7 @@
                                 return "error: string expected";
                         return null;
                     };
-    
+
                     /**
                      * Creates a ReadEventCompleted message from a plain object. Also converts values to their respective internal types.
                      * @function fromObject
@@ -4931,7 +4925,7 @@
                             message.error = String(object.error);
                         return message;
                     };
-    
+
                     /**
                      * Creates a plain object from a ReadEventCompleted message. Also converts values to other types if specified.
                      * @function toObject
@@ -4958,7 +4952,7 @@
                             object.error = message.error;
                         return object;
                     };
-    
+
                     /**
                      * Converts this ReadEventCompleted to JSON.
                      * @function toJSON
@@ -4969,7 +4963,7 @@
                     ReadEventCompleted.prototype.toJSON = function toJSON() {
                         return this.constructor.toObject(this, $protobuf.util.toJSONOptions);
                     };
-    
+
                     /**
                      * ReadEventResult enum.
                      * @name EventStore.Client.Messages.ReadEventCompleted.ReadEventResult
@@ -4991,12 +4985,12 @@
                         values[valuesById[5] = "AccessDenied"] = 5;
                         return values;
                     })();
-    
+
                     return ReadEventCompleted;
                 })();
-    
+
                 Messages.ReadStreamEvents = (function() {
-    
+
                     /**
                      * Properties of a ReadStreamEvents.
                      * @memberof EventStore.Client.Messages
@@ -5007,7 +5001,7 @@
                      * @property {boolean} resolveLinkTos ReadStreamEvents resolveLinkTos
                      * @property {boolean} requireMaster ReadStreamEvents requireMaster
                      */
-    
+
                     /**
                      * Constructs a new ReadStreamEvents.
                      * @memberof EventStore.Client.Messages
@@ -5022,7 +5016,7 @@
                                 if (properties[keys[i]] != null)
                                     this[keys[i]] = properties[keys[i]];
                     }
-    
+
                     /**
                      * ReadStreamEvents eventStreamId.
                      * @member {string} eventStreamId
@@ -5030,7 +5024,7 @@
                      * @instance
                      */
                     ReadStreamEvents.prototype.eventStreamId = "";
-    
+
                     /**
                      * ReadStreamEvents fromEventNumber.
                      * @member {number|Long} fromEventNumber
@@ -5038,7 +5032,7 @@
                      * @instance
                      */
                     ReadStreamEvents.prototype.fromEventNumber = $util.Long ? $util.Long.fromBits(0,0,false) : 0;
-    
+
                     /**
                      * ReadStreamEvents maxCount.
                      * @member {number} maxCount
@@ -5046,7 +5040,7 @@
                      * @instance
                      */
                     ReadStreamEvents.prototype.maxCount = 0;
-    
+
                     /**
                      * ReadStreamEvents resolveLinkTos.
                      * @member {boolean} resolveLinkTos
@@ -5054,7 +5048,7 @@
                      * @instance
                      */
                     ReadStreamEvents.prototype.resolveLinkTos = false;
-    
+
                     /**
                      * ReadStreamEvents requireMaster.
                      * @member {boolean} requireMaster
@@ -5062,7 +5056,7 @@
                      * @instance
                      */
                     ReadStreamEvents.prototype.requireMaster = false;
-    
+
                     /**
                      * Creates a new ReadStreamEvents instance using the specified properties.
                      * @function create
@@ -5074,7 +5068,7 @@
                     ReadStreamEvents.create = function create(properties) {
                         return new ReadStreamEvents(properties);
                     };
-    
+
                     /**
                      * Encodes the specified ReadStreamEvents message. Does not implicitly {@link EventStore.Client.Messages.ReadStreamEvents.verify|verify} messages.
                      * @function encode
@@ -5094,7 +5088,7 @@
                         writer.uint32(/* id 5, wireType 0 =*/40).bool(message.requireMaster);
                         return writer;
                     };
-    
+
                     /**
                      * Encodes the specified ReadStreamEvents message, length delimited. Does not implicitly {@link EventStore.Client.Messages.ReadStreamEvents.verify|verify} messages.
                      * @function encodeDelimited
@@ -5107,7 +5101,7 @@
                     ReadStreamEvents.encodeDelimited = function encodeDelimited(message, writer) {
                         return this.encode(message, writer).ldelim();
                     };
-    
+
                     /**
                      * Decodes a ReadStreamEvents message from the specified reader or buffer.
                      * @function decode
@@ -5158,7 +5152,7 @@
                             throw $util.ProtocolError("missing required 'requireMaster'", { instance: message });
                         return message;
                     };
-    
+
                     /**
                      * Decodes a ReadStreamEvents message from the specified reader or buffer, length delimited.
                      * @function decodeDelimited
@@ -5174,7 +5168,7 @@
                             reader = new $Reader(reader);
                         return this.decode(reader, reader.uint32());
                     };
-    
+
                     /**
                      * Verifies a ReadStreamEvents message.
                      * @function verify
@@ -5198,7 +5192,7 @@
                             return "requireMaster: boolean expected";
                         return null;
                     };
-    
+
                     /**
                      * Creates a ReadStreamEvents message from a plain object. Also converts values to their respective internal types.
                      * @function fromObject
@@ -5230,7 +5224,7 @@
                             message.requireMaster = Boolean(object.requireMaster);
                         return message;
                     };
-    
+
                     /**
                      * Creates a plain object from a ReadStreamEvents message. Also converts values to other types if specified.
                      * @function toObject
@@ -5270,7 +5264,7 @@
                             object.requireMaster = message.requireMaster;
                         return object;
                     };
-    
+
                     /**
                      * Converts this ReadStreamEvents to JSON.
                      * @function toJSON
@@ -5281,12 +5275,12 @@
                     ReadStreamEvents.prototype.toJSON = function toJSON() {
                         return this.constructor.toObject(this, $protobuf.util.toJSONOptions);
                     };
-    
+
                     return ReadStreamEvents;
                 })();
-    
+
                 Messages.ReadStreamEventsCompleted = (function() {
-    
+
                     /**
                      * Properties of a ReadStreamEventsCompleted.
                      * @memberof EventStore.Client.Messages
@@ -5299,7 +5293,7 @@
                      * @property {number|Long} lastCommitPosition ReadStreamEventsCompleted lastCommitPosition
                      * @property {string|null} [error] ReadStreamEventsCompleted error
                      */
-    
+
                     /**
                      * Constructs a new ReadStreamEventsCompleted.
                      * @memberof EventStore.Client.Messages
@@ -5315,7 +5309,7 @@
                                 if (properties[keys[i]] != null)
                                     this[keys[i]] = properties[keys[i]];
                     }
-    
+
                     /**
                      * ReadStreamEventsCompleted events.
                      * @member {Array.<EventStore.Client.Messages.IResolvedIndexedEvent>} events
@@ -5323,7 +5317,7 @@
                      * @instance
                      */
                     ReadStreamEventsCompleted.prototype.events = $util.emptyArray;
-    
+
                     /**
                      * ReadStreamEventsCompleted result.
                      * @member {EventStore.Client.Messages.ReadStreamEventsCompleted.ReadStreamResult} result
@@ -5331,7 +5325,7 @@
                      * @instance
                      */
                     ReadStreamEventsCompleted.prototype.result = 0;
-    
+
                     /**
                      * ReadStreamEventsCompleted nextEventNumber.
                      * @member {number|Long} nextEventNumber
@@ -5339,7 +5333,7 @@
                      * @instance
                      */
                     ReadStreamEventsCompleted.prototype.nextEventNumber = $util.Long ? $util.Long.fromBits(0,0,false) : 0;
-    
+
                     /**
                      * ReadStreamEventsCompleted lastEventNumber.
                      * @member {number|Long} lastEventNumber
@@ -5347,7 +5341,7 @@
                      * @instance
                      */
                     ReadStreamEventsCompleted.prototype.lastEventNumber = $util.Long ? $util.Long.fromBits(0,0,false) : 0;
-    
+
                     /**
                      * ReadStreamEventsCompleted isEndOfStream.
                      * @member {boolean} isEndOfStream
@@ -5355,7 +5349,7 @@
                      * @instance
                      */
                     ReadStreamEventsCompleted.prototype.isEndOfStream = false;
-    
+
                     /**
                      * ReadStreamEventsCompleted lastCommitPosition.
                      * @member {number|Long} lastCommitPosition
@@ -5363,7 +5357,7 @@
                      * @instance
                      */
                     ReadStreamEventsCompleted.prototype.lastCommitPosition = $util.Long ? $util.Long.fromBits(0,0,false) : 0;
-    
+
                     /**
                      * ReadStreamEventsCompleted error.
                      * @member {string} error
@@ -5371,7 +5365,7 @@
                      * @instance
                      */
                     ReadStreamEventsCompleted.prototype.error = "";
-    
+
                     /**
                      * Creates a new ReadStreamEventsCompleted instance using the specified properties.
                      * @function create
@@ -5383,7 +5377,7 @@
                     ReadStreamEventsCompleted.create = function create(properties) {
                         return new ReadStreamEventsCompleted(properties);
                     };
-    
+
                     /**
                      * Encodes the specified ReadStreamEventsCompleted message. Does not implicitly {@link EventStore.Client.Messages.ReadStreamEventsCompleted.verify|verify} messages.
                      * @function encode
@@ -5408,7 +5402,7 @@
                             writer.uint32(/* id 7, wireType 2 =*/58).string(message.error);
                         return writer;
                     };
-    
+
                     /**
                      * Encodes the specified ReadStreamEventsCompleted message, length delimited. Does not implicitly {@link EventStore.Client.Messages.ReadStreamEventsCompleted.verify|verify} messages.
                      * @function encodeDelimited
@@ -5421,7 +5415,7 @@
                     ReadStreamEventsCompleted.encodeDelimited = function encodeDelimited(message, writer) {
                         return this.encode(message, writer).ldelim();
                     };
-    
+
                     /**
                      * Decodes a ReadStreamEventsCompleted message from the specified reader or buffer.
                      * @function decode
@@ -5480,7 +5474,7 @@
                             throw $util.ProtocolError("missing required 'lastCommitPosition'", { instance: message });
                         return message;
                     };
-    
+
                     /**
                      * Decodes a ReadStreamEventsCompleted message from the specified reader or buffer, length delimited.
                      * @function decodeDelimited
@@ -5496,7 +5490,7 @@
                             reader = new $Reader(reader);
                         return this.decode(reader, reader.uint32());
                     };
-    
+
                     /**
                      * Verifies a ReadStreamEventsCompleted message.
                      * @function verify
@@ -5541,7 +5535,7 @@
                                 return "error: string expected";
                         return null;
                     };
-    
+
                     /**
                      * Creates a ReadStreamEventsCompleted message from a plain object. Also converts values to their respective internal types.
                      * @function fromObject
@@ -5623,7 +5617,7 @@
                             message.error = String(object.error);
                         return message;
                     };
-    
+
                     /**
                      * Creates a plain object from a ReadStreamEventsCompleted message. Also converts values to other types if specified.
                      * @function toObject
@@ -5687,7 +5681,7 @@
                             object.error = message.error;
                         return object;
                     };
-    
+
                     /**
                      * Converts this ReadStreamEventsCompleted to JSON.
                      * @function toJSON
@@ -5698,7 +5692,7 @@
                     ReadStreamEventsCompleted.prototype.toJSON = function toJSON() {
                         return this.constructor.toObject(this, $protobuf.util.toJSONOptions);
                     };
-    
+
                     /**
                      * ReadStreamResult enum.
                      * @name EventStore.Client.Messages.ReadStreamEventsCompleted.ReadStreamResult
@@ -5720,12 +5714,12 @@
                         values[valuesById[5] = "AccessDenied"] = 5;
                         return values;
                     })();
-    
+
                     return ReadStreamEventsCompleted;
                 })();
-    
+
                 Messages.ReadAllEvents = (function() {
-    
+
                     /**
                      * Properties of a ReadAllEvents.
                      * @memberof EventStore.Client.Messages
@@ -5736,7 +5730,7 @@
                      * @property {boolean} resolveLinkTos ReadAllEvents resolveLinkTos
                      * @property {boolean} requireMaster ReadAllEvents requireMaster
                      */
-    
+
                     /**
                      * Constructs a new ReadAllEvents.
                      * @memberof EventStore.Client.Messages
@@ -5751,7 +5745,7 @@
                                 if (properties[keys[i]] != null)
                                     this[keys[i]] = properties[keys[i]];
                     }
-    
+
                     /**
                      * ReadAllEvents commitPosition.
                      * @member {number|Long} commitPosition
@@ -5759,7 +5753,7 @@
                      * @instance
                      */
                     ReadAllEvents.prototype.commitPosition = $util.Long ? $util.Long.fromBits(0,0,false) : 0;
-    
+
                     /**
                      * ReadAllEvents preparePosition.
                      * @member {number|Long} preparePosition
@@ -5767,7 +5761,7 @@
                      * @instance
                      */
                     ReadAllEvents.prototype.preparePosition = $util.Long ? $util.Long.fromBits(0,0,false) : 0;
-    
+
                     /**
                      * ReadAllEvents maxCount.
                      * @member {number} maxCount
@@ -5775,7 +5769,7 @@
                      * @instance
                      */
                     ReadAllEvents.prototype.maxCount = 0;
-    
+
                     /**
                      * ReadAllEvents resolveLinkTos.
                      * @member {boolean} resolveLinkTos
@@ -5783,7 +5777,7 @@
                      * @instance
                      */
                     ReadAllEvents.prototype.resolveLinkTos = false;
-    
+
                     /**
                      * ReadAllEvents requireMaster.
                      * @member {boolean} requireMaster
@@ -5791,7 +5785,7 @@
                      * @instance
                      */
                     ReadAllEvents.prototype.requireMaster = false;
-    
+
                     /**
                      * Creates a new ReadAllEvents instance using the specified properties.
                      * @function create
@@ -5803,7 +5797,7 @@
                     ReadAllEvents.create = function create(properties) {
                         return new ReadAllEvents(properties);
                     };
-    
+
                     /**
                      * Encodes the specified ReadAllEvents message. Does not implicitly {@link EventStore.Client.Messages.ReadAllEvents.verify|verify} messages.
                      * @function encode
@@ -5823,7 +5817,7 @@
                         writer.uint32(/* id 5, wireType 0 =*/40).bool(message.requireMaster);
                         return writer;
                     };
-    
+
                     /**
                      * Encodes the specified ReadAllEvents message, length delimited. Does not implicitly {@link EventStore.Client.Messages.ReadAllEvents.verify|verify} messages.
                      * @function encodeDelimited
@@ -5836,7 +5830,7 @@
                     ReadAllEvents.encodeDelimited = function encodeDelimited(message, writer) {
                         return this.encode(message, writer).ldelim();
                     };
-    
+
                     /**
                      * Decodes a ReadAllEvents message from the specified reader or buffer.
                      * @function decode
@@ -5887,7 +5881,7 @@
                             throw $util.ProtocolError("missing required 'requireMaster'", { instance: message });
                         return message;
                     };
-    
+
                     /**
                      * Decodes a ReadAllEvents message from the specified reader or buffer, length delimited.
                      * @function decodeDelimited
@@ -5903,7 +5897,7 @@
                             reader = new $Reader(reader);
                         return this.decode(reader, reader.uint32());
                     };
-    
+
                     /**
                      * Verifies a ReadAllEvents message.
                      * @function verify
@@ -5927,7 +5921,7 @@
                             return "requireMaster: boolean expected";
                         return null;
                     };
-    
+
                     /**
                      * Creates a ReadAllEvents message from a plain object. Also converts values to their respective internal types.
                      * @function fromObject
@@ -5966,7 +5960,7 @@
                             message.requireMaster = Boolean(object.requireMaster);
                         return message;
                     };
-    
+
                     /**
                      * Creates a plain object from a ReadAllEvents message. Also converts values to other types if specified.
                      * @function toObject
@@ -6013,7 +6007,7 @@
                             object.requireMaster = message.requireMaster;
                         return object;
                     };
-    
+
                     /**
                      * Converts this ReadAllEvents to JSON.
                      * @function toJSON
@@ -6024,12 +6018,12 @@
                     ReadAllEvents.prototype.toJSON = function toJSON() {
                         return this.constructor.toObject(this, $protobuf.util.toJSONOptions);
                     };
-    
+
                     return ReadAllEvents;
                 })();
-    
+
                 Messages.ReadAllEventsCompleted = (function() {
-    
+
                     /**
                      * Properties of a ReadAllEventsCompleted.
                      * @memberof EventStore.Client.Messages
@@ -6042,7 +6036,7 @@
                      * @property {EventStore.Client.Messages.ReadAllEventsCompleted.ReadAllResult|null} [result] ReadAllEventsCompleted result
                      * @property {string|null} [error] ReadAllEventsCompleted error
                      */
-    
+
                     /**
                      * Constructs a new ReadAllEventsCompleted.
                      * @memberof EventStore.Client.Messages
@@ -6058,7 +6052,7 @@
                                 if (properties[keys[i]] != null)
                                     this[keys[i]] = properties[keys[i]];
                     }
-    
+
                     /**
                      * ReadAllEventsCompleted commitPosition.
                      * @member {number|Long} commitPosition
@@ -6066,7 +6060,7 @@
                      * @instance
                      */
                     ReadAllEventsCompleted.prototype.commitPosition = $util.Long ? $util.Long.fromBits(0,0,false) : 0;
-    
+
                     /**
                      * ReadAllEventsCompleted preparePosition.
                      * @member {number|Long} preparePosition
@@ -6074,7 +6068,7 @@
                      * @instance
                      */
                     ReadAllEventsCompleted.prototype.preparePosition = $util.Long ? $util.Long.fromBits(0,0,false) : 0;
-    
+
                     /**
                      * ReadAllEventsCompleted events.
                      * @member {Array.<EventStore.Client.Messages.IResolvedEvent>} events
@@ -6082,7 +6076,7 @@
                      * @instance
                      */
                     ReadAllEventsCompleted.prototype.events = $util.emptyArray;
-    
+
                     /**
                      * ReadAllEventsCompleted nextCommitPosition.
                      * @member {number|Long} nextCommitPosition
@@ -6090,7 +6084,7 @@
                      * @instance
                      */
                     ReadAllEventsCompleted.prototype.nextCommitPosition = $util.Long ? $util.Long.fromBits(0,0,false) : 0;
-    
+
                     /**
                      * ReadAllEventsCompleted nextPreparePosition.
                      * @member {number|Long} nextPreparePosition
@@ -6098,7 +6092,7 @@
                      * @instance
                      */
                     ReadAllEventsCompleted.prototype.nextPreparePosition = $util.Long ? $util.Long.fromBits(0,0,false) : 0;
-    
+
                     /**
                      * ReadAllEventsCompleted result.
                      * @member {EventStore.Client.Messages.ReadAllEventsCompleted.ReadAllResult} result
@@ -6106,7 +6100,7 @@
                      * @instance
                      */
                     ReadAllEventsCompleted.prototype.result = 0;
-    
+
                     /**
                      * ReadAllEventsCompleted error.
                      * @member {string} error
@@ -6114,7 +6108,7 @@
                      * @instance
                      */
                     ReadAllEventsCompleted.prototype.error = "";
-    
+
                     /**
                      * Creates a new ReadAllEventsCompleted instance using the specified properties.
                      * @function create
@@ -6126,7 +6120,7 @@
                     ReadAllEventsCompleted.create = function create(properties) {
                         return new ReadAllEventsCompleted(properties);
                     };
-    
+
                     /**
                      * Encodes the specified ReadAllEventsCompleted message. Does not implicitly {@link EventStore.Client.Messages.ReadAllEventsCompleted.verify|verify} messages.
                      * @function encode
@@ -6152,7 +6146,7 @@
                             writer.uint32(/* id 7, wireType 2 =*/58).string(message.error);
                         return writer;
                     };
-    
+
                     /**
                      * Encodes the specified ReadAllEventsCompleted message, length delimited. Does not implicitly {@link EventStore.Client.Messages.ReadAllEventsCompleted.verify|verify} messages.
                      * @function encodeDelimited
@@ -6165,7 +6159,7 @@
                     ReadAllEventsCompleted.encodeDelimited = function encodeDelimited(message, writer) {
                         return this.encode(message, writer).ldelim();
                     };
-    
+
                     /**
                      * Decodes a ReadAllEventsCompleted message from the specified reader or buffer.
                      * @function decode
@@ -6222,7 +6216,7 @@
                             throw $util.ProtocolError("missing required 'nextPreparePosition'", { instance: message });
                         return message;
                     };
-    
+
                     /**
                      * Decodes a ReadAllEventsCompleted message from the specified reader or buffer, length delimited.
                      * @function decodeDelimited
@@ -6238,7 +6232,7 @@
                             reader = new $Reader(reader);
                         return this.decode(reader, reader.uint32());
                     };
-    
+
                     /**
                      * Verifies a ReadAllEventsCompleted message.
                      * @function verify
@@ -6282,7 +6276,7 @@
                                 return "error: string expected";
                         return null;
                     };
-    
+
                     /**
                      * Creates a ReadAllEventsCompleted message from a plain object. Also converts values to their respective internal types.
                      * @function fromObject
@@ -6363,7 +6357,7 @@
                             message.error = String(object.error);
                         return message;
                     };
-    
+
                     /**
                      * Creates a plain object from a ReadAllEventsCompleted message. Also converts values to other types if specified.
                      * @function toObject
@@ -6434,7 +6428,7 @@
                             object.error = message.error;
                         return object;
                     };
-    
+
                     /**
                      * Converts this ReadAllEventsCompleted to JSON.
                      * @function toJSON
@@ -6445,7 +6439,7 @@
                     ReadAllEventsCompleted.prototype.toJSON = function toJSON() {
                         return this.constructor.toObject(this, $protobuf.util.toJSONOptions);
                     };
-    
+
                     /**
                      * ReadAllResult enum.
                      * @name EventStore.Client.Messages.ReadAllEventsCompleted.ReadAllResult
@@ -6463,12 +6457,12 @@
                         values[valuesById[3] = "AccessDenied"] = 3;
                         return values;
                     })();
-    
+
                     return ReadAllEventsCompleted;
                 })();
-    
+
                 Messages.CreatePersistentSubscription = (function() {
-    
+
                     /**
                      * Properties of a CreatePersistentSubscription.
                      * @memberof EventStore.Client.Messages
@@ -6490,7 +6484,7 @@
                      * @property {number} subscriberMaxCount CreatePersistentSubscription subscriberMaxCount
                      * @property {string|null} [namedConsumerStrategy] CreatePersistentSubscription namedConsumerStrategy
                      */
-    
+
                     /**
                      * Constructs a new CreatePersistentSubscription.
                      * @memberof EventStore.Client.Messages
@@ -6505,7 +6499,7 @@
                                 if (properties[keys[i]] != null)
                                     this[keys[i]] = properties[keys[i]];
                     }
-    
+
                     /**
                      * CreatePersistentSubscription subscriptionGroupName.
                      * @member {string} subscriptionGroupName
@@ -6513,7 +6507,7 @@
                      * @instance
                      */
                     CreatePersistentSubscription.prototype.subscriptionGroupName = "";
-    
+
                     /**
                      * CreatePersistentSubscription eventStreamId.
                      * @member {string} eventStreamId
@@ -6521,7 +6515,7 @@
                      * @instance
                      */
                     CreatePersistentSubscription.prototype.eventStreamId = "";
-    
+
                     /**
                      * CreatePersistentSubscription resolveLinkTos.
                      * @member {boolean} resolveLinkTos
@@ -6529,7 +6523,7 @@
                      * @instance
                      */
                     CreatePersistentSubscription.prototype.resolveLinkTos = false;
-    
+
                     /**
                      * CreatePersistentSubscription startFrom.
                      * @member {number|Long} startFrom
@@ -6537,7 +6531,7 @@
                      * @instance
                      */
                     CreatePersistentSubscription.prototype.startFrom = $util.Long ? $util.Long.fromBits(0,0,false) : 0;
-    
+
                     /**
                      * CreatePersistentSubscription messageTimeoutMilliseconds.
                      * @member {number} messageTimeoutMilliseconds
@@ -6545,7 +6539,7 @@
                      * @instance
                      */
                     CreatePersistentSubscription.prototype.messageTimeoutMilliseconds = 0;
-    
+
                     /**
                      * CreatePersistentSubscription recordStatistics.
                      * @member {boolean} recordStatistics
@@ -6553,7 +6547,7 @@
                      * @instance
                      */
                     CreatePersistentSubscription.prototype.recordStatistics = false;
-    
+
                     /**
                      * CreatePersistentSubscription liveBufferSize.
                      * @member {number} liveBufferSize
@@ -6561,7 +6555,7 @@
                      * @instance
                      */
                     CreatePersistentSubscription.prototype.liveBufferSize = 0;
-    
+
                     /**
                      * CreatePersistentSubscription readBatchSize.
                      * @member {number} readBatchSize
@@ -6569,7 +6563,7 @@
                      * @instance
                      */
                     CreatePersistentSubscription.prototype.readBatchSize = 0;
-    
+
                     /**
                      * CreatePersistentSubscription bufferSize.
                      * @member {number} bufferSize
@@ -6577,7 +6571,7 @@
                      * @instance
                      */
                     CreatePersistentSubscription.prototype.bufferSize = 0;
-    
+
                     /**
                      * CreatePersistentSubscription maxRetryCount.
                      * @member {number} maxRetryCount
@@ -6585,7 +6579,7 @@
                      * @instance
                      */
                     CreatePersistentSubscription.prototype.maxRetryCount = 0;
-    
+
                     /**
                      * CreatePersistentSubscription preferRoundRobin.
                      * @member {boolean} preferRoundRobin
@@ -6593,7 +6587,7 @@
                      * @instance
                      */
                     CreatePersistentSubscription.prototype.preferRoundRobin = false;
-    
+
                     /**
                      * CreatePersistentSubscription checkpointAfterTime.
                      * @member {number} checkpointAfterTime
@@ -6601,7 +6595,7 @@
                      * @instance
                      */
                     CreatePersistentSubscription.prototype.checkpointAfterTime = 0;
-    
+
                     /**
                      * CreatePersistentSubscription checkpointMaxCount.
                      * @member {number} checkpointMaxCount
@@ -6609,7 +6603,7 @@
                      * @instance
                      */
                     CreatePersistentSubscription.prototype.checkpointMaxCount = 0;
-    
+
                     /**
                      * CreatePersistentSubscription checkpointMinCount.
                      * @member {number} checkpointMinCount
@@ -6617,7 +6611,7 @@
                      * @instance
                      */
                     CreatePersistentSubscription.prototype.checkpointMinCount = 0;
-    
+
                     /**
                      * CreatePersistentSubscription subscriberMaxCount.
                      * @member {number} subscriberMaxCount
@@ -6625,7 +6619,7 @@
                      * @instance
                      */
                     CreatePersistentSubscription.prototype.subscriberMaxCount = 0;
-    
+
                     /**
                      * CreatePersistentSubscription namedConsumerStrategy.
                      * @member {string} namedConsumerStrategy
@@ -6633,7 +6627,7 @@
                      * @instance
                      */
                     CreatePersistentSubscription.prototype.namedConsumerStrategy = "";
-    
+
                     /**
                      * Creates a new CreatePersistentSubscription instance using the specified properties.
                      * @function create
@@ -6645,7 +6639,7 @@
                     CreatePersistentSubscription.create = function create(properties) {
                         return new CreatePersistentSubscription(properties);
                     };
-    
+
                     /**
                      * Encodes the specified CreatePersistentSubscription message. Does not implicitly {@link EventStore.Client.Messages.CreatePersistentSubscription.verify|verify} messages.
                      * @function encode
@@ -6677,7 +6671,7 @@
                             writer.uint32(/* id 16, wireType 2 =*/130).string(message.namedConsumerStrategy);
                         return writer;
                     };
-    
+
                     /**
                      * Encodes the specified CreatePersistentSubscription message, length delimited. Does not implicitly {@link EventStore.Client.Messages.CreatePersistentSubscription.verify|verify} messages.
                      * @function encodeDelimited
@@ -6690,7 +6684,7 @@
                     CreatePersistentSubscription.encodeDelimited = function encodeDelimited(message, writer) {
                         return this.encode(message, writer).ldelim();
                     };
-    
+
                     /**
                      * Decodes a CreatePersistentSubscription message from the specified reader or buffer.
                      * @function decode
@@ -6794,7 +6788,7 @@
                             throw $util.ProtocolError("missing required 'subscriberMaxCount'", { instance: message });
                         return message;
                     };
-    
+
                     /**
                      * Decodes a CreatePersistentSubscription message from the specified reader or buffer, length delimited.
                      * @function decodeDelimited
@@ -6810,7 +6804,7 @@
                             reader = new $Reader(reader);
                         return this.decode(reader, reader.uint32());
                     };
-    
+
                     /**
                      * Verifies a CreatePersistentSubscription message.
                      * @function verify
@@ -6857,7 +6851,7 @@
                                 return "namedConsumerStrategy: string expected";
                         return null;
                     };
-    
+
                     /**
                      * Creates a CreatePersistentSubscription message from a plain object. Also converts values to their respective internal types.
                      * @function fromObject
@@ -6911,7 +6905,7 @@
                             message.namedConsumerStrategy = String(object.namedConsumerStrategy);
                         return message;
                     };
-    
+
                     /**
                      * Creates a plain object from a CreatePersistentSubscription message. Also converts values to other types if specified.
                      * @function toObject
@@ -6984,7 +6978,7 @@
                             object.namedConsumerStrategy = message.namedConsumerStrategy;
                         return object;
                     };
-    
+
                     /**
                      * Converts this CreatePersistentSubscription to JSON.
                      * @function toJSON
@@ -6995,12 +6989,12 @@
                     CreatePersistentSubscription.prototype.toJSON = function toJSON() {
                         return this.constructor.toObject(this, $protobuf.util.toJSONOptions);
                     };
-    
+
                     return CreatePersistentSubscription;
                 })();
-    
+
                 Messages.DeletePersistentSubscription = (function() {
-    
+
                     /**
                      * Properties of a DeletePersistentSubscription.
                      * @memberof EventStore.Client.Messages
@@ -7008,7 +7002,7 @@
                      * @property {string} subscriptionGroupName DeletePersistentSubscription subscriptionGroupName
                      * @property {string} eventStreamId DeletePersistentSubscription eventStreamId
                      */
-    
+
                     /**
                      * Constructs a new DeletePersistentSubscription.
                      * @memberof EventStore.Client.Messages
@@ -7023,7 +7017,7 @@
                                 if (properties[keys[i]] != null)
                                     this[keys[i]] = properties[keys[i]];
                     }
-    
+
                     /**
                      * DeletePersistentSubscription subscriptionGroupName.
                      * @member {string} subscriptionGroupName
@@ -7031,7 +7025,7 @@
                      * @instance
                      */
                     DeletePersistentSubscription.prototype.subscriptionGroupName = "";
-    
+
                     /**
                      * DeletePersistentSubscription eventStreamId.
                      * @member {string} eventStreamId
@@ -7039,7 +7033,7 @@
                      * @instance
                      */
                     DeletePersistentSubscription.prototype.eventStreamId = "";
-    
+
                     /**
                      * Creates a new DeletePersistentSubscription instance using the specified properties.
                      * @function create
@@ -7051,7 +7045,7 @@
                     DeletePersistentSubscription.create = function create(properties) {
                         return new DeletePersistentSubscription(properties);
                     };
-    
+
                     /**
                      * Encodes the specified DeletePersistentSubscription message. Does not implicitly {@link EventStore.Client.Messages.DeletePersistentSubscription.verify|verify} messages.
                      * @function encode
@@ -7068,7 +7062,7 @@
                         writer.uint32(/* id 2, wireType 2 =*/18).string(message.eventStreamId);
                         return writer;
                     };
-    
+
                     /**
                      * Encodes the specified DeletePersistentSubscription message, length delimited. Does not implicitly {@link EventStore.Client.Messages.DeletePersistentSubscription.verify|verify} messages.
                      * @function encodeDelimited
@@ -7081,7 +7075,7 @@
                     DeletePersistentSubscription.encodeDelimited = function encodeDelimited(message, writer) {
                         return this.encode(message, writer).ldelim();
                     };
-    
+
                     /**
                      * Decodes a DeletePersistentSubscription message from the specified reader or buffer.
                      * @function decode
@@ -7117,7 +7111,7 @@
                             throw $util.ProtocolError("missing required 'eventStreamId'", { instance: message });
                         return message;
                     };
-    
+
                     /**
                      * Decodes a DeletePersistentSubscription message from the specified reader or buffer, length delimited.
                      * @function decodeDelimited
@@ -7133,7 +7127,7 @@
                             reader = new $Reader(reader);
                         return this.decode(reader, reader.uint32());
                     };
-    
+
                     /**
                      * Verifies a DeletePersistentSubscription message.
                      * @function verify
@@ -7151,7 +7145,7 @@
                             return "eventStreamId: string expected";
                         return null;
                     };
-    
+
                     /**
                      * Creates a DeletePersistentSubscription message from a plain object. Also converts values to their respective internal types.
                      * @function fromObject
@@ -7170,7 +7164,7 @@
                             message.eventStreamId = String(object.eventStreamId);
                         return message;
                     };
-    
+
                     /**
                      * Creates a plain object from a DeletePersistentSubscription message. Also converts values to other types if specified.
                      * @function toObject
@@ -7194,7 +7188,7 @@
                             object.eventStreamId = message.eventStreamId;
                         return object;
                     };
-    
+
                     /**
                      * Converts this DeletePersistentSubscription to JSON.
                      * @function toJSON
@@ -7205,12 +7199,12 @@
                     DeletePersistentSubscription.prototype.toJSON = function toJSON() {
                         return this.constructor.toObject(this, $protobuf.util.toJSONOptions);
                     };
-    
+
                     return DeletePersistentSubscription;
                 })();
-    
+
                 Messages.UpdatePersistentSubscription = (function() {
-    
+
                     /**
                      * Properties of an UpdatePersistentSubscription.
                      * @memberof EventStore.Client.Messages
@@ -7232,7 +7226,7 @@
                      * @property {number} subscriberMaxCount UpdatePersistentSubscription subscriberMaxCount
                      * @property {string|null} [namedConsumerStrategy] UpdatePersistentSubscription namedConsumerStrategy
                      */
-    
+
                     /**
                      * Constructs a new UpdatePersistentSubscription.
                      * @memberof EventStore.Client.Messages
@@ -7247,7 +7241,7 @@
                                 if (properties[keys[i]] != null)
                                     this[keys[i]] = properties[keys[i]];
                     }
-    
+
                     /**
                      * UpdatePersistentSubscription subscriptionGroupName.
                      * @member {string} subscriptionGroupName
@@ -7255,7 +7249,7 @@
                      * @instance
                      */
                     UpdatePersistentSubscription.prototype.subscriptionGroupName = "";
-    
+
                     /**
                      * UpdatePersistentSubscription eventStreamId.
                      * @member {string} eventStreamId
@@ -7263,7 +7257,7 @@
                      * @instance
                      */
                     UpdatePersistentSubscription.prototype.eventStreamId = "";
-    
+
                     /**
                      * UpdatePersistentSubscription resolveLinkTos.
                      * @member {boolean} resolveLinkTos
@@ -7271,7 +7265,7 @@
                      * @instance
                      */
                     UpdatePersistentSubscription.prototype.resolveLinkTos = false;
-    
+
                     /**
                      * UpdatePersistentSubscription startFrom.
                      * @member {number|Long} startFrom
@@ -7279,7 +7273,7 @@
                      * @instance
                      */
                     UpdatePersistentSubscription.prototype.startFrom = $util.Long ? $util.Long.fromBits(0,0,false) : 0;
-    
+
                     /**
                      * UpdatePersistentSubscription messageTimeoutMilliseconds.
                      * @member {number} messageTimeoutMilliseconds
@@ -7287,7 +7281,7 @@
                      * @instance
                      */
                     UpdatePersistentSubscription.prototype.messageTimeoutMilliseconds = 0;
-    
+
                     /**
                      * UpdatePersistentSubscription recordStatistics.
                      * @member {boolean} recordStatistics
@@ -7295,7 +7289,7 @@
                      * @instance
                      */
                     UpdatePersistentSubscription.prototype.recordStatistics = false;
-    
+
                     /**
                      * UpdatePersistentSubscription liveBufferSize.
                      * @member {number} liveBufferSize
@@ -7303,7 +7297,7 @@
                      * @instance
                      */
                     UpdatePersistentSubscription.prototype.liveBufferSize = 0;
-    
+
                     /**
                      * UpdatePersistentSubscription readBatchSize.
                      * @member {number} readBatchSize
@@ -7311,7 +7305,7 @@
                      * @instance
                      */
                     UpdatePersistentSubscription.prototype.readBatchSize = 0;
-    
+
                     /**
                      * UpdatePersistentSubscription bufferSize.
                      * @member {number} bufferSize
@@ -7319,7 +7313,7 @@
                      * @instance
                      */
                     UpdatePersistentSubscription.prototype.bufferSize = 0;
-    
+
                     /**
                      * UpdatePersistentSubscription maxRetryCount.
                      * @member {number} maxRetryCount
@@ -7327,7 +7321,7 @@
                      * @instance
                      */
                     UpdatePersistentSubscription.prototype.maxRetryCount = 0;
-    
+
                     /**
                      * UpdatePersistentSubscription preferRoundRobin.
                      * @member {boolean} preferRoundRobin
@@ -7335,7 +7329,7 @@
                      * @instance
                      */
                     UpdatePersistentSubscription.prototype.preferRoundRobin = false;
-    
+
                     /**
                      * UpdatePersistentSubscription checkpointAfterTime.
                      * @member {number} checkpointAfterTime
@@ -7343,7 +7337,7 @@
                      * @instance
                      */
                     UpdatePersistentSubscription.prototype.checkpointAfterTime = 0;
-    
+
                     /**
                      * UpdatePersistentSubscription checkpointMaxCount.
                      * @member {number} checkpointMaxCount
@@ -7351,7 +7345,7 @@
                      * @instance
                      */
                     UpdatePersistentSubscription.prototype.checkpointMaxCount = 0;
-    
+
                     /**
                      * UpdatePersistentSubscription checkpointMinCount.
                      * @member {number} checkpointMinCount
@@ -7359,7 +7353,7 @@
                      * @instance
                      */
                     UpdatePersistentSubscription.prototype.checkpointMinCount = 0;
-    
+
                     /**
                      * UpdatePersistentSubscription subscriberMaxCount.
                      * @member {number} subscriberMaxCount
@@ -7367,7 +7361,7 @@
                      * @instance
                      */
                     UpdatePersistentSubscription.prototype.subscriberMaxCount = 0;
-    
+
                     /**
                      * UpdatePersistentSubscription namedConsumerStrategy.
                      * @member {string} namedConsumerStrategy
@@ -7375,7 +7369,7 @@
                      * @instance
                      */
                     UpdatePersistentSubscription.prototype.namedConsumerStrategy = "";
-    
+
                     /**
                      * Creates a new UpdatePersistentSubscription instance using the specified properties.
                      * @function create
@@ -7387,7 +7381,7 @@
                     UpdatePersistentSubscription.create = function create(properties) {
                         return new UpdatePersistentSubscription(properties);
                     };
-    
+
                     /**
                      * Encodes the specified UpdatePersistentSubscription message. Does not implicitly {@link EventStore.Client.Messages.UpdatePersistentSubscription.verify|verify} messages.
                      * @function encode
@@ -7419,7 +7413,7 @@
                             writer.uint32(/* id 16, wireType 2 =*/130).string(message.namedConsumerStrategy);
                         return writer;
                     };
-    
+
                     /**
                      * Encodes the specified UpdatePersistentSubscription message, length delimited. Does not implicitly {@link EventStore.Client.Messages.UpdatePersistentSubscription.verify|verify} messages.
                      * @function encodeDelimited
@@ -7432,7 +7426,7 @@
                     UpdatePersistentSubscription.encodeDelimited = function encodeDelimited(message, writer) {
                         return this.encode(message, writer).ldelim();
                     };
-    
+
                     /**
                      * Decodes an UpdatePersistentSubscription message from the specified reader or buffer.
                      * @function decode
@@ -7536,7 +7530,7 @@
                             throw $util.ProtocolError("missing required 'subscriberMaxCount'", { instance: message });
                         return message;
                     };
-    
+
                     /**
                      * Decodes an UpdatePersistentSubscription message from the specified reader or buffer, length delimited.
                      * @function decodeDelimited
@@ -7552,7 +7546,7 @@
                             reader = new $Reader(reader);
                         return this.decode(reader, reader.uint32());
                     };
-    
+
                     /**
                      * Verifies an UpdatePersistentSubscription message.
                      * @function verify
@@ -7599,7 +7593,7 @@
                                 return "namedConsumerStrategy: string expected";
                         return null;
                     };
-    
+
                     /**
                      * Creates an UpdatePersistentSubscription message from a plain object. Also converts values to their respective internal types.
                      * @function fromObject
@@ -7653,7 +7647,7 @@
                             message.namedConsumerStrategy = String(object.namedConsumerStrategy);
                         return message;
                     };
-    
+
                     /**
                      * Creates a plain object from an UpdatePersistentSubscription message. Also converts values to other types if specified.
                      * @function toObject
@@ -7726,7 +7720,7 @@
                             object.namedConsumerStrategy = message.namedConsumerStrategy;
                         return object;
                     };
-    
+
                     /**
                      * Converts this UpdatePersistentSubscription to JSON.
                      * @function toJSON
@@ -7737,12 +7731,12 @@
                     UpdatePersistentSubscription.prototype.toJSON = function toJSON() {
                         return this.constructor.toObject(this, $protobuf.util.toJSONOptions);
                     };
-    
+
                     return UpdatePersistentSubscription;
                 })();
-    
+
                 Messages.UpdatePersistentSubscriptionCompleted = (function() {
-    
+
                     /**
                      * Properties of an UpdatePersistentSubscriptionCompleted.
                      * @memberof EventStore.Client.Messages
@@ -7750,7 +7744,7 @@
                      * @property {EventStore.Client.Messages.UpdatePersistentSubscriptionCompleted.UpdatePersistentSubscriptionResult} result UpdatePersistentSubscriptionCompleted result
                      * @property {string|null} [reason] UpdatePersistentSubscriptionCompleted reason
                      */
-    
+
                     /**
                      * Constructs a new UpdatePersistentSubscriptionCompleted.
                      * @memberof EventStore.Client.Messages
@@ -7765,7 +7759,7 @@
                                 if (properties[keys[i]] != null)
                                     this[keys[i]] = properties[keys[i]];
                     }
-    
+
                     /**
                      * UpdatePersistentSubscriptionCompleted result.
                      * @member {EventStore.Client.Messages.UpdatePersistentSubscriptionCompleted.UpdatePersistentSubscriptionResult} result
@@ -7773,7 +7767,7 @@
                      * @instance
                      */
                     UpdatePersistentSubscriptionCompleted.prototype.result = 0;
-    
+
                     /**
                      * UpdatePersistentSubscriptionCompleted reason.
                      * @member {string} reason
@@ -7781,7 +7775,7 @@
                      * @instance
                      */
                     UpdatePersistentSubscriptionCompleted.prototype.reason = "";
-    
+
                     /**
                      * Creates a new UpdatePersistentSubscriptionCompleted instance using the specified properties.
                      * @function create
@@ -7793,7 +7787,7 @@
                     UpdatePersistentSubscriptionCompleted.create = function create(properties) {
                         return new UpdatePersistentSubscriptionCompleted(properties);
                     };
-    
+
                     /**
                      * Encodes the specified UpdatePersistentSubscriptionCompleted message. Does not implicitly {@link EventStore.Client.Messages.UpdatePersistentSubscriptionCompleted.verify|verify} messages.
                      * @function encode
@@ -7811,7 +7805,7 @@
                             writer.uint32(/* id 2, wireType 2 =*/18).string(message.reason);
                         return writer;
                     };
-    
+
                     /**
                      * Encodes the specified UpdatePersistentSubscriptionCompleted message, length delimited. Does not implicitly {@link EventStore.Client.Messages.UpdatePersistentSubscriptionCompleted.verify|verify} messages.
                      * @function encodeDelimited
@@ -7824,7 +7818,7 @@
                     UpdatePersistentSubscriptionCompleted.encodeDelimited = function encodeDelimited(message, writer) {
                         return this.encode(message, writer).ldelim();
                     };
-    
+
                     /**
                      * Decodes an UpdatePersistentSubscriptionCompleted message from the specified reader or buffer.
                      * @function decode
@@ -7858,7 +7852,7 @@
                             throw $util.ProtocolError("missing required 'result'", { instance: message });
                         return message;
                     };
-    
+
                     /**
                      * Decodes an UpdatePersistentSubscriptionCompleted message from the specified reader or buffer, length delimited.
                      * @function decodeDelimited
@@ -7874,7 +7868,7 @@
                             reader = new $Reader(reader);
                         return this.decode(reader, reader.uint32());
                     };
-    
+
                     /**
                      * Verifies an UpdatePersistentSubscriptionCompleted message.
                      * @function verify
@@ -7900,7 +7894,7 @@
                                 return "reason: string expected";
                         return null;
                     };
-    
+
                     /**
                      * Creates an UpdatePersistentSubscriptionCompleted message from a plain object. Also converts values to their respective internal types.
                      * @function fromObject
@@ -7935,7 +7929,7 @@
                             message.reason = String(object.reason);
                         return message;
                     };
-    
+
                     /**
                      * Creates a plain object from an UpdatePersistentSubscriptionCompleted message. Also converts values to other types if specified.
                      * @function toObject
@@ -7959,7 +7953,7 @@
                             object.reason = message.reason;
                         return object;
                     };
-    
+
                     /**
                      * Converts this UpdatePersistentSubscriptionCompleted to JSON.
                      * @function toJSON
@@ -7970,7 +7964,7 @@
                     UpdatePersistentSubscriptionCompleted.prototype.toJSON = function toJSON() {
                         return this.constructor.toObject(this, $protobuf.util.toJSONOptions);
                     };
-    
+
                     /**
                      * UpdatePersistentSubscriptionResult enum.
                      * @name EventStore.Client.Messages.UpdatePersistentSubscriptionCompleted.UpdatePersistentSubscriptionResult
@@ -7988,12 +7982,12 @@
                         values[valuesById[3] = "AccessDenied"] = 3;
                         return values;
                     })();
-    
+
                     return UpdatePersistentSubscriptionCompleted;
                 })();
-    
+
                 Messages.CreatePersistentSubscriptionCompleted = (function() {
-    
+
                     /**
                      * Properties of a CreatePersistentSubscriptionCompleted.
                      * @memberof EventStore.Client.Messages
@@ -8001,7 +7995,7 @@
                      * @property {EventStore.Client.Messages.CreatePersistentSubscriptionCompleted.CreatePersistentSubscriptionResult} result CreatePersistentSubscriptionCompleted result
                      * @property {string|null} [reason] CreatePersistentSubscriptionCompleted reason
                      */
-    
+
                     /**
                      * Constructs a new CreatePersistentSubscriptionCompleted.
                      * @memberof EventStore.Client.Messages
@@ -8016,7 +8010,7 @@
                                 if (properties[keys[i]] != null)
                                     this[keys[i]] = properties[keys[i]];
                     }
-    
+
                     /**
                      * CreatePersistentSubscriptionCompleted result.
                      * @member {EventStore.Client.Messages.CreatePersistentSubscriptionCompleted.CreatePersistentSubscriptionResult} result
@@ -8024,7 +8018,7 @@
                      * @instance
                      */
                     CreatePersistentSubscriptionCompleted.prototype.result = 0;
-    
+
                     /**
                      * CreatePersistentSubscriptionCompleted reason.
                      * @member {string} reason
@@ -8032,7 +8026,7 @@
                      * @instance
                      */
                     CreatePersistentSubscriptionCompleted.prototype.reason = "";
-    
+
                     /**
                      * Creates a new CreatePersistentSubscriptionCompleted instance using the specified properties.
                      * @function create
@@ -8044,7 +8038,7 @@
                     CreatePersistentSubscriptionCompleted.create = function create(properties) {
                         return new CreatePersistentSubscriptionCompleted(properties);
                     };
-    
+
                     /**
                      * Encodes the specified CreatePersistentSubscriptionCompleted message. Does not implicitly {@link EventStore.Client.Messages.CreatePersistentSubscriptionCompleted.verify|verify} messages.
                      * @function encode
@@ -8062,7 +8056,7 @@
                             writer.uint32(/* id 2, wireType 2 =*/18).string(message.reason);
                         return writer;
                     };
-    
+
                     /**
                      * Encodes the specified CreatePersistentSubscriptionCompleted message, length delimited. Does not implicitly {@link EventStore.Client.Messages.CreatePersistentSubscriptionCompleted.verify|verify} messages.
                      * @function encodeDelimited
@@ -8075,7 +8069,7 @@
                     CreatePersistentSubscriptionCompleted.encodeDelimited = function encodeDelimited(message, writer) {
                         return this.encode(message, writer).ldelim();
                     };
-    
+
                     /**
                      * Decodes a CreatePersistentSubscriptionCompleted message from the specified reader or buffer.
                      * @function decode
@@ -8109,7 +8103,7 @@
                             throw $util.ProtocolError("missing required 'result'", { instance: message });
                         return message;
                     };
-    
+
                     /**
                      * Decodes a CreatePersistentSubscriptionCompleted message from the specified reader or buffer, length delimited.
                      * @function decodeDelimited
@@ -8125,7 +8119,7 @@
                             reader = new $Reader(reader);
                         return this.decode(reader, reader.uint32());
                     };
-    
+
                     /**
                      * Verifies a CreatePersistentSubscriptionCompleted message.
                      * @function verify
@@ -8151,7 +8145,7 @@
                                 return "reason: string expected";
                         return null;
                     };
-    
+
                     /**
                      * Creates a CreatePersistentSubscriptionCompleted message from a plain object. Also converts values to their respective internal types.
                      * @function fromObject
@@ -8186,7 +8180,7 @@
                             message.reason = String(object.reason);
                         return message;
                     };
-    
+
                     /**
                      * Creates a plain object from a CreatePersistentSubscriptionCompleted message. Also converts values to other types if specified.
                      * @function toObject
@@ -8210,7 +8204,7 @@
                             object.reason = message.reason;
                         return object;
                     };
-    
+
                     /**
                      * Converts this CreatePersistentSubscriptionCompleted to JSON.
                      * @function toJSON
@@ -8221,7 +8215,7 @@
                     CreatePersistentSubscriptionCompleted.prototype.toJSON = function toJSON() {
                         return this.constructor.toObject(this, $protobuf.util.toJSONOptions);
                     };
-    
+
                     /**
                      * CreatePersistentSubscriptionResult enum.
                      * @name EventStore.Client.Messages.CreatePersistentSubscriptionCompleted.CreatePersistentSubscriptionResult
@@ -8239,12 +8233,12 @@
                         values[valuesById[3] = "AccessDenied"] = 3;
                         return values;
                     })();
-    
+
                     return CreatePersistentSubscriptionCompleted;
                 })();
-    
+
                 Messages.DeletePersistentSubscriptionCompleted = (function() {
-    
+
                     /**
                      * Properties of a DeletePersistentSubscriptionCompleted.
                      * @memberof EventStore.Client.Messages
@@ -8252,7 +8246,7 @@
                      * @property {EventStore.Client.Messages.DeletePersistentSubscriptionCompleted.DeletePersistentSubscriptionResult} result DeletePersistentSubscriptionCompleted result
                      * @property {string|null} [reason] DeletePersistentSubscriptionCompleted reason
                      */
-    
+
                     /**
                      * Constructs a new DeletePersistentSubscriptionCompleted.
                      * @memberof EventStore.Client.Messages
@@ -8267,7 +8261,7 @@
                                 if (properties[keys[i]] != null)
                                     this[keys[i]] = properties[keys[i]];
                     }
-    
+
                     /**
                      * DeletePersistentSubscriptionCompleted result.
                      * @member {EventStore.Client.Messages.DeletePersistentSubscriptionCompleted.DeletePersistentSubscriptionResult} result
@@ -8275,7 +8269,7 @@
                      * @instance
                      */
                     DeletePersistentSubscriptionCompleted.prototype.result = 0;
-    
+
                     /**
                      * DeletePersistentSubscriptionCompleted reason.
                      * @member {string} reason
@@ -8283,7 +8277,7 @@
                      * @instance
                      */
                     DeletePersistentSubscriptionCompleted.prototype.reason = "";
-    
+
                     /**
                      * Creates a new DeletePersistentSubscriptionCompleted instance using the specified properties.
                      * @function create
@@ -8295,7 +8289,7 @@
                     DeletePersistentSubscriptionCompleted.create = function create(properties) {
                         return new DeletePersistentSubscriptionCompleted(properties);
                     };
-    
+
                     /**
                      * Encodes the specified DeletePersistentSubscriptionCompleted message. Does not implicitly {@link EventStore.Client.Messages.DeletePersistentSubscriptionCompleted.verify|verify} messages.
                      * @function encode
@@ -8313,7 +8307,7 @@
                             writer.uint32(/* id 2, wireType 2 =*/18).string(message.reason);
                         return writer;
                     };
-    
+
                     /**
                      * Encodes the specified DeletePersistentSubscriptionCompleted message, length delimited. Does not implicitly {@link EventStore.Client.Messages.DeletePersistentSubscriptionCompleted.verify|verify} messages.
                      * @function encodeDelimited
@@ -8326,7 +8320,7 @@
                     DeletePersistentSubscriptionCompleted.encodeDelimited = function encodeDelimited(message, writer) {
                         return this.encode(message, writer).ldelim();
                     };
-    
+
                     /**
                      * Decodes a DeletePersistentSubscriptionCompleted message from the specified reader or buffer.
                      * @function decode
@@ -8360,7 +8354,7 @@
                             throw $util.ProtocolError("missing required 'result'", { instance: message });
                         return message;
                     };
-    
+
                     /**
                      * Decodes a DeletePersistentSubscriptionCompleted message from the specified reader or buffer, length delimited.
                      * @function decodeDelimited
@@ -8376,7 +8370,7 @@
                             reader = new $Reader(reader);
                         return this.decode(reader, reader.uint32());
                     };
-    
+
                     /**
                      * Verifies a DeletePersistentSubscriptionCompleted message.
                      * @function verify
@@ -8402,7 +8396,7 @@
                                 return "reason: string expected";
                         return null;
                     };
-    
+
                     /**
                      * Creates a DeletePersistentSubscriptionCompleted message from a plain object. Also converts values to their respective internal types.
                      * @function fromObject
@@ -8437,7 +8431,7 @@
                             message.reason = String(object.reason);
                         return message;
                     };
-    
+
                     /**
                      * Creates a plain object from a DeletePersistentSubscriptionCompleted message. Also converts values to other types if specified.
                      * @function toObject
@@ -8461,7 +8455,7 @@
                             object.reason = message.reason;
                         return object;
                     };
-    
+
                     /**
                      * Converts this DeletePersistentSubscriptionCompleted to JSON.
                      * @function toJSON
@@ -8472,7 +8466,7 @@
                     DeletePersistentSubscriptionCompleted.prototype.toJSON = function toJSON() {
                         return this.constructor.toObject(this, $protobuf.util.toJSONOptions);
                     };
-    
+
                     /**
                      * DeletePersistentSubscriptionResult enum.
                      * @name EventStore.Client.Messages.DeletePersistentSubscriptionCompleted.DeletePersistentSubscriptionResult
@@ -8490,12 +8484,12 @@
                         values[valuesById[3] = "AccessDenied"] = 3;
                         return values;
                     })();
-    
+
                     return DeletePersistentSubscriptionCompleted;
                 })();
-    
+
                 Messages.ConnectToPersistentSubscription = (function() {
-    
+
                     /**
                      * Properties of a ConnectToPersistentSubscription.
                      * @memberof EventStore.Client.Messages
@@ -8504,7 +8498,7 @@
                      * @property {string} eventStreamId ConnectToPersistentSubscription eventStreamId
                      * @property {number} allowedInFlightMessages ConnectToPersistentSubscription allowedInFlightMessages
                      */
-    
+
                     /**
                      * Constructs a new ConnectToPersistentSubscription.
                      * @memberof EventStore.Client.Messages
@@ -8519,7 +8513,7 @@
                                 if (properties[keys[i]] != null)
                                     this[keys[i]] = properties[keys[i]];
                     }
-    
+
                     /**
                      * ConnectToPersistentSubscription subscriptionId.
                      * @member {string} subscriptionId
@@ -8527,7 +8521,7 @@
                      * @instance
                      */
                     ConnectToPersistentSubscription.prototype.subscriptionId = "";
-    
+
                     /**
                      * ConnectToPersistentSubscription eventStreamId.
                      * @member {string} eventStreamId
@@ -8535,7 +8529,7 @@
                      * @instance
                      */
                     ConnectToPersistentSubscription.prototype.eventStreamId = "";
-    
+
                     /**
                      * ConnectToPersistentSubscription allowedInFlightMessages.
                      * @member {number} allowedInFlightMessages
@@ -8543,7 +8537,7 @@
                      * @instance
                      */
                     ConnectToPersistentSubscription.prototype.allowedInFlightMessages = 0;
-    
+
                     /**
                      * Creates a new ConnectToPersistentSubscription instance using the specified properties.
                      * @function create
@@ -8555,7 +8549,7 @@
                     ConnectToPersistentSubscription.create = function create(properties) {
                         return new ConnectToPersistentSubscription(properties);
                     };
-    
+
                     /**
                      * Encodes the specified ConnectToPersistentSubscription message. Does not implicitly {@link EventStore.Client.Messages.ConnectToPersistentSubscription.verify|verify} messages.
                      * @function encode
@@ -8573,7 +8567,7 @@
                         writer.uint32(/* id 3, wireType 0 =*/24).int32(message.allowedInFlightMessages);
                         return writer;
                     };
-    
+
                     /**
                      * Encodes the specified ConnectToPersistentSubscription message, length delimited. Does not implicitly {@link EventStore.Client.Messages.ConnectToPersistentSubscription.verify|verify} messages.
                      * @function encodeDelimited
@@ -8586,7 +8580,7 @@
                     ConnectToPersistentSubscription.encodeDelimited = function encodeDelimited(message, writer) {
                         return this.encode(message, writer).ldelim();
                     };
-    
+
                     /**
                      * Decodes a ConnectToPersistentSubscription message from the specified reader or buffer.
                      * @function decode
@@ -8627,7 +8621,7 @@
                             throw $util.ProtocolError("missing required 'allowedInFlightMessages'", { instance: message });
                         return message;
                     };
-    
+
                     /**
                      * Decodes a ConnectToPersistentSubscription message from the specified reader or buffer, length delimited.
                      * @function decodeDelimited
@@ -8643,7 +8637,7 @@
                             reader = new $Reader(reader);
                         return this.decode(reader, reader.uint32());
                     };
-    
+
                     /**
                      * Verifies a ConnectToPersistentSubscription message.
                      * @function verify
@@ -8663,7 +8657,7 @@
                             return "allowedInFlightMessages: integer expected";
                         return null;
                     };
-    
+
                     /**
                      * Creates a ConnectToPersistentSubscription message from a plain object. Also converts values to their respective internal types.
                      * @function fromObject
@@ -8684,7 +8678,7 @@
                             message.allowedInFlightMessages = object.allowedInFlightMessages | 0;
                         return message;
                     };
-    
+
                     /**
                      * Creates a plain object from a ConnectToPersistentSubscription message. Also converts values to other types if specified.
                      * @function toObject
@@ -8711,7 +8705,7 @@
                             object.allowedInFlightMessages = message.allowedInFlightMessages;
                         return object;
                     };
-    
+
                     /**
                      * Converts this ConnectToPersistentSubscription to JSON.
                      * @function toJSON
@@ -8722,12 +8716,12 @@
                     ConnectToPersistentSubscription.prototype.toJSON = function toJSON() {
                         return this.constructor.toObject(this, $protobuf.util.toJSONOptions);
                     };
-    
+
                     return ConnectToPersistentSubscription;
                 })();
-    
+
                 Messages.PersistentSubscriptionAckEvents = (function() {
-    
+
                     /**
                      * Properties of a PersistentSubscriptionAckEvents.
                      * @memberof EventStore.Client.Messages
@@ -8735,7 +8729,7 @@
                      * @property {string} subscriptionId PersistentSubscriptionAckEvents subscriptionId
                      * @property {Array.<Uint8Array>|null} [processedEventIds] PersistentSubscriptionAckEvents processedEventIds
                      */
-    
+
                     /**
                      * Constructs a new PersistentSubscriptionAckEvents.
                      * @memberof EventStore.Client.Messages
@@ -8751,7 +8745,7 @@
                                 if (properties[keys[i]] != null)
                                     this[keys[i]] = properties[keys[i]];
                     }
-    
+
                     /**
                      * PersistentSubscriptionAckEvents subscriptionId.
                      * @member {string} subscriptionId
@@ -8759,7 +8753,7 @@
                      * @instance
                      */
                     PersistentSubscriptionAckEvents.prototype.subscriptionId = "";
-    
+
                     /**
                      * PersistentSubscriptionAckEvents processedEventIds.
                      * @member {Array.<Uint8Array>} processedEventIds
@@ -8767,7 +8761,7 @@
                      * @instance
                      */
                     PersistentSubscriptionAckEvents.prototype.processedEventIds = $util.emptyArray;
-    
+
                     /**
                      * Creates a new PersistentSubscriptionAckEvents instance using the specified properties.
                      * @function create
@@ -8779,7 +8773,7 @@
                     PersistentSubscriptionAckEvents.create = function create(properties) {
                         return new PersistentSubscriptionAckEvents(properties);
                     };
-    
+
                     /**
                      * Encodes the specified PersistentSubscriptionAckEvents message. Does not implicitly {@link EventStore.Client.Messages.PersistentSubscriptionAckEvents.verify|verify} messages.
                      * @function encode
@@ -8798,7 +8792,7 @@
                                 writer.uint32(/* id 2, wireType 2 =*/18).bytes(message.processedEventIds[i]);
                         return writer;
                     };
-    
+
                     /**
                      * Encodes the specified PersistentSubscriptionAckEvents message, length delimited. Does not implicitly {@link EventStore.Client.Messages.PersistentSubscriptionAckEvents.verify|verify} messages.
                      * @function encodeDelimited
@@ -8811,7 +8805,7 @@
                     PersistentSubscriptionAckEvents.encodeDelimited = function encodeDelimited(message, writer) {
                         return this.encode(message, writer).ldelim();
                     };
-    
+
                     /**
                      * Decodes a PersistentSubscriptionAckEvents message from the specified reader or buffer.
                      * @function decode
@@ -8847,7 +8841,7 @@
                             throw $util.ProtocolError("missing required 'subscriptionId'", { instance: message });
                         return message;
                     };
-    
+
                     /**
                      * Decodes a PersistentSubscriptionAckEvents message from the specified reader or buffer, length delimited.
                      * @function decodeDelimited
@@ -8863,7 +8857,7 @@
                             reader = new $Reader(reader);
                         return this.decode(reader, reader.uint32());
                     };
-    
+
                     /**
                      * Verifies a PersistentSubscriptionAckEvents message.
                      * @function verify
@@ -8886,7 +8880,7 @@
                         }
                         return null;
                     };
-    
+
                     /**
                      * Creates a PersistentSubscriptionAckEvents message from a plain object. Also converts values to their respective internal types.
                      * @function fromObject
@@ -8913,7 +8907,7 @@
                         }
                         return message;
                     };
-    
+
                     /**
                      * Creates a plain object from a PersistentSubscriptionAckEvents message. Also converts values to other types if specified.
                      * @function toObject
@@ -8940,7 +8934,7 @@
                         }
                         return object;
                     };
-    
+
                     /**
                      * Converts this PersistentSubscriptionAckEvents to JSON.
                      * @function toJSON
@@ -8951,12 +8945,12 @@
                     PersistentSubscriptionAckEvents.prototype.toJSON = function toJSON() {
                         return this.constructor.toObject(this, $protobuf.util.toJSONOptions);
                     };
-    
+
                     return PersistentSubscriptionAckEvents;
                 })();
-    
+
                 Messages.PersistentSubscriptionNakEvents = (function() {
-    
+
                     /**
                      * Properties of a PersistentSubscriptionNakEvents.
                      * @memberof EventStore.Client.Messages
@@ -8966,7 +8960,7 @@
                      * @property {string|null} [message] PersistentSubscriptionNakEvents message
                      * @property {EventStore.Client.Messages.PersistentSubscriptionNakEvents.NakAction} action PersistentSubscriptionNakEvents action
                      */
-    
+
                     /**
                      * Constructs a new PersistentSubscriptionNakEvents.
                      * @memberof EventStore.Client.Messages
@@ -8982,7 +8976,7 @@
                                 if (properties[keys[i]] != null)
                                     this[keys[i]] = properties[keys[i]];
                     }
-    
+
                     /**
                      * PersistentSubscriptionNakEvents subscriptionId.
                      * @member {string} subscriptionId
@@ -8990,7 +8984,7 @@
                      * @instance
                      */
                     PersistentSubscriptionNakEvents.prototype.subscriptionId = "";
-    
+
                     /**
                      * PersistentSubscriptionNakEvents processedEventIds.
                      * @member {Array.<Uint8Array>} processedEventIds
@@ -8998,7 +8992,7 @@
                      * @instance
                      */
                     PersistentSubscriptionNakEvents.prototype.processedEventIds = $util.emptyArray;
-    
+
                     /**
                      * PersistentSubscriptionNakEvents message.
                      * @member {string} message
@@ -9006,7 +9000,7 @@
                      * @instance
                      */
                     PersistentSubscriptionNakEvents.prototype.message = "";
-    
+
                     /**
                      * PersistentSubscriptionNakEvents action.
                      * @member {EventStore.Client.Messages.PersistentSubscriptionNakEvents.NakAction} action
@@ -9014,7 +9008,7 @@
                      * @instance
                      */
                     PersistentSubscriptionNakEvents.prototype.action = 0;
-    
+
                     /**
                      * Creates a new PersistentSubscriptionNakEvents instance using the specified properties.
                      * @function create
@@ -9026,7 +9020,7 @@
                     PersistentSubscriptionNakEvents.create = function create(properties) {
                         return new PersistentSubscriptionNakEvents(properties);
                     };
-    
+
                     /**
                      * Encodes the specified PersistentSubscriptionNakEvents message. Does not implicitly {@link EventStore.Client.Messages.PersistentSubscriptionNakEvents.verify|verify} messages.
                      * @function encode
@@ -9048,7 +9042,7 @@
                         writer.uint32(/* id 4, wireType 0 =*/32).int32(message.action);
                         return writer;
                     };
-    
+
                     /**
                      * Encodes the specified PersistentSubscriptionNakEvents message, length delimited. Does not implicitly {@link EventStore.Client.Messages.PersistentSubscriptionNakEvents.verify|verify} messages.
                      * @function encodeDelimited
@@ -9061,7 +9055,7 @@
                     PersistentSubscriptionNakEvents.encodeDelimited = function encodeDelimited(message, writer) {
                         return this.encode(message, writer).ldelim();
                     };
-    
+
                     /**
                      * Decodes a PersistentSubscriptionNakEvents message from the specified reader or buffer.
                      * @function decode
@@ -9105,7 +9099,7 @@
                             throw $util.ProtocolError("missing required 'action'", { instance: message });
                         return message;
                     };
-    
+
                     /**
                      * Decodes a PersistentSubscriptionNakEvents message from the specified reader or buffer, length delimited.
                      * @function decodeDelimited
@@ -9121,7 +9115,7 @@
                             reader = new $Reader(reader);
                         return this.decode(reader, reader.uint32());
                     };
-    
+
                     /**
                      * Verifies a PersistentSubscriptionNakEvents message.
                      * @function verify
@@ -9157,7 +9151,7 @@
                         }
                         return null;
                     };
-    
+
                     /**
                      * Creates a PersistentSubscriptionNakEvents message from a plain object. Also converts values to their respective internal types.
                      * @function fromObject
@@ -9208,7 +9202,7 @@
                         }
                         return message;
                     };
-    
+
                     /**
                      * Creates a plain object from a PersistentSubscriptionNakEvents message. Also converts values to other types if specified.
                      * @function toObject
@@ -9242,7 +9236,7 @@
                             object.action = options.enums === String ? $root.EventStore.Client.Messages.PersistentSubscriptionNakEvents.NakAction[message.action] : message.action;
                         return object;
                     };
-    
+
                     /**
                      * Converts this PersistentSubscriptionNakEvents to JSON.
                      * @function toJSON
@@ -9253,7 +9247,7 @@
                     PersistentSubscriptionNakEvents.prototype.toJSON = function toJSON() {
                         return this.constructor.toObject(this, $protobuf.util.toJSONOptions);
                     };
-    
+
                     /**
                      * NakAction enum.
                      * @name EventStore.Client.Messages.PersistentSubscriptionNakEvents.NakAction
@@ -9273,12 +9267,12 @@
                         values[valuesById[4] = "Stop"] = 4;
                         return values;
                     })();
-    
+
                     return PersistentSubscriptionNakEvents;
                 })();
-    
+
                 Messages.PersistentSubscriptionConfirmation = (function() {
-    
+
                     /**
                      * Properties of a PersistentSubscriptionConfirmation.
                      * @memberof EventStore.Client.Messages
@@ -9287,7 +9281,7 @@
                      * @property {string} subscriptionId PersistentSubscriptionConfirmation subscriptionId
                      * @property {number|Long|null} [lastEventNumber] PersistentSubscriptionConfirmation lastEventNumber
                      */
-    
+
                     /**
                      * Constructs a new PersistentSubscriptionConfirmation.
                      * @memberof EventStore.Client.Messages
@@ -9302,7 +9296,7 @@
                                 if (properties[keys[i]] != null)
                                     this[keys[i]] = properties[keys[i]];
                     }
-    
+
                     /**
                      * PersistentSubscriptionConfirmation lastCommitPosition.
                      * @member {number|Long} lastCommitPosition
@@ -9310,7 +9304,7 @@
                      * @instance
                      */
                     PersistentSubscriptionConfirmation.prototype.lastCommitPosition = $util.Long ? $util.Long.fromBits(0,0,false) : 0;
-    
+
                     /**
                      * PersistentSubscriptionConfirmation subscriptionId.
                      * @member {string} subscriptionId
@@ -9318,7 +9312,7 @@
                      * @instance
                      */
                     PersistentSubscriptionConfirmation.prototype.subscriptionId = "";
-    
+
                     /**
                      * PersistentSubscriptionConfirmation lastEventNumber.
                      * @member {number|Long} lastEventNumber
@@ -9326,7 +9320,7 @@
                      * @instance
                      */
                     PersistentSubscriptionConfirmation.prototype.lastEventNumber = $util.Long ? $util.Long.fromBits(0,0,false) : 0;
-    
+
                     /**
                      * Creates a new PersistentSubscriptionConfirmation instance using the specified properties.
                      * @function create
@@ -9338,7 +9332,7 @@
                     PersistentSubscriptionConfirmation.create = function create(properties) {
                         return new PersistentSubscriptionConfirmation(properties);
                     };
-    
+
                     /**
                      * Encodes the specified PersistentSubscriptionConfirmation message. Does not implicitly {@link EventStore.Client.Messages.PersistentSubscriptionConfirmation.verify|verify} messages.
                      * @function encode
@@ -9357,7 +9351,7 @@
                             writer.uint32(/* id 3, wireType 0 =*/24).int64(message.lastEventNumber);
                         return writer;
                     };
-    
+
                     /**
                      * Encodes the specified PersistentSubscriptionConfirmation message, length delimited. Does not implicitly {@link EventStore.Client.Messages.PersistentSubscriptionConfirmation.verify|verify} messages.
                      * @function encodeDelimited
@@ -9370,7 +9364,7 @@
                     PersistentSubscriptionConfirmation.encodeDelimited = function encodeDelimited(message, writer) {
                         return this.encode(message, writer).ldelim();
                     };
-    
+
                     /**
                      * Decodes a PersistentSubscriptionConfirmation message from the specified reader or buffer.
                      * @function decode
@@ -9409,7 +9403,7 @@
                             throw $util.ProtocolError("missing required 'subscriptionId'", { instance: message });
                         return message;
                     };
-    
+
                     /**
                      * Decodes a PersistentSubscriptionConfirmation message from the specified reader or buffer, length delimited.
                      * @function decodeDelimited
@@ -9425,7 +9419,7 @@
                             reader = new $Reader(reader);
                         return this.decode(reader, reader.uint32());
                     };
-    
+
                     /**
                      * Verifies a PersistentSubscriptionConfirmation message.
                      * @function verify
@@ -9446,7 +9440,7 @@
                                 return "lastEventNumber: integer|Long expected";
                         return null;
                     };
-    
+
                     /**
                      * Creates a PersistentSubscriptionConfirmation message from a plain object. Also converts values to their respective internal types.
                      * @function fromObject
@@ -9481,7 +9475,7 @@
                                 message.lastEventNumber = new $util.LongBits(object.lastEventNumber.low >>> 0, object.lastEventNumber.high >>> 0).toNumber();
                         return message;
                     };
-    
+
                     /**
                      * Creates a plain object from a PersistentSubscriptionConfirmation message. Also converts values to other types if specified.
                      * @function toObject
@@ -9522,7 +9516,7 @@
                                 object.lastEventNumber = options.longs === String ? $util.Long.prototype.toString.call(message.lastEventNumber) : options.longs === Number ? new $util.LongBits(message.lastEventNumber.low >>> 0, message.lastEventNumber.high >>> 0).toNumber() : message.lastEventNumber;
                         return object;
                     };
-    
+
                     /**
                      * Converts this PersistentSubscriptionConfirmation to JSON.
                      * @function toJSON
@@ -9533,19 +9527,19 @@
                     PersistentSubscriptionConfirmation.prototype.toJSON = function toJSON() {
                         return this.constructor.toObject(this, $protobuf.util.toJSONOptions);
                     };
-    
+
                     return PersistentSubscriptionConfirmation;
                 })();
-    
+
                 Messages.PersistentSubscriptionStreamEventAppeared = (function() {
-    
+
                     /**
                      * Properties of a PersistentSubscriptionStreamEventAppeared.
                      * @memberof EventStore.Client.Messages
                      * @interface IPersistentSubscriptionStreamEventAppeared
                      * @property {EventStore.Client.Messages.IResolvedIndexedEvent} event PersistentSubscriptionStreamEventAppeared event
                      */
-    
+
                     /**
                      * Constructs a new PersistentSubscriptionStreamEventAppeared.
                      * @memberof EventStore.Client.Messages
@@ -9560,7 +9554,7 @@
                                 if (properties[keys[i]] != null)
                                     this[keys[i]] = properties[keys[i]];
                     }
-    
+
                     /**
                      * PersistentSubscriptionStreamEventAppeared event.
                      * @member {EventStore.Client.Messages.IResolvedIndexedEvent} event
@@ -9568,7 +9562,7 @@
                      * @instance
                      */
                     PersistentSubscriptionStreamEventAppeared.prototype.event = null;
-    
+
                     /**
                      * Creates a new PersistentSubscriptionStreamEventAppeared instance using the specified properties.
                      * @function create
@@ -9580,7 +9574,7 @@
                     PersistentSubscriptionStreamEventAppeared.create = function create(properties) {
                         return new PersistentSubscriptionStreamEventAppeared(properties);
                     };
-    
+
                     /**
                      * Encodes the specified PersistentSubscriptionStreamEventAppeared message. Does not implicitly {@link EventStore.Client.Messages.PersistentSubscriptionStreamEventAppeared.verify|verify} messages.
                      * @function encode
@@ -9596,7 +9590,7 @@
                         $root.EventStore.Client.Messages.ResolvedIndexedEvent.encode(message.event, writer.uint32(/* id 1, wireType 2 =*/10).fork()).ldelim();
                         return writer;
                     };
-    
+
                     /**
                      * Encodes the specified PersistentSubscriptionStreamEventAppeared message, length delimited. Does not implicitly {@link EventStore.Client.Messages.PersistentSubscriptionStreamEventAppeared.verify|verify} messages.
                      * @function encodeDelimited
@@ -9609,7 +9603,7 @@
                     PersistentSubscriptionStreamEventAppeared.encodeDelimited = function encodeDelimited(message, writer) {
                         return this.encode(message, writer).ldelim();
                     };
-    
+
                     /**
                      * Decodes a PersistentSubscriptionStreamEventAppeared message from the specified reader or buffer.
                      * @function decode
@@ -9640,7 +9634,7 @@
                             throw $util.ProtocolError("missing required 'event'", { instance: message });
                         return message;
                     };
-    
+
                     /**
                      * Decodes a PersistentSubscriptionStreamEventAppeared message from the specified reader or buffer, length delimited.
                      * @function decodeDelimited
@@ -9656,7 +9650,7 @@
                             reader = new $Reader(reader);
                         return this.decode(reader, reader.uint32());
                     };
-    
+
                     /**
                      * Verifies a PersistentSubscriptionStreamEventAppeared message.
                      * @function verify
@@ -9675,7 +9669,7 @@
                         }
                         return null;
                     };
-    
+
                     /**
                      * Creates a PersistentSubscriptionStreamEventAppeared message from a plain object. Also converts values to their respective internal types.
                      * @function fromObject
@@ -9695,7 +9689,7 @@
                         }
                         return message;
                     };
-    
+
                     /**
                      * Creates a plain object from a PersistentSubscriptionStreamEventAppeared message. Also converts values to other types if specified.
                      * @function toObject
@@ -9715,7 +9709,7 @@
                             object.event = $root.EventStore.Client.Messages.ResolvedIndexedEvent.toObject(message.event, options);
                         return object;
                     };
-    
+
                     /**
                      * Converts this PersistentSubscriptionStreamEventAppeared to JSON.
                      * @function toJSON
@@ -9726,12 +9720,12 @@
                     PersistentSubscriptionStreamEventAppeared.prototype.toJSON = function toJSON() {
                         return this.constructor.toObject(this, $protobuf.util.toJSONOptions);
                     };
-    
+
                     return PersistentSubscriptionStreamEventAppeared;
                 })();
-    
+
                 Messages.SubscribeToStream = (function() {
-    
+
                     /**
                      * Properties of a SubscribeToStream.
                      * @memberof EventStore.Client.Messages
@@ -9739,7 +9733,7 @@
                      * @property {string} eventStreamId SubscribeToStream eventStreamId
                      * @property {boolean} resolveLinkTos SubscribeToStream resolveLinkTos
                      */
-    
+
                     /**
                      * Constructs a new SubscribeToStream.
                      * @memberof EventStore.Client.Messages
@@ -9754,7 +9748,7 @@
                                 if (properties[keys[i]] != null)
                                     this[keys[i]] = properties[keys[i]];
                     }
-    
+
                     /**
                      * SubscribeToStream eventStreamId.
                      * @member {string} eventStreamId
@@ -9762,7 +9756,7 @@
                      * @instance
                      */
                     SubscribeToStream.prototype.eventStreamId = "";
-    
+
                     /**
                      * SubscribeToStream resolveLinkTos.
                      * @member {boolean} resolveLinkTos
@@ -9770,7 +9764,7 @@
                      * @instance
                      */
                     SubscribeToStream.prototype.resolveLinkTos = false;
-    
+
                     /**
                      * Creates a new SubscribeToStream instance using the specified properties.
                      * @function create
@@ -9782,7 +9776,7 @@
                     SubscribeToStream.create = function create(properties) {
                         return new SubscribeToStream(properties);
                     };
-    
+
                     /**
                      * Encodes the specified SubscribeToStream message. Does not implicitly {@link EventStore.Client.Messages.SubscribeToStream.verify|verify} messages.
                      * @function encode
@@ -9799,7 +9793,7 @@
                         writer.uint32(/* id 2, wireType 0 =*/16).bool(message.resolveLinkTos);
                         return writer;
                     };
-    
+
                     /**
                      * Encodes the specified SubscribeToStream message, length delimited. Does not implicitly {@link EventStore.Client.Messages.SubscribeToStream.verify|verify} messages.
                      * @function encodeDelimited
@@ -9812,7 +9806,7 @@
                     SubscribeToStream.encodeDelimited = function encodeDelimited(message, writer) {
                         return this.encode(message, writer).ldelim();
                     };
-    
+
                     /**
                      * Decodes a SubscribeToStream message from the specified reader or buffer.
                      * @function decode
@@ -9848,7 +9842,7 @@
                             throw $util.ProtocolError("missing required 'resolveLinkTos'", { instance: message });
                         return message;
                     };
-    
+
                     /**
                      * Decodes a SubscribeToStream message from the specified reader or buffer, length delimited.
                      * @function decodeDelimited
@@ -9864,7 +9858,7 @@
                             reader = new $Reader(reader);
                         return this.decode(reader, reader.uint32());
                     };
-    
+
                     /**
                      * Verifies a SubscribeToStream message.
                      * @function verify
@@ -9882,7 +9876,7 @@
                             return "resolveLinkTos: boolean expected";
                         return null;
                     };
-    
+
                     /**
                      * Creates a SubscribeToStream message from a plain object. Also converts values to their respective internal types.
                      * @function fromObject
@@ -9901,7 +9895,7 @@
                             message.resolveLinkTos = Boolean(object.resolveLinkTos);
                         return message;
                     };
-    
+
                     /**
                      * Creates a plain object from a SubscribeToStream message. Also converts values to other types if specified.
                      * @function toObject
@@ -9925,7 +9919,7 @@
                             object.resolveLinkTos = message.resolveLinkTos;
                         return object;
                     };
-    
+
                     /**
                      * Converts this SubscribeToStream to JSON.
                      * @function toJSON
@@ -9936,12 +9930,12 @@
                     SubscribeToStream.prototype.toJSON = function toJSON() {
                         return this.constructor.toObject(this, $protobuf.util.toJSONOptions);
                     };
-    
+
                     return SubscribeToStream;
                 })();
-    
+
                 Messages.SubscriptionConfirmation = (function() {
-    
+
                     /**
                      * Properties of a SubscriptionConfirmation.
                      * @memberof EventStore.Client.Messages
@@ -9949,7 +9943,7 @@
                      * @property {number|Long} lastCommitPosition SubscriptionConfirmation lastCommitPosition
                      * @property {number|Long|null} [lastEventNumber] SubscriptionConfirmation lastEventNumber
                      */
-    
+
                     /**
                      * Constructs a new SubscriptionConfirmation.
                      * @memberof EventStore.Client.Messages
@@ -9964,7 +9958,7 @@
                                 if (properties[keys[i]] != null)
                                     this[keys[i]] = properties[keys[i]];
                     }
-    
+
                     /**
                      * SubscriptionConfirmation lastCommitPosition.
                      * @member {number|Long} lastCommitPosition
@@ -9972,7 +9966,7 @@
                      * @instance
                      */
                     SubscriptionConfirmation.prototype.lastCommitPosition = $util.Long ? $util.Long.fromBits(0,0,false) : 0;
-    
+
                     /**
                      * SubscriptionConfirmation lastEventNumber.
                      * @member {number|Long} lastEventNumber
@@ -9980,7 +9974,7 @@
                      * @instance
                      */
                     SubscriptionConfirmation.prototype.lastEventNumber = $util.Long ? $util.Long.fromBits(0,0,false) : 0;
-    
+
                     /**
                      * Creates a new SubscriptionConfirmation instance using the specified properties.
                      * @function create
@@ -9992,7 +9986,7 @@
                     SubscriptionConfirmation.create = function create(properties) {
                         return new SubscriptionConfirmation(properties);
                     };
-    
+
                     /**
                      * Encodes the specified SubscriptionConfirmation message. Does not implicitly {@link EventStore.Client.Messages.SubscriptionConfirmation.verify|verify} messages.
                      * @function encode
@@ -10010,7 +10004,7 @@
                             writer.uint32(/* id 2, wireType 0 =*/16).int64(message.lastEventNumber);
                         return writer;
                     };
-    
+
                     /**
                      * Encodes the specified SubscriptionConfirmation message, length delimited. Does not implicitly {@link EventStore.Client.Messages.SubscriptionConfirmation.verify|verify} messages.
                      * @function encodeDelimited
@@ -10023,7 +10017,7 @@
                     SubscriptionConfirmation.encodeDelimited = function encodeDelimited(message, writer) {
                         return this.encode(message, writer).ldelim();
                     };
-    
+
                     /**
                      * Decodes a SubscriptionConfirmation message from the specified reader or buffer.
                      * @function decode
@@ -10057,7 +10051,7 @@
                             throw $util.ProtocolError("missing required 'lastCommitPosition'", { instance: message });
                         return message;
                     };
-    
+
                     /**
                      * Decodes a SubscriptionConfirmation message from the specified reader or buffer, length delimited.
                      * @function decodeDelimited
@@ -10073,7 +10067,7 @@
                             reader = new $Reader(reader);
                         return this.decode(reader, reader.uint32());
                     };
-    
+
                     /**
                      * Verifies a SubscriptionConfirmation message.
                      * @function verify
@@ -10092,7 +10086,7 @@
                                 return "lastEventNumber: integer|Long expected";
                         return null;
                     };
-    
+
                     /**
                      * Creates a SubscriptionConfirmation message from a plain object. Also converts values to their respective internal types.
                      * @function fromObject
@@ -10125,7 +10119,7 @@
                                 message.lastEventNumber = new $util.LongBits(object.lastEventNumber.low >>> 0, object.lastEventNumber.high >>> 0).toNumber();
                         return message;
                     };
-    
+
                     /**
                      * Creates a plain object from a SubscriptionConfirmation message. Also converts values to other types if specified.
                      * @function toObject
@@ -10163,7 +10157,7 @@
                                 object.lastEventNumber = options.longs === String ? $util.Long.prototype.toString.call(message.lastEventNumber) : options.longs === Number ? new $util.LongBits(message.lastEventNumber.low >>> 0, message.lastEventNumber.high >>> 0).toNumber() : message.lastEventNumber;
                         return object;
                     };
-    
+
                     /**
                      * Converts this SubscriptionConfirmation to JSON.
                      * @function toJSON
@@ -10174,19 +10168,19 @@
                     SubscriptionConfirmation.prototype.toJSON = function toJSON() {
                         return this.constructor.toObject(this, $protobuf.util.toJSONOptions);
                     };
-    
+
                     return SubscriptionConfirmation;
                 })();
-    
+
                 Messages.StreamEventAppeared = (function() {
-    
+
                     /**
                      * Properties of a StreamEventAppeared.
                      * @memberof EventStore.Client.Messages
                      * @interface IStreamEventAppeared
                      * @property {EventStore.Client.Messages.IResolvedEvent} event StreamEventAppeared event
                      */
-    
+
                     /**
                      * Constructs a new StreamEventAppeared.
                      * @memberof EventStore.Client.Messages
@@ -10201,7 +10195,7 @@
                                 if (properties[keys[i]] != null)
                                     this[keys[i]] = properties[keys[i]];
                     }
-    
+
                     /**
                      * StreamEventAppeared event.
                      * @member {EventStore.Client.Messages.IResolvedEvent} event
@@ -10209,7 +10203,7 @@
                      * @instance
                      */
                     StreamEventAppeared.prototype.event = null;
-    
+
                     /**
                      * Creates a new StreamEventAppeared instance using the specified properties.
                      * @function create
@@ -10221,7 +10215,7 @@
                     StreamEventAppeared.create = function create(properties) {
                         return new StreamEventAppeared(properties);
                     };
-    
+
                     /**
                      * Encodes the specified StreamEventAppeared message. Does not implicitly {@link EventStore.Client.Messages.StreamEventAppeared.verify|verify} messages.
                      * @function encode
@@ -10237,7 +10231,7 @@
                         $root.EventStore.Client.Messages.ResolvedEvent.encode(message.event, writer.uint32(/* id 1, wireType 2 =*/10).fork()).ldelim();
                         return writer;
                     };
-    
+
                     /**
                      * Encodes the specified StreamEventAppeared message, length delimited. Does not implicitly {@link EventStore.Client.Messages.StreamEventAppeared.verify|verify} messages.
                      * @function encodeDelimited
@@ -10250,7 +10244,7 @@
                     StreamEventAppeared.encodeDelimited = function encodeDelimited(message, writer) {
                         return this.encode(message, writer).ldelim();
                     };
-    
+
                     /**
                      * Decodes a StreamEventAppeared message from the specified reader or buffer.
                      * @function decode
@@ -10281,7 +10275,7 @@
                             throw $util.ProtocolError("missing required 'event'", { instance: message });
                         return message;
                     };
-    
+
                     /**
                      * Decodes a StreamEventAppeared message from the specified reader or buffer, length delimited.
                      * @function decodeDelimited
@@ -10297,7 +10291,7 @@
                             reader = new $Reader(reader);
                         return this.decode(reader, reader.uint32());
                     };
-    
+
                     /**
                      * Verifies a StreamEventAppeared message.
                      * @function verify
@@ -10316,7 +10310,7 @@
                         }
                         return null;
                     };
-    
+
                     /**
                      * Creates a StreamEventAppeared message from a plain object. Also converts values to their respective internal types.
                      * @function fromObject
@@ -10336,7 +10330,7 @@
                         }
                         return message;
                     };
-    
+
                     /**
                      * Creates a plain object from a StreamEventAppeared message. Also converts values to other types if specified.
                      * @function toObject
@@ -10356,7 +10350,7 @@
                             object.event = $root.EventStore.Client.Messages.ResolvedEvent.toObject(message.event, options);
                         return object;
                     };
-    
+
                     /**
                      * Converts this StreamEventAppeared to JSON.
                      * @function toJSON
@@ -10367,18 +10361,18 @@
                     StreamEventAppeared.prototype.toJSON = function toJSON() {
                         return this.constructor.toObject(this, $protobuf.util.toJSONOptions);
                     };
-    
+
                     return StreamEventAppeared;
                 })();
-    
+
                 Messages.UnsubscribeFromStream = (function() {
-    
+
                     /**
                      * Properties of an UnsubscribeFromStream.
                      * @memberof EventStore.Client.Messages
                      * @interface IUnsubscribeFromStream
                      */
-    
+
                     /**
                      * Constructs a new UnsubscribeFromStream.
                      * @memberof EventStore.Client.Messages
@@ -10393,7 +10387,7 @@
                                 if (properties[keys[i]] != null)
                                     this[keys[i]] = properties[keys[i]];
                     }
-    
+
                     /**
                      * Creates a new UnsubscribeFromStream instance using the specified properties.
                      * @function create
@@ -10405,7 +10399,7 @@
                     UnsubscribeFromStream.create = function create(properties) {
                         return new UnsubscribeFromStream(properties);
                     };
-    
+
                     /**
                      * Encodes the specified UnsubscribeFromStream message. Does not implicitly {@link EventStore.Client.Messages.UnsubscribeFromStream.verify|verify} messages.
                      * @function encode
@@ -10420,7 +10414,7 @@
                             writer = $Writer.create();
                         return writer;
                     };
-    
+
                     /**
                      * Encodes the specified UnsubscribeFromStream message, length delimited. Does not implicitly {@link EventStore.Client.Messages.UnsubscribeFromStream.verify|verify} messages.
                      * @function encodeDelimited
@@ -10433,7 +10427,7 @@
                     UnsubscribeFromStream.encodeDelimited = function encodeDelimited(message, writer) {
                         return this.encode(message, writer).ldelim();
                     };
-    
+
                     /**
                      * Decodes an UnsubscribeFromStream message from the specified reader or buffer.
                      * @function decode
@@ -10459,7 +10453,7 @@
                         }
                         return message;
                     };
-    
+
                     /**
                      * Decodes an UnsubscribeFromStream message from the specified reader or buffer, length delimited.
                      * @function decodeDelimited
@@ -10475,7 +10469,7 @@
                             reader = new $Reader(reader);
                         return this.decode(reader, reader.uint32());
                     };
-    
+
                     /**
                      * Verifies an UnsubscribeFromStream message.
                      * @function verify
@@ -10489,7 +10483,7 @@
                             return "object expected";
                         return null;
                     };
-    
+
                     /**
                      * Creates an UnsubscribeFromStream message from a plain object. Also converts values to their respective internal types.
                      * @function fromObject
@@ -10503,7 +10497,7 @@
                             return object;
                         return new $root.EventStore.Client.Messages.UnsubscribeFromStream();
                     };
-    
+
                     /**
                      * Creates a plain object from an UnsubscribeFromStream message. Also converts values to other types if specified.
                      * @function toObject
@@ -10516,7 +10510,7 @@
                     UnsubscribeFromStream.toObject = function toObject() {
                         return {};
                     };
-    
+
                     /**
                      * Converts this UnsubscribeFromStream to JSON.
                      * @function toJSON
@@ -10527,19 +10521,19 @@
                     UnsubscribeFromStream.prototype.toJSON = function toJSON() {
                         return this.constructor.toObject(this, $protobuf.util.toJSONOptions);
                     };
-    
+
                     return UnsubscribeFromStream;
                 })();
-    
+
                 Messages.SubscriptionDropped = (function() {
-    
+
                     /**
                      * Properties of a SubscriptionDropped.
                      * @memberof EventStore.Client.Messages
                      * @interface ISubscriptionDropped
                      * @property {EventStore.Client.Messages.SubscriptionDropped.SubscriptionDropReason|null} [reason] SubscriptionDropped reason
                      */
-    
+
                     /**
                      * Constructs a new SubscriptionDropped.
                      * @memberof EventStore.Client.Messages
@@ -10554,7 +10548,7 @@
                                 if (properties[keys[i]] != null)
                                     this[keys[i]] = properties[keys[i]];
                     }
-    
+
                     /**
                      * SubscriptionDropped reason.
                      * @member {EventStore.Client.Messages.SubscriptionDropped.SubscriptionDropReason} reason
@@ -10562,7 +10556,7 @@
                      * @instance
                      */
                     SubscriptionDropped.prototype.reason = 0;
-    
+
                     /**
                      * Creates a new SubscriptionDropped instance using the specified properties.
                      * @function create
@@ -10574,7 +10568,7 @@
                     SubscriptionDropped.create = function create(properties) {
                         return new SubscriptionDropped(properties);
                     };
-    
+
                     /**
                      * Encodes the specified SubscriptionDropped message. Does not implicitly {@link EventStore.Client.Messages.SubscriptionDropped.verify|verify} messages.
                      * @function encode
@@ -10591,7 +10585,7 @@
                             writer.uint32(/* id 1, wireType 0 =*/8).int32(message.reason);
                         return writer;
                     };
-    
+
                     /**
                      * Encodes the specified SubscriptionDropped message, length delimited. Does not implicitly {@link EventStore.Client.Messages.SubscriptionDropped.verify|verify} messages.
                      * @function encodeDelimited
@@ -10604,7 +10598,7 @@
                     SubscriptionDropped.encodeDelimited = function encodeDelimited(message, writer) {
                         return this.encode(message, writer).ldelim();
                     };
-    
+
                     /**
                      * Decodes a SubscriptionDropped message from the specified reader or buffer.
                      * @function decode
@@ -10633,7 +10627,7 @@
                         }
                         return message;
                     };
-    
+
                     /**
                      * Decodes a SubscriptionDropped message from the specified reader or buffer, length delimited.
                      * @function decodeDelimited
@@ -10649,7 +10643,7 @@
                             reader = new $Reader(reader);
                         return this.decode(reader, reader.uint32());
                     };
-    
+
                     /**
                      * Verifies a SubscriptionDropped message.
                      * @function verify
@@ -10674,7 +10668,7 @@
                             }
                         return null;
                     };
-    
+
                     /**
                      * Creates a SubscriptionDropped message from a plain object. Also converts values to their respective internal types.
                      * @function fromObject
@@ -10711,7 +10705,7 @@
                         }
                         return message;
                     };
-    
+
                     /**
                      * Creates a plain object from a SubscriptionDropped message. Also converts values to other types if specified.
                      * @function toObject
@@ -10731,7 +10725,7 @@
                             object.reason = options.enums === String ? $root.EventStore.Client.Messages.SubscriptionDropped.SubscriptionDropReason[message.reason] : message.reason;
                         return object;
                     };
-    
+
                     /**
                      * Converts this SubscriptionDropped to JSON.
                      * @function toJSON
@@ -10742,7 +10736,7 @@
                     SubscriptionDropped.prototype.toJSON = function toJSON() {
                         return this.constructor.toObject(this, $protobuf.util.toJSONOptions);
                     };
-    
+
                     /**
                      * SubscriptionDropReason enum.
                      * @name EventStore.Client.Messages.SubscriptionDropped.SubscriptionDropReason
@@ -10762,12 +10756,12 @@
                         values[valuesById[4] = "SubscriberMaxCountReached"] = 4;
                         return values;
                     })();
-    
+
                     return SubscriptionDropped;
                 })();
-    
+
                 Messages.NotHandled = (function() {
-    
+
                     /**
                      * Properties of a NotHandled.
                      * @memberof EventStore.Client.Messages
@@ -10775,7 +10769,7 @@
                      * @property {EventStore.Client.Messages.NotHandled.NotHandledReason} reason NotHandled reason
                      * @property {Uint8Array|null} [additionalInfo] NotHandled additionalInfo
                      */
-    
+
                     /**
                      * Constructs a new NotHandled.
                      * @memberof EventStore.Client.Messages
@@ -10790,7 +10784,7 @@
                                 if (properties[keys[i]] != null)
                                     this[keys[i]] = properties[keys[i]];
                     }
-    
+
                     /**
                      * NotHandled reason.
                      * @member {EventStore.Client.Messages.NotHandled.NotHandledReason} reason
@@ -10798,7 +10792,7 @@
                      * @instance
                      */
                     NotHandled.prototype.reason = 0;
-    
+
                     /**
                      * NotHandled additionalInfo.
                      * @member {Uint8Array} additionalInfo
@@ -10806,7 +10800,7 @@
                      * @instance
                      */
                     NotHandled.prototype.additionalInfo = $util.newBuffer([]);
-    
+
                     /**
                      * Creates a new NotHandled instance using the specified properties.
                      * @function create
@@ -10818,7 +10812,7 @@
                     NotHandled.create = function create(properties) {
                         return new NotHandled(properties);
                     };
-    
+
                     /**
                      * Encodes the specified NotHandled message. Does not implicitly {@link EventStore.Client.Messages.NotHandled.verify|verify} messages.
                      * @function encode
@@ -10836,7 +10830,7 @@
                             writer.uint32(/* id 2, wireType 2 =*/18).bytes(message.additionalInfo);
                         return writer;
                     };
-    
+
                     /**
                      * Encodes the specified NotHandled message, length delimited. Does not implicitly {@link EventStore.Client.Messages.NotHandled.verify|verify} messages.
                      * @function encodeDelimited
@@ -10849,7 +10843,7 @@
                     NotHandled.encodeDelimited = function encodeDelimited(message, writer) {
                         return this.encode(message, writer).ldelim();
                     };
-    
+
                     /**
                      * Decodes a NotHandled message from the specified reader or buffer.
                      * @function decode
@@ -10883,7 +10877,7 @@
                             throw $util.ProtocolError("missing required 'reason'", { instance: message });
                         return message;
                     };
-    
+
                     /**
                      * Decodes a NotHandled message from the specified reader or buffer, length delimited.
                      * @function decodeDelimited
@@ -10899,7 +10893,7 @@
                             reader = new $Reader(reader);
                         return this.decode(reader, reader.uint32());
                     };
-    
+
                     /**
                      * Verifies a NotHandled message.
                      * @function verify
@@ -10924,7 +10918,7 @@
                                 return "additionalInfo: buffer expected";
                         return null;
                     };
-    
+
                     /**
                      * Creates a NotHandled message from a plain object. Also converts values to their respective internal types.
                      * @function fromObject
@@ -10958,7 +10952,7 @@
                                 message.additionalInfo = object.additionalInfo;
                         return message;
                     };
-    
+
                     /**
                      * Creates a plain object from a NotHandled message. Also converts values to other types if specified.
                      * @function toObject
@@ -10988,7 +10982,7 @@
                             object.additionalInfo = options.bytes === String ? $util.base64.encode(message.additionalInfo, 0, message.additionalInfo.length) : options.bytes === Array ? Array.prototype.slice.call(message.additionalInfo) : message.additionalInfo;
                         return object;
                     };
-    
+
                     /**
                      * Converts this NotHandled to JSON.
                      * @function toJSON
@@ -10999,7 +10993,7 @@
                     NotHandled.prototype.toJSON = function toJSON() {
                         return this.constructor.toObject(this, $protobuf.util.toJSONOptions);
                     };
-    
+
                     /**
                      * NotHandledReason enum.
                      * @name EventStore.Client.Messages.NotHandled.NotHandledReason
@@ -11015,9 +11009,9 @@
                         values[valuesById[2] = "NotMaster"] = 2;
                         return values;
                     })();
-    
+
                     NotHandled.MasterInfo = (function() {
-    
+
                         /**
                          * Properties of a MasterInfo.
                          * @memberof EventStore.Client.Messages.NotHandled
@@ -11029,7 +11023,7 @@
                          * @property {string|null} [externalSecureTcpAddress] MasterInfo externalSecureTcpAddress
                          * @property {number|null} [externalSecureTcpPort] MasterInfo externalSecureTcpPort
                          */
-    
+
                         /**
                          * Constructs a new MasterInfo.
                          * @memberof EventStore.Client.Messages.NotHandled
@@ -11044,7 +11038,7 @@
                                     if (properties[keys[i]] != null)
                                         this[keys[i]] = properties[keys[i]];
                         }
-    
+
                         /**
                          * MasterInfo externalTcpAddress.
                          * @member {string} externalTcpAddress
@@ -11052,7 +11046,7 @@
                          * @instance
                          */
                         MasterInfo.prototype.externalTcpAddress = "";
-    
+
                         /**
                          * MasterInfo externalTcpPort.
                          * @member {number} externalTcpPort
@@ -11060,7 +11054,7 @@
                          * @instance
                          */
                         MasterInfo.prototype.externalTcpPort = 0;
-    
+
                         /**
                          * MasterInfo externalHttpAddress.
                          * @member {string} externalHttpAddress
@@ -11068,7 +11062,7 @@
                          * @instance
                          */
                         MasterInfo.prototype.externalHttpAddress = "";
-    
+
                         /**
                          * MasterInfo externalHttpPort.
                          * @member {number} externalHttpPort
@@ -11076,7 +11070,7 @@
                          * @instance
                          */
                         MasterInfo.prototype.externalHttpPort = 0;
-    
+
                         /**
                          * MasterInfo externalSecureTcpAddress.
                          * @member {string} externalSecureTcpAddress
@@ -11084,7 +11078,7 @@
                          * @instance
                          */
                         MasterInfo.prototype.externalSecureTcpAddress = "";
-    
+
                         /**
                          * MasterInfo externalSecureTcpPort.
                          * @member {number} externalSecureTcpPort
@@ -11092,7 +11086,7 @@
                          * @instance
                          */
                         MasterInfo.prototype.externalSecureTcpPort = 0;
-    
+
                         /**
                          * Creates a new MasterInfo instance using the specified properties.
                          * @function create
@@ -11104,7 +11098,7 @@
                         MasterInfo.create = function create(properties) {
                             return new MasterInfo(properties);
                         };
-    
+
                         /**
                          * Encodes the specified MasterInfo message. Does not implicitly {@link EventStore.Client.Messages.NotHandled.MasterInfo.verify|verify} messages.
                          * @function encode
@@ -11127,7 +11121,7 @@
                                 writer.uint32(/* id 6, wireType 0 =*/48).int32(message.externalSecureTcpPort);
                             return writer;
                         };
-    
+
                         /**
                          * Encodes the specified MasterInfo message, length delimited. Does not implicitly {@link EventStore.Client.Messages.NotHandled.MasterInfo.verify|verify} messages.
                          * @function encodeDelimited
@@ -11140,7 +11134,7 @@
                         MasterInfo.encodeDelimited = function encodeDelimited(message, writer) {
                             return this.encode(message, writer).ldelim();
                         };
-    
+
                         /**
                          * Decodes a MasterInfo message from the specified reader or buffer.
                          * @function decode
@@ -11192,7 +11186,7 @@
                                 throw $util.ProtocolError("missing required 'externalHttpPort'", { instance: message });
                             return message;
                         };
-    
+
                         /**
                          * Decodes a MasterInfo message from the specified reader or buffer, length delimited.
                          * @function decodeDelimited
@@ -11208,7 +11202,7 @@
                                 reader = new $Reader(reader);
                             return this.decode(reader, reader.uint32());
                         };
-    
+
                         /**
                          * Verifies a MasterInfo message.
                          * @function verify
@@ -11236,7 +11230,7 @@
                                     return "externalSecureTcpPort: integer expected";
                             return null;
                         };
-    
+
                         /**
                          * Creates a MasterInfo message from a plain object. Also converts values to their respective internal types.
                          * @function fromObject
@@ -11263,7 +11257,7 @@
                                 message.externalSecureTcpPort = object.externalSecureTcpPort | 0;
                             return message;
                         };
-    
+
                         /**
                          * Creates a plain object from a MasterInfo message. Also converts values to other types if specified.
                          * @function toObject
@@ -11299,7 +11293,7 @@
                                 object.externalSecureTcpPort = message.externalSecureTcpPort;
                             return object;
                         };
-    
+
                         /**
                          * Converts this MasterInfo to JSON.
                          * @function toJSON
@@ -11310,21 +11304,21 @@
                         MasterInfo.prototype.toJSON = function toJSON() {
                             return this.constructor.toObject(this, $protobuf.util.toJSONOptions);
                         };
-    
+
                         return MasterInfo;
                     })();
-    
+
                     return NotHandled;
                 })();
-    
+
                 Messages.ScavengeDatabase = (function() {
-    
+
                     /**
                      * Properties of a ScavengeDatabase.
                      * @memberof EventStore.Client.Messages
                      * @interface IScavengeDatabase
                      */
-    
+
                     /**
                      * Constructs a new ScavengeDatabase.
                      * @memberof EventStore.Client.Messages
@@ -11339,7 +11333,7 @@
                                 if (properties[keys[i]] != null)
                                     this[keys[i]] = properties[keys[i]];
                     }
-    
+
                     /**
                      * Creates a new ScavengeDatabase instance using the specified properties.
                      * @function create
@@ -11351,7 +11345,7 @@
                     ScavengeDatabase.create = function create(properties) {
                         return new ScavengeDatabase(properties);
                     };
-    
+
                     /**
                      * Encodes the specified ScavengeDatabase message. Does not implicitly {@link EventStore.Client.Messages.ScavengeDatabase.verify|verify} messages.
                      * @function encode
@@ -11366,7 +11360,7 @@
                             writer = $Writer.create();
                         return writer;
                     };
-    
+
                     /**
                      * Encodes the specified ScavengeDatabase message, length delimited. Does not implicitly {@link EventStore.Client.Messages.ScavengeDatabase.verify|verify} messages.
                      * @function encodeDelimited
@@ -11379,7 +11373,7 @@
                     ScavengeDatabase.encodeDelimited = function encodeDelimited(message, writer) {
                         return this.encode(message, writer).ldelim();
                     };
-    
+
                     /**
                      * Decodes a ScavengeDatabase message from the specified reader or buffer.
                      * @function decode
@@ -11405,7 +11399,7 @@
                         }
                         return message;
                     };
-    
+
                     /**
                      * Decodes a ScavengeDatabase message from the specified reader or buffer, length delimited.
                      * @function decodeDelimited
@@ -11421,7 +11415,7 @@
                             reader = new $Reader(reader);
                         return this.decode(reader, reader.uint32());
                     };
-    
+
                     /**
                      * Verifies a ScavengeDatabase message.
                      * @function verify
@@ -11435,7 +11429,7 @@
                             return "object expected";
                         return null;
                     };
-    
+
                     /**
                      * Creates a ScavengeDatabase message from a plain object. Also converts values to their respective internal types.
                      * @function fromObject
@@ -11449,7 +11443,7 @@
                             return object;
                         return new $root.EventStore.Client.Messages.ScavengeDatabase();
                     };
-    
+
                     /**
                      * Creates a plain object from a ScavengeDatabase message. Also converts values to other types if specified.
                      * @function toObject
@@ -11462,7 +11456,7 @@
                     ScavengeDatabase.toObject = function toObject() {
                         return {};
                     };
-    
+
                     /**
                      * Converts this ScavengeDatabase to JSON.
                      * @function toJSON
@@ -11473,12 +11467,12 @@
                     ScavengeDatabase.prototype.toJSON = function toJSON() {
                         return this.constructor.toObject(this, $protobuf.util.toJSONOptions);
                     };
-    
+
                     return ScavengeDatabase;
                 })();
-    
+
                 Messages.ScavengeDatabaseCompleted = (function() {
-    
+
                     /**
                      * Properties of a ScavengeDatabaseCompleted.
                      * @memberof EventStore.Client.Messages
@@ -11488,7 +11482,7 @@
                      * @property {number} totalTimeMs ScavengeDatabaseCompleted totalTimeMs
                      * @property {number|Long} totalSpaceSaved ScavengeDatabaseCompleted totalSpaceSaved
                      */
-    
+
                     /**
                      * Constructs a new ScavengeDatabaseCompleted.
                      * @memberof EventStore.Client.Messages
@@ -11503,7 +11497,7 @@
                                 if (properties[keys[i]] != null)
                                     this[keys[i]] = properties[keys[i]];
                     }
-    
+
                     /**
                      * ScavengeDatabaseCompleted result.
                      * @member {EventStore.Client.Messages.ScavengeDatabaseCompleted.ScavengeResult} result
@@ -11511,7 +11505,7 @@
                      * @instance
                      */
                     ScavengeDatabaseCompleted.prototype.result = 0;
-    
+
                     /**
                      * ScavengeDatabaseCompleted error.
                      * @member {string} error
@@ -11519,7 +11513,7 @@
                      * @instance
                      */
                     ScavengeDatabaseCompleted.prototype.error = "";
-    
+
                     /**
                      * ScavengeDatabaseCompleted totalTimeMs.
                      * @member {number} totalTimeMs
@@ -11527,7 +11521,7 @@
                      * @instance
                      */
                     ScavengeDatabaseCompleted.prototype.totalTimeMs = 0;
-    
+
                     /**
                      * ScavengeDatabaseCompleted totalSpaceSaved.
                      * @member {number|Long} totalSpaceSaved
@@ -11535,7 +11529,7 @@
                      * @instance
                      */
                     ScavengeDatabaseCompleted.prototype.totalSpaceSaved = $util.Long ? $util.Long.fromBits(0,0,false) : 0;
-    
+
                     /**
                      * Creates a new ScavengeDatabaseCompleted instance using the specified properties.
                      * @function create
@@ -11547,7 +11541,7 @@
                     ScavengeDatabaseCompleted.create = function create(properties) {
                         return new ScavengeDatabaseCompleted(properties);
                     };
-    
+
                     /**
                      * Encodes the specified ScavengeDatabaseCompleted message. Does not implicitly {@link EventStore.Client.Messages.ScavengeDatabaseCompleted.verify|verify} messages.
                      * @function encode
@@ -11567,7 +11561,7 @@
                         writer.uint32(/* id 4, wireType 0 =*/32).int64(message.totalSpaceSaved);
                         return writer;
                     };
-    
+
                     /**
                      * Encodes the specified ScavengeDatabaseCompleted message, length delimited. Does not implicitly {@link EventStore.Client.Messages.ScavengeDatabaseCompleted.verify|verify} messages.
                      * @function encodeDelimited
@@ -11580,7 +11574,7 @@
                     ScavengeDatabaseCompleted.encodeDelimited = function encodeDelimited(message, writer) {
                         return this.encode(message, writer).ldelim();
                     };
-    
+
                     /**
                      * Decodes a ScavengeDatabaseCompleted message from the specified reader or buffer.
                      * @function decode
@@ -11624,7 +11618,7 @@
                             throw $util.ProtocolError("missing required 'totalSpaceSaved'", { instance: message });
                         return message;
                     };
-    
+
                     /**
                      * Decodes a ScavengeDatabaseCompleted message from the specified reader or buffer, length delimited.
                      * @function decodeDelimited
@@ -11640,7 +11634,7 @@
                             reader = new $Reader(reader);
                         return this.decode(reader, reader.uint32());
                     };
-    
+
                     /**
                      * Verifies a ScavengeDatabaseCompleted message.
                      * @function verify
@@ -11669,7 +11663,7 @@
                             return "totalSpaceSaved: integer|Long expected";
                         return null;
                     };
-    
+
                     /**
                      * Creates a ScavengeDatabaseCompleted message from a plain object. Also converts values to their respective internal types.
                      * @function fromObject
@@ -11711,7 +11705,7 @@
                                 message.totalSpaceSaved = new $util.LongBits(object.totalSpaceSaved.low >>> 0, object.totalSpaceSaved.high >>> 0).toNumber();
                         return message;
                     };
-    
+
                     /**
                      * Creates a plain object from a ScavengeDatabaseCompleted message. Also converts values to other types if specified.
                      * @function toObject
@@ -11748,7 +11742,7 @@
                                 object.totalSpaceSaved = options.longs === String ? $util.Long.prototype.toString.call(message.totalSpaceSaved) : options.longs === Number ? new $util.LongBits(message.totalSpaceSaved.low >>> 0, message.totalSpaceSaved.high >>> 0).toNumber() : message.totalSpaceSaved;
                         return object;
                     };
-    
+
                     /**
                      * Converts this ScavengeDatabaseCompleted to JSON.
                      * @function toJSON
@@ -11759,7 +11753,7 @@
                     ScavengeDatabaseCompleted.prototype.toJSON = function toJSON() {
                         return this.constructor.toObject(this, $protobuf.util.toJSONOptions);
                     };
-    
+
                     /**
                      * ScavengeResult enum.
                      * @name EventStore.Client.Messages.ScavengeDatabaseCompleted.ScavengeResult
@@ -11775,12 +11769,12 @@
                         values[valuesById[2] = "Failed"] = 2;
                         return values;
                     })();
-    
+
                     return ScavengeDatabaseCompleted;
                 })();
-    
+
                 Messages.IdentifyClient = (function() {
-    
+
                     /**
                      * Properties of an IdentifyClient.
                      * @memberof EventStore.Client.Messages
@@ -11788,7 +11782,7 @@
                      * @property {number} version IdentifyClient version
                      * @property {string|null} [connectionName] IdentifyClient connectionName
                      */
-    
+
                     /**
                      * Constructs a new IdentifyClient.
                      * @memberof EventStore.Client.Messages
@@ -11803,7 +11797,7 @@
                                 if (properties[keys[i]] != null)
                                     this[keys[i]] = properties[keys[i]];
                     }
-    
+
                     /**
                      * IdentifyClient version.
                      * @member {number} version
@@ -11811,7 +11805,7 @@
                      * @instance
                      */
                     IdentifyClient.prototype.version = 0;
-    
+
                     /**
                      * IdentifyClient connectionName.
                      * @member {string} connectionName
@@ -11819,7 +11813,7 @@
                      * @instance
                      */
                     IdentifyClient.prototype.connectionName = "";
-    
+
                     /**
                      * Creates a new IdentifyClient instance using the specified properties.
                      * @function create
@@ -11831,7 +11825,7 @@
                     IdentifyClient.create = function create(properties) {
                         return new IdentifyClient(properties);
                     };
-    
+
                     /**
                      * Encodes the specified IdentifyClient message. Does not implicitly {@link EventStore.Client.Messages.IdentifyClient.verify|verify} messages.
                      * @function encode
@@ -11849,7 +11843,7 @@
                             writer.uint32(/* id 2, wireType 2 =*/18).string(message.connectionName);
                         return writer;
                     };
-    
+
                     /**
                      * Encodes the specified IdentifyClient message, length delimited. Does not implicitly {@link EventStore.Client.Messages.IdentifyClient.verify|verify} messages.
                      * @function encodeDelimited
@@ -11862,7 +11856,7 @@
                     IdentifyClient.encodeDelimited = function encodeDelimited(message, writer) {
                         return this.encode(message, writer).ldelim();
                     };
-    
+
                     /**
                      * Decodes an IdentifyClient message from the specified reader or buffer.
                      * @function decode
@@ -11896,7 +11890,7 @@
                             throw $util.ProtocolError("missing required 'version'", { instance: message });
                         return message;
                     };
-    
+
                     /**
                      * Decodes an IdentifyClient message from the specified reader or buffer, length delimited.
                      * @function decodeDelimited
@@ -11912,7 +11906,7 @@
                             reader = new $Reader(reader);
                         return this.decode(reader, reader.uint32());
                     };
-    
+
                     /**
                      * Verifies an IdentifyClient message.
                      * @function verify
@@ -11931,7 +11925,7 @@
                                 return "connectionName: string expected";
                         return null;
                     };
-    
+
                     /**
                      * Creates an IdentifyClient message from a plain object. Also converts values to their respective internal types.
                      * @function fromObject
@@ -11950,7 +11944,7 @@
                             message.connectionName = String(object.connectionName);
                         return message;
                     };
-    
+
                     /**
                      * Creates a plain object from an IdentifyClient message. Also converts values to other types if specified.
                      * @function toObject
@@ -11974,7 +11968,7 @@
                             object.connectionName = message.connectionName;
                         return object;
                     };
-    
+
                     /**
                      * Converts this IdentifyClient to JSON.
                      * @function toJSON
@@ -11985,18 +11979,18 @@
                     IdentifyClient.prototype.toJSON = function toJSON() {
                         return this.constructor.toObject(this, $protobuf.util.toJSONOptions);
                     };
-    
+
                     return IdentifyClient;
                 })();
-    
+
                 Messages.ClientIdentified = (function() {
-    
+
                     /**
                      * Properties of a ClientIdentified.
                      * @memberof EventStore.Client.Messages
                      * @interface IClientIdentified
                      */
-    
+
                     /**
                      * Constructs a new ClientIdentified.
                      * @memberof EventStore.Client.Messages
@@ -12011,7 +12005,7 @@
                                 if (properties[keys[i]] != null)
                                     this[keys[i]] = properties[keys[i]];
                     }
-    
+
                     /**
                      * Creates a new ClientIdentified instance using the specified properties.
                      * @function create
@@ -12023,7 +12017,7 @@
                     ClientIdentified.create = function create(properties) {
                         return new ClientIdentified(properties);
                     };
-    
+
                     /**
                      * Encodes the specified ClientIdentified message. Does not implicitly {@link EventStore.Client.Messages.ClientIdentified.verify|verify} messages.
                      * @function encode
@@ -12038,7 +12032,7 @@
                             writer = $Writer.create();
                         return writer;
                     };
-    
+
                     /**
                      * Encodes the specified ClientIdentified message, length delimited. Does not implicitly {@link EventStore.Client.Messages.ClientIdentified.verify|verify} messages.
                      * @function encodeDelimited
@@ -12051,7 +12045,7 @@
                     ClientIdentified.encodeDelimited = function encodeDelimited(message, writer) {
                         return this.encode(message, writer).ldelim();
                     };
-    
+
                     /**
                      * Decodes a ClientIdentified message from the specified reader or buffer.
                      * @function decode
@@ -12077,7 +12071,7 @@
                         }
                         return message;
                     };
-    
+
                     /**
                      * Decodes a ClientIdentified message from the specified reader or buffer, length delimited.
                      * @function decodeDelimited
@@ -12093,7 +12087,7 @@
                             reader = new $Reader(reader);
                         return this.decode(reader, reader.uint32());
                     };
-    
+
                     /**
                      * Verifies a ClientIdentified message.
                      * @function verify
@@ -12107,7 +12101,7 @@
                             return "object expected";
                         return null;
                     };
-    
+
                     /**
                      * Creates a ClientIdentified message from a plain object. Also converts values to their respective internal types.
                      * @function fromObject
@@ -12121,7 +12115,7 @@
                             return object;
                         return new $root.EventStore.Client.Messages.ClientIdentified();
                     };
-    
+
                     /**
                      * Creates a plain object from a ClientIdentified message. Also converts values to other types if specified.
                      * @function toObject
@@ -12134,7 +12128,7 @@
                     ClientIdentified.toObject = function toObject() {
                         return {};
                     };
-    
+
                     /**
                      * Converts this ClientIdentified to JSON.
                      * @function toJSON
@@ -12145,16 +12139,16 @@
                     ClientIdentified.prototype.toJSON = function toJSON() {
                         return this.constructor.toObject(this, $protobuf.util.toJSONOptions);
                     };
-    
+
                     return ClientIdentified;
                 })();
-    
+
                 return Messages;
             })();
-    
+
             return Client;
         })();
-    
+
         return EventStore;
     })();
 
