@@ -5,6 +5,11 @@ var client = require('../../lib/dist');
 var FileLogger = require('../../src/common/log/fileLogger');
 var NoopLogger = require('../../src/common/log/noopLogger');
 
+// Make sure we mess with protobufjs setup for bug #91
+var protobufJS = require('protobufjs');
+protobufJS.util.Long = undefined;
+protobufJS.configure();
+
 var settings = {
   log: new NoopLogger()
 };
