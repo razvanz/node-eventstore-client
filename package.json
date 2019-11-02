@@ -1,6 +1,6 @@
 {
   "name": "node-eventstore-client",
-  "version": "0.2.13",
+  "version": "0.2.14",
   "description": "A port of the EventStore .Net ClientAPI to Node.js",
   "main": "index.js",
   "types": "index.d.ts",
@@ -9,13 +9,13 @@
   },
   "engineStrict": true,
   "scripts": {
-    "clean": "rm lib/dist.js",
+    "clean": "rm -f lib/dist.js",
     "prebuild": "npm run clean",
-    "build": "webpack",
+    "build": "webpack -o ./lib/dist.js",
     "pretest": "npm run build",
     "test": "nodeunit",
     "test-debug": "TESTS_VERBOSE_LOGGING=1 nodeunit",
-    "prepublish": "npm run build && npm run gendocs",
+    "prepublishOnly": "npm run build && npm run gendocs",
     "gendocs": "rm -rf docs && jsdoc src -r -d docs"
   },
   "files": [
