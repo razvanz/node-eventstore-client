@@ -1,8 +1,6 @@
 const Client = require('../lib/')
-// const client = require("node-eventstore-client")
 
 const { enums: { PersistentSubscriptionNakEventAction } } = Client
-
 const client = new Client({
   connection: {
     name: 'local-instance',
@@ -16,7 +14,7 @@ const client = new Client({
 })
 
 function onEvent (event) {
-  if (!event.data.username || !event.data.password) {
+  if (!event.data.id) {
     console.log(`NACK ${event.eventId} with action: ${PersistentSubscriptionNakEventAction.Park}`)
     event.nack(PersistentSubscriptionNakEventAction.Park)
     return
@@ -26,4 +24,4 @@ function onEvent (event) {
   event.ack()
 }
 
-client.connectPersistentSubscription('UserEvents', 'test', onEvent)
+client.connectPersistentSubscription('TestEvents', 'test', onEvent)
