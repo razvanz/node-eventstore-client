@@ -227,7 +227,7 @@ ClusterDnsEndPointDiscoverer.prototype._tryDetermineBestNode = function (members
 
   var normTcp = {host: node.externalTcpIp, port: node.externalTcpPort};
   var secTcp = node.externalSecureTcpPort > 0
-    ? {host: externalTcpIp, port: node.externalSecureTcpPort}
+    ? {host: node.externalTcpIp, port: node.externalSecureTcpPort}
     : null;
   this._log.info(util.format("Discovering: found best choice [%j,%j] (%s).", normTcp, secTcp === null ? "n/a" : secTcp, node.state));
   return new NodeEndPoints(normTcp, secTcp);
