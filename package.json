@@ -1,5 +1,5 @@
 {
-  "name": "@razvanz/eventstore-client",
+  "name": "@billyfree/eventstore-client",
   "version": "0.2.12",
   "description": "A port of the EventStore .Net ClientAPI to Node.js",
   "main": "lib/index.js",
@@ -23,7 +23,7 @@
   ],
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/razvanz/node-eventstore-client.git"
+    "url": "git+https://github.com/billyfree/node-eventstore-client.git"
   },
   "keywords": [
     "eventstore",
@@ -33,9 +33,9 @@
   "author": "Nicolas Dextraze",
   "license": "MIT",
   "bugs": {
-    "url": "https://github.com/razvanz/node-eventstore-client/issues"
+    "url": "https://github.com/billyfree/node-eventstore-client/issues"
   },
-  "homepage": "https://github.com/razvanz/node-eventstore-client#readme",
+  "homepage": "https://github.com/billyfree/node-eventstore-client#readme",
   "dependencies": {
     "@types/long": "^4.0.0",
     "@types/node": "^12.7.2",
