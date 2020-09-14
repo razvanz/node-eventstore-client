@@ -15,6 +15,7 @@
     "pretest": "npm run build",
     "test": "nodeunit",
     "test-debug": "TESTS_VERBOSE_LOGGING=1 nodeunit",
+    "test:jest:watch": "jest --watch --coverage",
     "prepublishOnly": "npm run build && npm run gendocs",
     "gendocs": "rm -rf docs && jsdoc src -r -d docs"
   },
@@ -54,6 +55,7 @@
     "uuid": "^3.0.1"
   },
   "devDependencies": {
+    "jest": "^26.4.2",
     "jsdoc": "^3.6.3",
     "nodeunit": "^0.11.3",
     "webpack": "^4.41.2",
