@@ -9,20 +9,6 @@ function createRandomEvent() {
 
 var testStreamName = 'test-' + uuid.v4();
 
-function delay(ms) {
-  return new Promise(function (resolve, reject) {
-    setTimeout(resolve, ms);
-  })
-}
-
-function delayOnlyFirst(count, action) {
-  if (count === 0) return action();
-  return delay(200)
-    .then(function () {
-      action();
-    })
-}
-
 module.exports = {
   'Test Create Persistent Subscription': function(test) {
     var settings = client.PersistentSubscriptionSettings.create();
@@ -46,10 +32,8 @@ module.exports = {
       test.done();
     }
     function eventAppeared(s, e) {
-      return delayOnlyFirst(receivedEvents.length, function () {
-        receivedEvents.push(e);
-        if (receivedEvents.length === 2) s.stop();
-      });
+      receivedEvents.push(e);
+      if (receivedEvents.length === 2) s.stop();
     }
     function subscriptionDropped(connection, reason, error) {
       if (error) return done(error);

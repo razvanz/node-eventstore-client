@@ -7,20 +7,6 @@ function createRandomEvent() {
   return client.createJsonEventData(uuid.v4(), {a: uuid.v4(), b: Math.random()}, {createdAt: Date.now()}, 'testEvent');
 }
 
-function delay(ms) {
-  return new Promise(function (resolve, reject) {
-    setTimeout(resolve, ms);
-  })
-}
-
-function delayOnlyFirst(count, action) {
-  if (count === 0) return action();
-  return delay(200)
-    .then(function () {
-      action();
-    })
-}
-
 module.exports = {
   'Test Subscribe to All From (Start)': function(test) {
     test.expect(6);
@@ -48,14 +34,12 @@ module.exports = {
     }
     function eventAppeared(s, e) {
       var isLive = liveProcessing;
-      delayOnlyFirst(isLive ? liveEvents.length : catchUpEvents.length, function() {
-        if (isLive) {
-          liveEvents.push(e);
-        } else {
-          catchUpEvents.push(e);
-        }
-        if (isLive && liveEvents.length === 2) s.stop();
-      });
+      if (isLive) {
+        liveEvents.push(e);
+      } else {
+        catchUpEvents.push(e);
+      }
+      if (isLive && liveEvents.length === 2) s.stop();
     }
     function liveProcessingStarted() {
       liveProcessing = true;
@@ -99,14 +83,12 @@ module.exports = {
     }
     function eventAppeared(s, e) {
       var isLive = liveProcessing;
-      delayOnlyFirst(isLive ? liveEvents.length : catchUpEvents.length, function() {
-        if (isLive) {
-          liveEvents.push(e);
-        } else {
-          catchUpEvents.push(e);
-        }
-        if (isLive && liveEvents.length === 2) s.stop();
-      });
+      if (isLive) {
+        liveEvents.push(e);
+      } else {
+        catchUpEvents.push(e);
+      }
+      if (isLive && liveEvents.length === 2) s.stop();
     }
     function liveProcessingStarted() {
       liveProcessing = true;
@@ -149,14 +131,12 @@ module.exports = {
     }
     function eventAppeared(s, e) {
       var isLive = liveProcessing;
-      delayOnlyFirst(isLive ? liveEvents.length : catchUpEvents.length, function() {
-        if (isLive) {
-          liveEvents.push(e);
-        } else {
-          catchUpEvents.push(e);
-        }
-        if (isLive && liveEvents.length === 2) s.stop();
-      });
+      if (isLive) {
+        liveEvents.push(e);
+      } else {
+        catchUpEvents.push(e);
+      }
+      if (isLive && liveEvents.length === 2) s.stop();
     }
     function liveProcessingStarted() {
       liveProcessing = true;

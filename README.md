@@ -112,12 +112,27 @@ To generate a test event, open a separate console and run:
 
 ## Running the tests
 
+### Local testing
+
 To run the tests it is recommended that you use an in-memory instance of the eventstore so you don't pollute your dev instance.
 
     EventStore.ClusterNode.exe --run-projections=all --memdb –certificate-file=yourcert.pfx
     or
     ./run-node.sh --run-projections=all --memdb –certificate-file=yourcert.p12
-    
+
+You can also use docker-compose :
+
+```bash
+# start the single node cluster
+npm run compose:single:start
+# if you want to wait for the cluster to be available
+npm run compose:wait
+# run the tests
+npm run test
+# to cleanup (stop containres, delete volumes)
+npm run compose:single:stop
+```
+
 For SSL setup see:
 
 https://eventstore.org/docs/server/setting_up_ssl/  
@@ -127,6 +142,29 @@ https://eventstore.org/docs/server/setting_up_ssl_linux/
 To execute the tests suites simply run
 
     npm test
+
+### Isolated environment
+
+To be able to run the tests for different connection types (tcp, gossip, cluster) docker-compose files are available to setup the environment and run the tests.
+
+#### Prerequisites
+
+* docker
+* docker-compose
+
+#### Run
+
+To execute the tests suites for single node cluster (tcp connection) simply run
+
+    npm run test:single
+
+To execute the tests suites for multiple nodes cluster (gossip connection) simply run
+
+    npm run test:gossip
+
+To execute the tests suites for multiple nodes cluster (dns discovery connection) simply run
+
+    npm run test:cluster
 
 ## Porting .Net Task to Node.js
 
