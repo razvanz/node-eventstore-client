@@ -153,9 +153,20 @@ TcpConnection.createConnectingConnection = function(
     connection._initSocket(socket);
     if (onConnectionEstablished) onConnectionEstablished(connection);
   });
+  var timer = setTimeout(function(){
+    log.error('TcpConnection: timeout when connecting to %j in %d ms', remoteEndPoint, connectionTimeout);
+    connection.close();
+    if (onConnectionFailed) onConnectionFailed(connection, new Error('Connection failed'));
+  }, connectionTimeout)
   socket.once('error', onError);
   function onError(err) {
+    clearTimeout(timer);
     if (onConnectionFailed) onConnectionFailed(connection, err);
+  }
+  socket.once('connect', onConnect);
+  function onConnect() {
+    log.info('TcpConnection: successfully connected to %j', remoteEndPoint);
+    clearTimeout(timer);
   }
   return connection;
 };
