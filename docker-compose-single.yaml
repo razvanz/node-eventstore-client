@@ -1,0 +1,54 @@
+version: '3.4'
+
+services:
+  eventstore.db:
+    image: eventstore/eventstore:release-5.0.8
+    environment:
+      - EVENTSTORE_CLUSTER_SIZE=1
+      - EVENTSTORE_RUN_PROJECTIONS=All
+      - EVENTSTORE_START_STANDARD_PROJECTIONS=True
+      - EVENTSTORE_DB=/var/lib/eventstore-data
+      - EVENTSTORE_INDEX=/var/lib/eventstore-index
+      - EVENTSTORE_LOG=/var/log/eventstore
+      - EVENTSTORE_EXT_TCP_PORT=1113
+      - EVENTSTORE_EXT_HTTP_PORT=2113
+      - EVENTSTORE_INT_IP=192.168.33.10
+      - EVENTSTORE_EXT_IP=192.168.33.10
+    ports:
+      - "1113:1113"
+      - "2113:2113"
+    volumes:
+      - type: volume
+        source: eventstore-volume-data
+        target: /var/lib/eventstore-data
+      - type: volume
+        source: eventstore-volume-index
+        target: /var/lib/eventstore-index
+      - type: volume
+        source: eventstore-volume-logs
+        target: /var/log/eventstore
+    networks:
+      app_net:
+        ipv4_address: 192.168.33.10
+
+  nodejs:
+    image: node:14
+    working_dir: /var/code
+    volumes:
+      - .:/var/code
+      - /var/code/node_modules
+    command: bash -c "tail -f /dev/null"
+    networks:
+      - app_net
+
+volumes:
+  eventstore-volume-data:
+  eventstore-volume-index:
+  eventstore-volume-logs:
+
+networks:
+  app_net:
+    ipam:
+      driver: default
+      config:
+        - subnet: "192.168.33.0/24"

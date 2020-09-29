@@ -1,8 +1,8 @@
 /// <reference types="node" />
 /// <reference types="Long" />
 
-import { EventEmitter } from "events";
-import { StrictEventEmitter } from "strict-event-emitter-types";
+import { EventEmitter } from 'events';
+import { StrictEventEmitter } from 'strict-event-emitter-types';
 
 // Expose classes
 export class Position {
@@ -380,6 +380,7 @@ export interface ConnectionSettings {
     // Cluster Settings
     clusterDns?: string,
     maxDiscoverAttempts?: number,
+    discoverDelay?: number,
     externalGossipPort?: number,
     gossipTimeout?: number
 }

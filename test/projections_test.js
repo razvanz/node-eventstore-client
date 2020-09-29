@@ -2,7 +2,7 @@ const client = require('../lib/dist');
 const userCredentials = new client.UserCredentials('admin', 'changeit');
 
 const log = new client.NoopLogger();
-const httpEndpoint = 'http://127.0.0.1:2113';
+const httpEndpoint = `http://${process.env.EVENTSTORE_HOST || "localhost"}:2113`;
 const operationTimeout = 5000;
 
 const simpleProjection = "\

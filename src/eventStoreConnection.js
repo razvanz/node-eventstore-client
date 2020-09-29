@@ -1,8 +1,18 @@
 var EventStoreNodeConnection = require('./eventStoreNodeConnection');
 var StaticEndpointDiscoverer = require('./core/staticEndpointDiscoverer');
-var ClusterDnsEndPointDiscoverer = require('./core/clusterDnsEndPointDiscoverer');
+var ClusterDiscoverer = require('./core/cluster/clusterDiscoverer');
 var NoopLogger = require('./common/log/noopLogger');
 var ensure = require('./common/utils/ensure');
+
+const util = require('util');
+const http = require('http');
+const dns = require('dns');
+
+const dnsService = {
+  lookup : util.promisify(dns.lookup),
+  ADDRCONFIG: dns.ADDRCONFIG,
+  V4MAPPED: dns.V4MAPPED
+};
 
 var defaultConnectionSettings = Object.freeze({
   log: new NoopLogger(),
@@ -32,6 +42,7 @@ var defaultConnectionSettings = Object.freeze({
   // Cluster Settings
   clusterDns: '',
   maxDiscoverAttempts: 10,
+  discoverDelay: 500,
   externalGossipPort: 0,
   gossipTimeout: 1000
 });
@@ -80,17 +91,17 @@ function createFromClusterDns(connectionSettings, clusterDns, externalGossipPort
   var mergedSettings = merge(defaultConnectionSettings, connectionSettings || {});
   var clusterSettings = {
     clusterDns: clusterDns,
-    gossipSeeds: null,
-    externalGossipPort: externalGossipPort,
+    seeds: null,
+    managerExternalHttpPort: externalGossipPort,
     maxDiscoverAttempts: mergedSettings.maxDiscoverAttempts,
+    discoverDelay: mergedSettings.discoverDelay,
     gossipTimeout: mergedSettings.gossipTimeout
   };
-  var endPointDiscoverer = new ClusterDnsEndPointDiscoverer(mergedSettings.log,
-    clusterSettings.clusterDns,
-    clusterSettings.maxDiscoverAttempts,
-    clusterSettings.externalGossipPort,
-    clusterSettings.gossipSeeds,
-    clusterSettings.gossipTimeout
+  var endPointDiscoverer = new ClusterDiscoverer(
+    mergedSettings.log,
+    clusterSettings,
+    dnsService,
+    http
   );
   return new EventStoreNodeConnection(mergedSettings, clusterSettings, endPointDiscoverer, connectionName);
 }
@@ -101,17 +112,17 @@ function createFromGossipSeeds(connectionSettings, gossipSeeds, connectionName) 
   var mergedSettings = merge(defaultConnectionSettings, connectionSettings || {});
   var clusterSettings = {
     clusterDns: '',
-    gossipSeeds: gossipSeeds,
+    seeds: gossipSeeds,
     externalGossipPort: 0,
     maxDiscoverAttempts: mergedSettings.maxDiscoverAttempts,
+    discoverDelay: mergedSettings.discoverDelay,
     gossipTimeout: mergedSettings.gossipTimeout
   };
-  var endPointDiscoverer = new ClusterDnsEndPointDiscoverer(mergedSettings.log,
-    clusterSettings.clusterDns,
-    clusterSettings.maxDiscoverAttempts,
-    clusterSettings.externalGossipPort,
-    clusterSettings.gossipSeeds,
-    clusterSettings.gossipTimeout
+  var endPointDiscoverer = new ClusterDiscoverer(
+    mergedSettings.log,
+    clusterSettings,
+    dnsService,
+    http
   );
   return new EventStoreNodeConnection(mergedSettings, clusterSettings, endPointDiscoverer, connectionName);
 }

@@ -2,20 +2,6 @@ const uuid = require('uuid');
 const client = require('../lib/dist');
 const allCredentials = new client.UserCredentials("admin", "changeit");
 
-function delay(ms) {
-  return new Promise(function (resolve, reject) {
-    setTimeout(resolve, ms);
-  })
-}
-
-function delayOnlyFirst(count, action) {
-  if (count === 0) return action();
-  return delay(200)
-    .then(function () {
-      action();
-    })
-}
-
 module.exports = {
   'Test Subscribe To All Happy Path': function(test) {
     const resolveLinkTos = false;
@@ -44,10 +30,15 @@ module.exports = {
 
     var receivedEvents = [];
     function eventAppeared(subscription, event) {
-      delayOnlyFirst(receivedEvents.length, function() {
+      // Filter non-compliant events (only the one we've published)
+      let eventData;
+      try {
+        eventData = JSON.parse(event.event.data.toString());
+      } catch(e){}
+      if (eventData && eventData.a && eventData.b){
         receivedEvents.push(event);
-        if (receivedEvents.length === numberOfPublishedEvents) subscription.close();
-      });
+      }
+      if (receivedEvents.length === numberOfPublishedEvents) subscription.close();
     }
     function subscriptionDropped(subscription, reason, error) {
       if (error) return done(error);
