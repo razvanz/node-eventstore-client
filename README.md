@@ -1,6 +1,10 @@
 # node-eventstore-client
 A port of the EventStore .Net ClientAPI to Node.js
 
+## Learning
+
+If you want to learn more about EventSourcing/CQRS/EventModeling, you can join the virtual workshop offered by my employer Adaptech Group, see info at [https://www.adaptechgroup.com/virtual-workshop/](https://www.adaptechgroup.com/virtual-workshop/).
+
 ## Status
 
 ### Missing features:
