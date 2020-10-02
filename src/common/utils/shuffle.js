@@ -5,11 +5,14 @@ function rndNext(min, max) {
 }
 
 function shuffle (arr, from, to) {
-  if (!to) {
-    to = arr.length - 1;
+  if (arr.length <= 1){
+    return arr;
   }
   if (!from) {
     from = 0;
+  }
+  if (!to) {
+    to = arr.length - 1;
   }
   const newArr = [...arr];
   if (from >= to) return;
