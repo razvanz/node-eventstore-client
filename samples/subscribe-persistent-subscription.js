@@ -1,6 +1,5 @@
-const Client = require('../lib/')
+const { Client, PersistentSubscriptionNakEventAction } = require('../')
 
-const { enums: { PersistentSubscriptionNakEventAction } } = Client
 const client = new Client({
   connection: {
     name: 'local-instance',

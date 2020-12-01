@@ -27,10 +27,10 @@ export class PersistentSubscriptionSettings {
     static create(): PersistentSubscriptionSettings;
 }
 
-export namespace SystemConsumerStrategies {
-    const DispatchToSingle: string;
-    const RoundRobin: string;
-    const Pinned: string;
+export enum SystemConsumerStrategies {
+    DispatchToSingle = 'DispatchToSingle',
+    RoundRobin = 'RoundRobin',
+    Pinned = 'Pinned'
 }
 
 export class GossipSeed {

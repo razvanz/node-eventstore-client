@@ -2,8 +2,8 @@
   "name": "@billyfree/eventstore-client",
   "version": "0.2.14",
   "description": "A port of the EventStore .Net ClientAPI to Node.js",
-  "main": "lib/index.js",
-  "types": "lib/index.d.ts",
+  "main": "./index.js",
+  "types": "./index.d.ts",
   "engines": {
     "node": ">=5.10"
   },
@@ -11,7 +11,7 @@
   "scripts": {
     "clean": "rm -f lib/dist.js",
     "prebuild": "npm run clean",
-    "build": "webpack -o ./lib/dist.js",
+    "build": "webpack",
     "pretest": "npm run build",
     "test": "nodeunit",
     "test-debug": "TESTS_VERBOSE_LOGGING=1 nodeunit",
@@ -51,6 +51,7 @@
   },
   "homepage": "https://github.com/billyfree/node-eventstore-client#readme",
   "dependencies": {
+    "got": "^11.8.0",
     "long": "^4.0.0",
     "protobufjs": "^6.8.8",
     "strict-event-emitter-types": "^2.0.0",

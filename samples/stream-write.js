@@ -1,5 +1,5 @@
 const uuid = require('uuid')
-const Client = require('../lib/')
+const { Client } = require('../')
 
 const client = new Client({
   connection: {
@@ -16,7 +16,7 @@ const client = new Client({
 ;(async () => {
   console.log(
     await client.writeStream(
-      `test-${uuid.v4()}`,
+      `Test-${uuid.v4()}`,
       {
         eventType: 'TestEvent',
         metadata: { timestamp: new Date().toISOString() },
