@@ -27,7 +27,7 @@ switch(evenstStoreType){
         done();
       });
       conn.on('error', done);
-  
+
       function done(err) {
         conn.close();
         if (err) return test.done(err);
@@ -41,7 +41,7 @@ switch(evenstStoreType){
         new GossipSeed({host: '1.2.3.4', port: 1113}),
         new GossipSeed({host: '2.3.4.5', port: 2113}),
         new GossipSeed({host: '3.4.5.6', port: 3113})
-      ];      
+      ];
       var conn = client.EventStoreConnection.create(testBase.settings({maxDiscoverAttempts: 1}), gossipSeeds);
       conn.connect()
         .catch(function (err) {
@@ -73,7 +73,7 @@ switch(evenstStoreType){
         done();
       });
       conn.on('error', done);
-  
+
       function done(err) {
         conn.close();
         if (err) return test.done(err);
@@ -116,7 +116,7 @@ switch(evenstStoreType){
         done();
       });
       conn.on('error', done);
-  
+
       function done(err) {
         conn.close();
         if (err) return test.done(err);
@@ -144,7 +144,7 @@ switch(evenstStoreType){
         test.done();
       });
     };
-    
+
     module.exports['Create a connection with tcp://host:port string'] = function (test) {
       var conn = client.createConnection({}, `tcp://${process.env.EVENTSTORE_HOST || 'localhost'}:1113`);
       conn.close();

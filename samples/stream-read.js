@@ -1,4 +1,4 @@
-const Client = require('../lib/')
+const { Client } = require('../')
 
 const client = new Client({
   connection: {
@@ -13,7 +13,7 @@ const client = new Client({
 })
 
 ;(async () => {
-  console.log(await client.readStream('$ce-test', 0, 1))
+  console.log(await client.readStream('$ce-Test', 0, 1))
 
   await client.disconnect()
 })()
